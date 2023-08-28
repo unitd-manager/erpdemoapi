@@ -7766,3 +7766,35 @@ RENAME TABLE `smartcongen`.`leave`
 
 /* =================== MEERA - 30/11/2022 ===================== */
  ALTER TABLE `purchase_order` CHANGE `company_id_supplier` `supplier_id` INT(11) NULL DEFAULT NULL;
+
+
+ /* *************************FATHIMA (26-08-2023)***************** */
+CREATE TABLE IF NOT EXISTS `price_list` (
+  `price_list_id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_name` varchar(255) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `effective_date` varchar(255) DEFAULT NULL,
+  `expiry_date` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`price_list_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `price_list_item` (
+  `price_list_item_id` int(11) NOT NULL AUTO_INCREMENT,
+    `price_list_id` int(11) DEFAULT NULL,
+    `product_id` int(11) DEFAULT NULL,
+  `price` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`price_list_item_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+ 

@@ -11,8 +11,8 @@ var credentials = {key: privateKey, cert: certificate};
 
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
-httpServer.listen(5001);
-httpsServer.listen(5002);
+httpServer.listen(3001);
+httpsServer.listen(3002);
     
 var bodyParser = require('body-parser');
 var cors = require('cors');
@@ -77,6 +77,7 @@ const cpfcalculator = require('./routes/cpfcalculator.js');
 const timesheet = require('./routes/timesheet.js');
 const planning = require('./routes/planning.js');
 const quote = require('./routes/quote.js');
+const pricelistitem = require('./routes/pricelistitem.js');
 const translation = require('./routes/translation.js');
 
 
@@ -134,6 +135,7 @@ app.use('/timesheet', timesheet);
 app.use('/cpfCalculator', cpfcalculator);
 app.use('/planning', planning);
 app.use('/quote', quote);
+app.use('/pricelistitem', pricelistitem);
 app.use('/translation', translation);
 
 
