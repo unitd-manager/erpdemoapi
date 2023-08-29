@@ -17,24 +17,25 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
-app.get('/getPurchaseRequest', (req, res, next) => {
-  db.query(`SELECT 
-  pr.purchase_request_id,
-  pr.purchase_request_code,
-  pr.purchase_request_date,
-  pr.purchase_delivery_date,
-  pr.department,
-  pr.status,
-  pr.creation_date,
-  pr.modification_date,
-  pr.created_by,
-  pr.modified_by,
-  pr.priority,
-  c.company_name,
-  c.company_id
-  FROM purchase_request pr
-  LEFT join company c on c.company_id=pr.company_id
-  Where pr.purchase_request_id !=''`,
+app.get('/getGoodsReceipt', (req, res, next) => {
+  db.query(`SELECT
+  gr.goods_receipt_id
+  ,gr.received_date
+  ,gr.supplier_id
+  ,gr.purchase_order_id
+  ,gr.staff_id
+  ,gr.status
+  ,gr.total_amount
+  ,gr.creation_date
+  ,gr.modification_date
+  ,gr.created_by
+  ,gr.modified_by
+  ,s.company_name
+  ,po.title
+  FROM goods_receipt gr
+  LEFT join supplier s on s.supplier_id = gr.supplier_id
+  LEFT join purchase_order po on po.purchase_order_id = gr.purchase_order_id
+  Where gr.goods_receipt_id !=''`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -52,24 +53,25 @@ app.get('/getPurchaseRequest', (req, res, next) => {
 );
 });
 
-app.post('/getPurchaseRequestById', (req, res, next) => {
-  db.query(`SELECT 
-  pr.purchase_request_id,
-  pr.purchase_request_code,
-  pr.purchase_request_date,
-  pr.purchase_delivery_date,
-  pr.department,
-  pr.status,
-  pr.creation_date,
-  pr.modification_date,
-  pr.created_by,
-  pr.modified_by,
-  pr.priority,
-  c.company_name,
-  c.company_id
-  FROM purchase_request pr
-  LEFT join company c on c.company_id=pr.company_id
-  Where pr.purchase_request_id=${db.escape(req.body.purchase_request_id)}`,
+app.post('/getGoodsReceiptById', (req, res, next) => {
+  db.query(`SELECT
+  gr.goods_receipt_id
+  ,gr.received_date
+  ,gr.supplier_id
+  ,gr.purchase_order_id
+  ,gr.staff_id
+  ,gr.status
+  ,gr.total_amount
+  ,gr.creation_date
+  ,gr.modification_date
+  ,gr.created_by
+  ,gr.modified_by
+  ,s.company_name
+  ,po.title
+  FROM goods_receipt gr
+  LEFT join supplier s on s.supplier_id = gr.supplier_id
+  LEFT join purchase_order po on po.purchase_order_id = gr.purchase_order_id
+  Where gr.goods_receipt_id=${db.escape(req.body.goods_receipt_id)}`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -87,8 +89,8 @@ app.post('/getPurchaseRequestById', (req, res, next) => {
 );
 });
 
-app.post('/editPurchaseRequest', (req, res, next) => {
-  db.query(`UPDATE purchase_request 
+app.post('/editGoodsReceipt', (req, res, next) => {
+  db.query(`UPDATE goods_receipt 
             SET purchase_request_date=${db.escape(req.body.purchase_request_date)}
             ,purchase_delivery_date=${db.escape(req.body.purchase_delivery_date)}
             ,department=${db.escape(req.body.department)}

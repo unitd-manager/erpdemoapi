@@ -44,9 +44,12 @@ app.get('/getProjectTask', (req, res, next) => {
   ,p.title
   ,e.first_name
   ,e.employee_id
-FROM project_task pt
-LEFT JOIN project p ON pt.project_id = p.project_id
-LEFT JOIN employee e ON pt.employee_id = e.employee_id
+  ,jo.job_order_title
+  ,jo.job_order_code
+  FROM project_task pt
+  LEFT JOIN project p ON p.project_id = pt.project_id
+  LEFT JOIN employee e ON e.employee_id = pt.employee_id
+  LEFT JOIN job_order jo ON jo.job_order_id = pt.job_order_id
   Where pt.project_task_id !=''`,
   (err, result) => {
     if (err) {
@@ -89,9 +92,12 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,p.title
     ,e.first_name
     ,e.employee_id
-  FROM project_task pt
-  LEFT JOIN project p ON pt.project_id = p.project_id
-  LEFT JOIN employee e ON pt.employee_id = e.employee_id
+    ,jo.job_order_title
+    ,jo.job_order_code
+    FROM project_task pt
+    LEFT JOIN project p ON p.project_id = pt.project_id
+    LEFT JOIN employee e ON e.employee_id = pt.employee_id
+    LEFT JOIN job_order jo ON jo.job_order_id = pt.job_order_id
     Where pt.project_task_id=${db.escape(req.body.project_task_id)}`,
     (err, result) => {
       if (err) {
@@ -114,8 +120,31 @@ app.get("/getProjectTitle", (req, res, next) => {
     db.query(
       `SELECT
     title,project_id
-     From project 
-    `,
+     From project `,
+      (err, result) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(400).send({
+            data: err,
+            msg: "failed",
+          });
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: "Success",
+          });
+        }
+      }
+    );
+  });
+
+
+  app.get("/getJobOrderTitle", (req, res, next) => {
+    db.query(
+      `SELECT
+      job_order_title
+      ,job_order_id
+     From job_order `,
       (err, result) => {
         if (err) {
           console.log("error: ", err);
@@ -210,6 +239,32 @@ app.post('/insertProjectTask', (req, res, next) => {
 }
   }
 );
+});
+
+app.get('/getEmployeeName', (req, res, next) => {
+    db.query(`SELECT 
+    e.employee_id
+   ,e.first_name
+   ,e.nric_no
+   ,e.fin_no
+   ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count
+    FROM employee e 
+    `,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+}
+    }
+  );
 });
 
 

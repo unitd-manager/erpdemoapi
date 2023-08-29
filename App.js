@@ -11,8 +11,8 @@ var credentials = {key: privateKey, cert: certificate};
 
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
-httpServer.listen(3001);
-httpsServer.listen(3002);
+httpServer.listen(5001);
+httpsServer.listen(5002);
     
 var bodyParser = require('body-parser');
 var cors = require('cors');
@@ -80,6 +80,7 @@ const quote = require('./routes/quote.js');
 const translation = require('./routes/translation.js');
 const projecttask = require('./routes/projecttask.js');
 const purchaserequest = require('./routes/purchaserequest.js');
+const goodsreceipt = require('./routes/goodsreceipt.js');
 
 
 
@@ -139,6 +140,7 @@ app.use('/quote', quote);
 app.use('/translation', translation);
 app.use('/projecttask', projecttask);
 app.use('/purchaserequest', purchaserequest);
+app.use('/goodsreceipt', goodsreceipt);
 
 
 
