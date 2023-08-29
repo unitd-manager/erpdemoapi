@@ -80,6 +80,7 @@ const quote = require('./routes/quote.js');
 const pricelistitem = require('./routes/pricelistitem.js');
 const translation = require('./routes/translation.js');
 const projecttask = require('./routes/projecttask.js');
+const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 
 
@@ -140,6 +141,7 @@ app.use('/quote', quote);
 app.use('/pricelistitem', pricelistitem);
 app.use('/translation', translation);
 app.use('/projecttask', projecttask);
+app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 
 

@@ -111,6 +111,9 @@ app.get('/getProjects', (req, res, next) => {
 });
 
 
+
+
+
 app.post('/getAmountByProjectIds', (req, res, next) => {
   db.query(`SELECT
   amount,

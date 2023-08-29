@@ -7797,4 +7797,22 @@ CREATE TABLE IF NOT EXISTS `price_list_item` (
   PRIMARY KEY (`price_list_item_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
- 
+ ALTER TABLE `price_list_item` ADD `title` VARCHAR(255) NULL DEFAULT NULL AFTER `product_id`; 
+
+ CREATE TABLE IF NOT EXISTS `project_enquiry` (
+  `project_enquiry_id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_name` varchar(255) DEFAULT NULL,
+  `enquiry_code` varchar(255) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  `enquiry_date` varchar(255) DEFAULT NULL,
+    `project_end_date` varchar(255) DEFAULT NULL,
+      `status` varchar(255) DEFAULT NULL,
+  `services` varchar(255) DEFAULT NULL,
+  `office_ref_no` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`project_enquiry_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+

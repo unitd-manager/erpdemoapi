@@ -215,8 +215,8 @@ app.post('/editPriceListItem', (req, res, next) => {
   let data = {
     price_list_item_id:req.body.price_list_item_id	
    , price_list_id:req.body.price_list_id
-   , product_name	: req.body.product_name	
    , product_id: req.body.product_id
+   , title	: req.body.title	
    , price: req.body.price
    , unit: req.body.unit
   
