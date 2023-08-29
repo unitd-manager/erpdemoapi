@@ -7816,3 +7816,10 @@ CREATE TABLE IF NOT EXISTS `price_list_item` (
   PRIMARY KEY (`project_enquiry_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+
+
+/* =================== Gokila - 26/08/2023 ===================== */
+ALTER TABLE `quote` ADD `company_id` INT NULL DEFAULT NULL AFTER `show_project_manager`
+
+/* =================== Gokila - 26/08/2023 ===================== */
+ALTER TABLE `quote` ADD `contact_id` INT NULL DEFAULT NULL AFTER `company_id`
