@@ -77,8 +77,10 @@ const cpfcalculator = require('./routes/cpfcalculator.js');
 const timesheet = require('./routes/timesheet.js');
 const planning = require('./routes/planning.js');
 const quote = require('./routes/quote.js');
+const pricelistitem = require('./routes/pricelistitem.js');
 const translation = require('./routes/translation.js');
 const projecttask = require('./routes/projecttask.js');
+const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
 
@@ -137,8 +139,10 @@ app.use('/timesheet', timesheet);
 app.use('/cpfCalculator', cpfcalculator);
 app.use('/planning', planning);
 app.use('/quote', quote);
+app.use('/pricelistitem', pricelistitem);
 app.use('/translation', translation);
 app.use('/projecttask', projecttask);
+app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 
