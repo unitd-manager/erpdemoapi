@@ -144,7 +144,8 @@ app.post('/edit-Supplier', (req, res, next) => {
             ,address_country=${db.escape(req.body.address_country)}
             ,address_po_code=${db.escape(req.body.address_po_code)}
             ,payment_details=${db.escape(req.body.payment_details)}
-            ,modification_date=${db.escape(new Date())}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,terms=${db.escape(req.body.terms)}
             WHERE supplier_id =${db.escape(req.body.supplier_id)}`,
             (err, result) => {
@@ -191,6 +192,7 @@ app.post('/insert-Supplier', (req, res, next) => {
               source: req.body.source,
               group_name: req.body.group_name,
               supplier_type: req.body.supplier_type,
+              creation_date: req.body.creation_date,
               created_by: req.body.created_by,
               modified_by: req.body.modified_by,
               chi_company_name: req.body.chi_company_name,

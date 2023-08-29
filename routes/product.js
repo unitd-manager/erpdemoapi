@@ -82,7 +82,9 @@ app.get('/getProducts', (req, res, next) => {
 });
 
 
-app.post("/getProductsbySearchFilter", (req, res, next) => {
+app.get("/getProductsbySearchFilter", (req, res, next) => {
+  const { keyword } = req.query; // Extract query parameters
+
   db.query(
     `SELECT DISTINCT p.product_id
   ,p.category_id
@@ -127,7 +129,7 @@ app.post("/getProductsbySearchFilter", (req, res, next) => {
   LEFT JOIN (sub_category sc) ON (p.sub_category_id  = sc.sub_category_id)
   LEFT JOIN (product_company pc) ON (pc.product_id = p.product_id) 
   LEFT JOIN (supplier co) ON (co.supplier_id = pc.company_id)
-    where p.title LIKE CONCAT('%', ${db.escape(req.body.keyword)}, '%') AND p.published=1 
+    where p.title LIKE CONCAT('%',  ${db.escape(keyword)}, '%') AND p.published=1 
      GROUP BY p.product_id 
      LIMIT 10`,
     (err, result) => {
