@@ -154,6 +154,38 @@ app.get('/getFinances', (req, res, next) => {
   );
 });
 
+
+app.get('/getQuote', (req, res, next) => {
+  db.query(`SELECT q.quote_id 
+  ,q.opportunity_id
+  ,q.project_id
+  ,q.quote_code
+  ,q.quote_date
+  ,q.quote_status
+  ,q.creation_date
+  ,q.modification_date
+  ,q.currency_item
+  ,q.note
+  FROM quote q 
+  WHERE q.quote_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.get('/getGst', (req, res, next) => {
   db.query(`SELECT value FROM setting WHERE key_text='cp.gstPercentage'`,
     (err, result) => {
