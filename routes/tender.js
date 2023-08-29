@@ -509,8 +509,6 @@ app.post('/getCostingSummaryById', (req, res, next) => {
 app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
             qt.* 
-            ,qt.quote_id
-            ,qt.quote_items_id
             FROM quote_items qt 
             WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
           (err, result) => {
@@ -1284,34 +1282,6 @@ app.get('/getTenderBestMonthSummary', (req, res, next) => {
 }
   }
 );
-});
-app.get('/getTradingquote', (req, res, next) => {
-  db.query(` SELECT q.quote_date
-  ,q.quote_code
-  ,q.quote_status
-  ,q.project_location
-  ,q.project_reference
-  ,q.payment_method
-  ,q.revision
-  ,q.intro_drawing_quote 
-  FROM quote q  
-  WHERE q.quote_id != ''  ORDER BY quote_code DESC
-  `,
-    (err, result) => {
-     
-      if (result.length == 0) {
-        return res.status(400).send({
-          msg: 'No result found'
-        });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-        }
- 
-    }
-  );
 });
 
 
