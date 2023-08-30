@@ -17,28 +17,30 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
-app.post('/getTradingquoteById', (req, res, next) => {
-    db.query(` SELECT q.quote_date
-    ,q.quote_id
-    ,q.quote_code
-    ,q.quote_status
-    ,q.ref_no_quote
-    ,q.project_location
-    ,q.project_reference
-    ,q.payment_method
-    ,q.revision
-    ,q.intro_drawing_quote 
-    ,q.total_amount
-    ,q.opportunity_id
-    ,q.company_id
-    ,o.opportunity_code
+app.post('/getgoodsdeliveryById', (req, res, next) => {
+    db.query(` SELECT gd.goods_delivery_id
+    ,gd.delivery_no
+    ,gd.goods_delivery_date
+    ,gd.order_id
+    ,o.order_code
+    ,gd.goods_ref_no
+    ,gd.company_id
     ,c.company_name
     ,cont.first_name
-    FROM quote q  
-    LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
-    LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id)   
-    WHERE q.quote_id =${db.escape(req.body.quote_id)}  ORDER BY quote_code DESC
+    ,gd.goods_delivery_status
+    ,gd.po_no
+    ,gd.sales_man
+    ,gd.contact_id
+    ,gd.department
+    ,gd.creation_date
+    ,gd.modification_date
+    ,gd.created_by
+    ,gd.modified_by    
+       FROM goods_delivery gd  
+       LEFT JOIN (orders o) ON (o.order_id=gd.order_id)
+       LEFT JOIN (company c) ON (c.company_id=gd.company_id)
+       LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
+       WHERE gd.goods_delivery_id =${db.escape(req.body.goods_delivery_id)}
     `,
       (err, result) => {
        
@@ -96,6 +98,23 @@ app.post('/getTradingquoteById', (req, res, next) => {
           }
    
       }
+    );
+  });
+  app.get('/getOrderCode', (req, res, next) => {
+    db.query(`  SELECT order_code,order_id from orders `,
+      (err, result) => {
+       
+        if (result.length == 0) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+          }
+         }
     );
   });
   app.post('/edit-Tradingquote', (req, res, next) => {

@@ -31,9 +31,14 @@ app.post('/getTradingquoteById', (req, res, next) => {
     ,q.total_amount
     ,q.opportunity_id
     ,q.company_id
+    ,q.contact_id
     ,o.opportunity_code
     ,c.company_name
     ,cont.first_name
+    ,q.creation_date
+    ,q.modification_date
+    ,q.created_by
+    ,q.modified_by
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
@@ -71,6 +76,7 @@ app.post('/getTradingquoteById', (req, res, next) => {
     ,q.total_amount
     ,q.opportunity_id
     ,q.company_id
+    ,q.contact_id
     ,o.opportunity_code
     ,c.company_name
     ,cont.first_name
@@ -134,7 +140,8 @@ app.post('/getTradingquoteById', (req, res, next) => {
               ,opportunity_id=${db.escape(req.body.opportunity_id)}
               ,company_id=${db.escape(req.body.company_id)}
               ,contact_id=${db.escape(req.body.contact_id)}
-              
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
               WHERE quote_id =  ${db.escape(req.body.quote_id)}`,
               (err, result) =>{
                 if (err) {
@@ -174,6 +181,9 @@ app.post('/getTradingquoteById', (req, res, next) => {
       , ref_no_quote: req.body.ref_no_quote
       , intro_drawing_quote: req.body.intro_drawing_quote
       , show_project_manager: req.body.show_project_manager
+      , creation_date: req.body.creation_date
+      , modification_date: null
+      , created_by: req.body.created_by
     };
     let sql = "INSERT INTO quote SET ?";
     let query = db.query(sql, data,(err, result) => {
@@ -196,6 +206,10 @@ app.post('/getTradingquoteById', (req, res, next) => {
               qt.* 
               ,qt.quote_id
               ,qt.quote_items_id
+              ,qt.creation_date
+              ,qt.modification_date
+              ,qt.created_by
+              ,qt.modified_by
               FROM quote_items qt 
               WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
             (err, result) => {
@@ -215,6 +229,53 @@ app.post('/getTradingquoteById', (req, res, next) => {
     );
   });
 
+  app.post('/insertQuoteItems', (req, res, next) => {
+
+    let data = {
+      quote_category_id:req.body.quote_category_id
+       ,description: req.body.description
+      , amount: req.body.amount
+      , amount_other: req.body.amount_other
+      , item_type: req.body.item_type
+      , sort_order: req.body.sort_order
+      , title: req.body.title
+      , quote_id: req.body.quote_id
+      , opportunity_id: req.body.opportunity_id
+      , actual_amount: req.body.actual_amount
+      , supplier_amount	: req.body.supplier_amount	
+      , quantity: req.body.quantity
+      , project_id: req.body.project_id
+      , created_by: req.body.created_by
+      , modified_by: req.body.modified_by
+      , unit: req.body.unit
+      , remarks: req.body.remarks
+      , part_no: req.body.part_no
+      , nationality: req.body.nationality
+      , ot_rate: req.body.ot_rate
+      , ph_rate: req.body.ph_rate
+      , scaffold_code: req.body.scaffold_code
+      , erection: req.body.erection
+      , dismantle: req.body.dismantle
+      , unit_price: req.body.unit_price
+      , drawing_number: req.body.drawing_number
+      , drawing_title: req.body.drawing_title
+      , drawing_revision: req.body.drawing_revision
+   };
+    let sql = "INSERT INTO quote_items SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+       return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'New quote item has been created successfully'
+            });
+      }
+    });
+  });
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');
