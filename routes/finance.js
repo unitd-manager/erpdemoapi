@@ -22,14 +22,19 @@ app.post('/getFinancesById', (req, res, next) => {
   db.query(`SELECT 
   o.order_id,
   o.order_date,
+  o.company_id,
+  c.company_name,
   o.project_id,
   o.project_type,
   o.creation_date,
   o.order_status,
   o.invoice_terms,
   o.notes,
+  q.quote_id,
+  q.quote_code,
   o.shipping_first_name,
   o.shipping_address1,
+  o.order_code,
   o.shipping_address2,
   o.shipping_address_country,
   o.shipping_address_po_code,
@@ -51,6 +56,8 @@ app.post('/getFinancesById', (req, res, next) => {
   c.phone AS company_phone,
   c.address_flat AS company_address_flat,
   c.address_street AS company_address_street,
+  op.opportunity_id,
+  op.office_ref_no,
   c.address_town AS company_address_town,
   c.address_state AS company_address_state,
   gc3.name AS company_country_name,
@@ -63,9 +70,10 @@ app.post('/getFinancesById', (req, res, next) => {
 FROM orders o
 LEFT JOIN geo_country gc2 ON (o.shipping_address_country_code = gc2.country_code)
 LEFT JOIN company c ON (o.company_id = c.company_id)
+LEFT JOIN quote q ON (q.quote_id = o.quote_id)
+LEFT JOIN opportunity op ON (op.opportunity_id = q.opportunity_id)
 LEFT JOIN invoice ii ON (o.order_id = ii.order_id)
 LEFT JOIN geo_country gc3 ON (c.address_country = gc3.country_code)
-LEFT JOIN quote q ON o.quote_id = q.quote_id
 LEFT JOIN project p ON o.project_id = p.project_id
 WHERE o.order_id = ${db.escape(req.body.order_id)}
 GROUP BY o.order_id; `,
@@ -761,6 +769,7 @@ app.post('/insertOrder', (req, res, next) => {
     cust_address_po_code: req.body.cust_address_po_code,
     cust_phone: req.body.cust_phone,
     memo: req.body.memo,
+     quote_id: req.body.quote_id,
     creation_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
     modification_date: req.body.modification_date,
     flag: req.body.flag,
