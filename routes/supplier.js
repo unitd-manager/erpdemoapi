@@ -33,6 +33,10 @@ app.get('/getSupplier', (req, res, next) => {
   ,s.address_country
   ,s.address_po_code
   ,s.payment_details
+  ,s.creation_date
+  ,s.created_by
+  ,s.modified_by
+  ,s.modification_date
   ,s.terms
   ,s.phone
   ,gc.name AS country_name 
@@ -71,6 +75,8 @@ app.post('/get-SupplierById', (req, res, next) => {
   ,s.terms
   ,s.phone
   ,s.creation_date
+  ,s.created_by
+  ,s.modified_by
   ,s.modification_date
   ,gc.name AS country_name 
   ,p.payment_status
