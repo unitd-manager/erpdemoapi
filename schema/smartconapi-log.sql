@@ -7823,3 +7823,9 @@ ALTER TABLE `quote` ADD `company_id` INT NULL DEFAULT NULL AFTER `show_project_m
 
 /* =================== Gokila - 26/08/2023 ===================== */
 ALTER TABLE `quote` ADD `contact_id` INT NULL DEFAULT NULL AFTER `company_id`
+
+ 
+/* =================== SULFIYA - 31/08/2023 ===================== */
+ALTER TABLE `order_item` CHANGE `discount_percentage` `discount_percentage` FLOAT(10,2) NOT NULL; 
+ALTER TABLE `order_item` CHANGE `qty_for_invoice` `qty_for_invoice` INT(10) NULL DEFAULT NULL; 
+ALTER TABLE `order_item` CHANGE `site_id` `site_id` INT(11) NULL DEFAULT NULL; 
