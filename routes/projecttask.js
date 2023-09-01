@@ -162,6 +162,29 @@ app.get("/getProjectTitle", (req, res, next) => {
     );
   });
 
+  app.get("/getCompanyName", (req, res, next) => {
+    db.query(
+      `SELECT
+      company_name
+      ,company_id
+     From company `,
+      (err, result) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(400).send({
+            data: err,
+            msg: "failed",
+          });
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: "Success",
+          });
+        }
+      }
+    );
+  });
+
 
   app.post('/editProjectTask', (req, res, next) => {
     db.query(`UPDATE project_task 

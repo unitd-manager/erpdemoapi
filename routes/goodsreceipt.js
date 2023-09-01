@@ -20,10 +20,10 @@ app.use(fileUpload({
 app.get('/getGoodsReceipt', (req, res, next) => {
   db.query(`SELECT
   gr.goods_receipt_id
-  ,gr.received_date
+  ,gr.goods_received_date
   ,gr.supplier_id
   ,gr.purchase_order_id
-  ,gr.staff_id
+  ,gr.employee_id
   ,gr.status
   ,gr.total_amount
   ,gr.creation_date
@@ -31,10 +31,13 @@ app.get('/getGoodsReceipt', (req, res, next) => {
   ,gr.created_by
   ,gr.modified_by
   ,s.company_name
-  ,po.title
+  ,po.po_code
+  ,e.first_name
+  ,e.employee_id
   FROM goods_receipt gr
   LEFT join supplier s on s.supplier_id = gr.supplier_id
   LEFT join purchase_order po on po.purchase_order_id = gr.purchase_order_id
+  LEFT join employee e on e.employee_id = gr.employee_id
   Where gr.goods_receipt_id !=''`,
   (err, result) => {
     if (err) {
@@ -56,10 +59,10 @@ app.get('/getGoodsReceipt', (req, res, next) => {
 app.post('/getGoodsReceiptById', (req, res, next) => {
   db.query(`SELECT
   gr.goods_receipt_id
-  ,gr.received_date
+  ,gr.goods_received_date
   ,gr.supplier_id
   ,gr.purchase_order_id
-  ,gr.staff_id
+  ,gr.employee_id
   ,gr.status
   ,gr.total_amount
   ,gr.creation_date
@@ -67,10 +70,13 @@ app.post('/getGoodsReceiptById', (req, res, next) => {
   ,gr.created_by
   ,gr.modified_by
   ,s.company_name
-  ,po.title
+  ,po.po_code
+  ,e.first_name
+  ,e.employee_id
   FROM goods_receipt gr
   LEFT join supplier s on s.supplier_id = gr.supplier_id
   LEFT join purchase_order po on po.purchase_order_id = gr.purchase_order_id
+  LEFT join employee e on e.employee_id = gr.employee_id
   Where gr.goods_receipt_id=${db.escape(req.body.goods_receipt_id)}`,
   (err, result) => {
     if (err) {
@@ -91,18 +97,17 @@ app.post('/getGoodsReceiptById', (req, res, next) => {
 
 app.post('/editGoodsReceipt', (req, res, next) => {
   db.query(`UPDATE goods_receipt 
-            SET purchase_request_date=${db.escape(req.body.purchase_request_date)}
-            ,purchase_delivery_date=${db.escape(req.body.purchase_delivery_date)}
-            ,department=${db.escape(req.body.department)}
+            SET goods_received_date=${db.escape(req.body.goods_received_date)}
+            ,supplier_id=${db.escape(req.body.supplier_id)}
+            ,purchase_order_id=${db.escape(req.body.purchase_order_id)}
+            ,employee_id=${db.escape(req.body.employee_id)}
             ,status=${db.escape(req.body.status)}
-            ,priority=${db.escape(req.body.priority)}
-            ,company_id=${db.escape(req.body.company_id)}
-            ,description=${db.escape(req.body.description)}
+            ,total_amount=${db.escape(req.body.total_amount)}
             ,creation_date=${db.escape(req.body.creation_date)}
             ,created_by=${db.escape(req.body.created_by)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
-            WHERE purchase_request_id = ${db.escape(req.body.purchase_request_id)}`,
+            WHERE goods_receipt_id = ${db.escape(req.body.goods_receipt_id)}`,
             (err, result) => {
               if (err) {
                 console.log('error: ', err)
@@ -121,22 +126,20 @@ app.post('/editGoodsReceipt', (req, res, next) => {
         });
         
         
-app.post('/insertPurchaseRequest', (req, res, next) => {
+app.post('/insertGoodsReceipt', (req, res, next) => {
   let data = {
-      purchase_request_code	: req.body.purchase_request_code
-    , purchase_request_date	: req.body.purchase_request_date
-    , purchase_delivery_date: req.body.purchase_delivery_date
-    , department: req.body.department
-    , status	: req.body.status
-    , priority: req.body.priority
-    , description: req.body.description
+      goods_received_date	: req.body.goods_received_date
+    , supplier_id: req.body.supplier_id
+    , purchase_order_id: req.body.purchase_order_id
+    , employee_id	: req.body.employee_id
+    , status: req.body.status
+    , total_amount: req.body.total_amount
     , creation_date: req.body.creation_date
     , created_by:req.body.created_by
     , modification_date:req.body.modification_date
     , modified_by:req.body.modified_by
-    , priority:req.body.priority
  };
-  let sql = "INSERT INTO purchase_request SET ?";
+  let sql = "INSERT INTO goods_receipt SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -154,8 +157,63 @@ app.post('/insertPurchaseRequest', (req, res, next) => {
 );
 });
 
-app.get("/getCustomerName", (req, res, next) => {
-  db.query(`SELECT company_name,company_id FROM company`, (err, result) => {
+app.post('/insertGoodsReceiptItems', (req, res, next) => {
+  let data = {
+      goods_receipt_id	: req.body.goods_receipt_id
+    , product_id: req.body.product_id
+    , goods_received_qty: req.body.goods_received_qty
+    , goods_damaged_qty	: req.body.goods_damaged_qty
+    , unit: req.body.unit
+    , serial_no: req.body.serial_no
+    , description: req.body.description
+    , creation_date: req.body.creation_date
+    , created_by:req.body.created_by
+    , modification_date:req.body.modification_date
+    , modified_by:req.body.modified_by
+ };
+  let sql = "INSERT INTO goods_receipt_items SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.get("/getPoCode", (req, res, next) => {
+  db.query(
+    `SELECT
+     po_code
+    ,purchase_order_id
+   From purchase_order `,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getSupplierName", (req, res, next) => {
+  db.query(`SELECT company_name,supplier_id FROM supplier`, (err, result) => {
     if (err) {
       return res.status(400).send({
         data: err,
@@ -169,6 +227,31 @@ app.get("/getCustomerName", (req, res, next) => {
   });
 });
 
+app.get('/getEmployeeName', (req, res, next) => {
+  db.query(`SELECT 
+  e.employee_id
+ ,e.first_name
+ ,e.nric_no
+ ,e.fin_no
+ ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count
+  FROM employee e 
+  `,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 
 app.post('/deletePurchaseRequest', (req, res, next) => {
 
@@ -326,18 +409,18 @@ app.post("/getCodeValue", (req, res, next) => {
   });
 
 
-  app.post('/PurchaseRequestLineItemById', (req, res, next) => {
+  app.post('/getPurchaseOrderedById', (req, res, next) => {
     db.query(`SELECT
     p.product_code
-    ,pr.unit
-    ,pr.purchase_request_qty
-    ,pr.modified_by
-    ,pr.purchase_request_items_id
-    ,pr.purchase_request_id
-    ,p.title
-    FROM purchase_request_items pr
-    LEFT JOIN (product p) ON (p.product_id = pr.product_id) 
-    WHERE pr.purchase_request_id = ${db.escape(req.body.purchase_request_id)}`,
+    ,p.product_id
+    ,po.unit
+    ,po.item_title
+    ,po.quantity
+    ,po.po_product_id
+    ,po.purchase_order_id
+    FROM po_product po
+    LEFT JOIN (product p) ON (p.product_id = po.product_id)
+    WHERE po.purchase_order_id = ${db.escape(req.body.purchase_order_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -382,8 +465,8 @@ app.post("/getCodeValue", (req, res, next) => {
 
   app.post('/deleteEditItem', (req, res, next) => {
 
-    let data = {purchase_request_items_id: req.body.purchase_request_items_id};
-    let sql = "DELETE FROM purchase_request_items WHERE ?";
+    let data = {goods_received_items_id: req.body.goods_received_items_id};
+    let sql = "DELETE FROM goods_receipt_items WHERE ?";
     let query = db.query(sql, data,(err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -399,6 +482,9 @@ app.post("/getCodeValue", (req, res, next) => {
       }
     });
   });
+
+  
+
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);

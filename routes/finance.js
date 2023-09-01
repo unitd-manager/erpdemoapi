@@ -530,6 +530,85 @@ WHERE i.order_id = ${db.escape(req.body.order_id)} AND i.status != 'cancelled'
   );
 });
 
+app.post('/getInvoiceById', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.invoice_code  
+  ,i.status
+  ,i.invoice_date
+   ,i.invoice_amount
+   ,i.gst_percentage
+   ,i.gst_value
+   ,i.discount
+   ,i.quote_code
+   ,i.po_number
+    ,i.project_location
+    ,i.project_reference
+    ,i.so_ref_no
+    ,i.code
+    ,i.reference
+     ,i.invoice_terms
+     ,i.attention
+     ,i.site_code
+     ,i.payment_terms
+   from invoice i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+ WHERE i.order_id= ${db.escape(req.body.order_id)} `,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+app.post('/getReceiptByIds', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.receipt_id
+  ,r.receipt_id
+  ,o.order_id
+  ,r.receipt_code
+  ,r.receipt_status
+  ,r.amount
+  ,r.receipt_date
+  ,r.mode_of_payment
+  ,r.remarks
+  ,r.creation_date
+  ,r.created_by
+  ,r.modification_date
+  ,r.modified_by 
+  FROM receipt r  
+  LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
+   LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
+ LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.post("/getInvoiceReceiptSummary", (req, res, next) => {
   db.query(
     `SELECT

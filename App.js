@@ -50,6 +50,7 @@ const expensehead = require('./routes/expensehead.js');
 const clients = require('./routes/client.js');
 const section = require('./routes/section.js');
 const accounts = require('./routes/accounts.js');
+const accountsMap = require('./routes/accountsMap.js');
 const product = require('./routes/product.js');
 const inventory = require('./routes/inventory.js');
 const tradingquote = require('./routes/tradingquote.js');
@@ -87,6 +88,7 @@ const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
 const labourrequest = require('./routes/labourrequest.js');
+const changerequest = require('./routes/changerequest.js');
 
 
 
@@ -103,6 +105,7 @@ app.use('/setting', setting);
 app.use('/supplier', supplier);
 app.use('/subcon', subcon);
 app.use('/accounts', accounts);
+app.use('/accountsMap', accountsMap);
 app.use('/inventory', inventory);
 app.use('/payrollmanagement', payrollmanagement);
 app.use('/employeeModule',employeeModule);
@@ -153,6 +156,7 @@ app.use('/projecttask', projecttask);
 app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
+app.use('/changerequest', changerequest);
 
 
 
