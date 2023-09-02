@@ -80,7 +80,7 @@ app.post('/getContactByCompanyId', (req, res, next) => {
   db.query(`SELECT * FROM contact WHERE company_id =${db.escape(req.body.company_id)}`,
     (err, result) => {
      
-      if (result.length == 0) {
+      if (err) {
         return res.status(400).send({
           msg: 'No result found'
         });

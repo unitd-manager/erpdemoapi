@@ -7967,3 +7967,123 @@ CREATE TABLE `purchase_request_items` (
   PRIMARY KEY (`purchase_request_items_id`)
    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
  -- --------------------------------------------------------
+
+
+
+
+/* ********************FATHIMA(30/08/2023) ********************** */
+CREATE TABLE IF NOT EXISTS `project_quote` (
+  `project_quote_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_enquiry_id` int(10) DEFAULT NULL,
+  `project_id` int(10) DEFAULT NULL,
+  `quote_code` varchar(50) DEFAULT NULL,
+  `quote_date` varchar(255) DEFAULT NULL,
+  `quote_status` varchar(50) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `currency_item` varchar(50) DEFAULT NULL,
+  `note` text,
+  `quote_condition` text,
+  `quote_type` varchar(100) DEFAULT NULL,
+  `quote_sequence` tinyint(4) NOT NULL DEFAULT '1',
+  `template` tinyint(4) DEFAULT '0',
+  `template_title` varchar(255) DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL,
+  `sign_staff_id` int(11) DEFAULT NULL,
+  `flag` tinyint(4) DEFAULT '0',
+  `sort_order` int(11) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `signatory_name` varchar(25) DEFAULT NULL,
+  `signatory_position` varchar(25) DEFAULT NULL,
+  `quote_code_user` varchar(50) DEFAULT NULL,
+  `quote_intro_text_1` varchar(100) DEFAULT NULL,
+  `invoices_payment_terms` text,
+  `responsibility` text,
+  `provision_by_client` text,
+  `provision_by_krs` text,
+  `monday_to_friday_normal_timing` varchar(500) DEFAULT NULL,
+  `saturday_normal_timing` varchar(500) DEFAULT NULL,
+  `monday_to_friday_ot_timing` varchar(500) DEFAULT NULL,
+  `saturday_ot_timing` varchar(500) DEFAULT NULL,
+  `sunday_and_publicholiday_ot_timing` varchar(500) DEFAULT NULL,
+  `timesheet_type` varchar(50) DEFAULT NULL,
+  `site_address` varchar(255) DEFAULT NULL,
+  `project_location` varchar(255) DEFAULT NULL,
+  `project_reference` varchar(255) DEFAULT NULL,
+  `discount` decimal(10,2) DEFAULT NULL,
+  `gst` int(11) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `drawing_nos` tinyint(4) DEFAULT NULL,
+  `intro_quote` text,
+  `our_reference` varchar(255) DEFAULT NULL,
+  `total_amount` decimal(10,2) DEFAULT NULL,
+  `revision` varchar(100) DEFAULT NULL,
+  `employee_id` int(11) DEFAULT NULL,
+  `ref_no_quote` varchar(50) DEFAULT NULL,
+  `intro_drawing_quote` text,
+  `show_project_manager` int(1) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  `contact_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`project_quote_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `project_quote_items` (
+  `project_quote_items_id` int(11) NOT NULL AUTO_INCREMENT,
+  `quote_category_id` int(10) DEFAULT NULL,
+  `description` text,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `amount_other` decimal(10,0) DEFAULT NULL,
+  `item_type` varchar(200) DEFAULT NULL,
+  `sort_order` int(10) DEFAULT NULL,
+  `creation_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modification_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `title` text,
+  `project_quote_id` int(11) DEFAULT NULL,
+  `opportunity_id` int(11) DEFAULT NULL,
+  `actual_amount` int(11) DEFAULT NULL,
+  `supplier_amount` int(11) DEFAULT NULL,
+  `quantity` decimal(10,2) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `created_by` varchar(100) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `unit` varchar(25) DEFAULT NULL,
+  `remarks` text,
+  `part_no` varchar(255) DEFAULT NULL,
+  `nationality` varchar(100) DEFAULT NULL,
+  `ot_rate` decimal(10,2) DEFAULT NULL,
+  `ph_rate` decimal(10,2) DEFAULT NULL,
+  `scaffold_code` varchar(100) DEFAULT NULL,
+  `erection` decimal(10,2) DEFAULT NULL,
+  `dismantle` decimal(10,2) DEFAULT NULL,
+  `unit_price` decimal(10,2) DEFAULT NULL,
+  `drawing_number` varchar(255) DEFAULT NULL,
+  `drawing_title` text,
+  `drawing_revision` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`project_quote_items_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'The next quote code', 'nextProjectQuoteCode', '1', '', '', NULL, 'Number Field', '1', NULL, NULL, NULL, '0', '1'); 
+
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'The prefix used for quote code', 'projectQuoteCodePrefix', 'VIR/PQT/', '', '', 'Admin', 'Text Field', '1', NULL, NULL, NULL, '0', '1'); 
+
+
+CREATE TABLE IF NOT EXISTS `labour_request` (
+  `labour_request_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) DEFAULT NULL,
+  `request_by` varchar(255) DEFAULT NULL,
+    `request_urgency` varchar(255) DEFAULT NULL,
+  `request_type` varchar(255) DEFAULT NULL,
+  `job_description` varchar(255) DEFAULT NULL,
+  `skills_required` varchar(255) DEFAULT NULL,
+  `no_of_employees` varchar(255) DEFAULT NULL,
+  `department` varchar(255) DEFAULT NULL,
+  `request_date` varchar(255) DEFAULT NULL,
+  `request_start_date` varchar(255) DEFAULT NULL,
+    `request_end_date` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`labour_request_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
