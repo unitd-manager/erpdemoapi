@@ -95,6 +95,126 @@ GROUP BY o.order_id; `,
  );
 });
 
+app.post('/getInvoiceById', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.invoice_code  
+  ,i.status
+  ,i.invoice_date
+   ,i.invoice_amount
+   ,i.gst_percentage
+   ,i.gst_value
+   ,i.discount
+   ,i.quote_code
+   ,i.po_number
+    ,i.project_location
+    ,i.project_reference
+    ,i.so_ref_no
+    ,i.code
+    ,i.reference
+     ,i.invoice_terms
+     ,i.attention
+     ,i.site_code
+     ,i.payment_terms
+   from invoice i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+ WHERE i.order_id= ${db.escape(req.body.order_id)} `,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+
+app.post('/getReceiptByIds', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.receipt_id
+  ,r.receipt_id
+  ,o.order_id
+  ,r.receipt_code
+  ,r.receipt_status
+  ,r.amount
+  ,r.receipt_date
+  ,r.mode_of_payment
+  ,r.remarks
+  ,r.creation_date
+  ,r.created_by
+  ,r.modification_date
+  ,r.modified_by 
+  FROM receipt r  
+  LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
+   LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
+ LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+
+app.post('/getOrdersByIds', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.order_item_id 
+  ,r.record_id
+  ,r.order_id
+  ,o.order_code
+  ,r.qty
+  ,r.unit_price
+  ,r.item_title
+  ,r.model
+  ,r.module
+  ,r.supplier_id 
+  ,r.invoice_id 
+  ,r.cost_price
+  ,r.unit
+  ,r.quote_id
+  ,r.order_id 
+  FROM order_item r  
+ LEFT JOIN orders o ON (o.order_id = r.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+
+
 app.get('/getFinances', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
@@ -104,6 +224,8 @@ app.get('/getFinances', (req, res, next) => {
   ,o.order_status
   ,o.invoice_terms
   ,o.notes
+  ,q.quote_id
+  ,q.quote_code
   ,o.shipping_first_name
   ,o.shipping_address1
   ,o.shipping_address2
@@ -120,30 +242,13 @@ app.get('/getFinances', (req, res, next) => {
   ,o.created_by
   ,o.modified_by
   ,o.cust_company_name
-  ,gc2.name AS shipping_country_name
-  ,c.company_name AS company_name
-  ,c.website AS company_website
-  ,c.fax AS company_fax
-  ,c.phone AS company_phone
-  ,c.address_flat AS company_address_flat
-  ,c.address_street AS company_address_street
-  ,c.address_town AS company_address_town
-  ,c.address_state AS company_address_state
-  ,gc3.name AS company_country_name
-  ,(SELECT (SUM(i.invoice_amount))
-  FROM invoice i 
-  WHERE i.order_id = o.order_id)  AS orderamount
-  ,i.invoice_amount
-  ,i.invoice_code
-  ,i.status
-  ,i.invoice_date
-  ,q.quote_code,p.project_code,p.title FROM orders o 
-  LEFT JOIN invoice i ON i.order_id =o.order_id
-  LEFT JOIN geo_country gc2 ON (o.shipping_address_country_code = gc2.country_code) 
+  ,c.company_name 
+  ,op.office_ref_no
+  from orders o
   LEFT JOIN company c ON (c.company_id = o.company_id) 
-  LEFT JOIN geo_country gc3 ON (c.address_country = gc3.country_code) 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
-  LEFT JOIN project p ON o.project_id = p.project_id WHERE o.order_id != ''`,
+    LEFT JOIN opportunity op ON op.opportunity_id = q.opportunity_id 
+  WHERE o.order_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -158,6 +263,27 @@ app.get('/getFinances', (req, res, next) => {
 
       }
 
+    }
+  );
+});
+
+
+app.get('/checkOrderItem', (req, res, next) => {
+  db.query(
+    `SELECT quote_items_id FROM order_item`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.quote_items_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
     }
   );
 });
@@ -385,6 +511,8 @@ app.post('/editFinances', (req, res, next) => {
   db.query(`UPDATE orders
             SET invoice_terms=${db.escape(req.body.invoice_terms)}
             ,notes=${db.escape(req.body.notes)}
+            ,order_status=${db.escape(req.body.order_status)}
+            ,order_date=${db.escape(req.body.order_date)}
             ,shipping_first_name=${db.escape(req.body.shipping_first_name)}
             ,shipping_address1=${db.escape(req.body.shipping_address1)}
             ,shipping_address2=${db.escape(req.body.shipping_address2)}
@@ -526,85 +654,6 @@ WHERE i.order_id = ${db.escape(req.body.order_id)} AND i.status != 'cancelled'
           msg: "Success",
         });
       }
-    }
-  );
-});
-
-app.post('/getInvoiceById', (req, res, next) => {
-  db.query(`select i.invoice_id
-  ,i.invoice_code  
-  ,i.status
-  ,i.invoice_date
-   ,i.invoice_amount
-   ,i.gst_percentage
-   ,i.gst_value
-   ,i.discount
-   ,i.quote_code
-   ,i.po_number
-    ,i.project_location
-    ,i.project_reference
-    ,i.so_ref_no
-    ,i.code
-    ,i.reference
-     ,i.invoice_terms
-     ,i.attention
-     ,i.site_code
-     ,i.payment_terms
-   from invoice i
-  LEFT JOIN orders o ON o.order_id=i.order_id
- WHERE i.order_id= ${db.escape(req.body.order_id)} `,
-    (err, result) => {
-
-      if (err) {
-        return res.status(400).send({
-              data: err,
-              msg:'failed'
-            });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
-      }
-
-    }
-  );
-});
-
-app.post('/getReceiptByIds', (req, res, next) => {
-  db.query(`SELECT DISTINCT r.receipt_id
-  ,r.receipt_id
-  ,o.order_id
-  ,r.receipt_code
-  ,r.receipt_status
-  ,r.amount
-  ,r.receipt_date
-  ,r.mode_of_payment
-  ,r.remarks
-  ,r.creation_date
-  ,r.created_by
-  ,r.modification_date
-  ,r.modified_by 
-  FROM receipt r  
-  LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
-   LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
- LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
-    (err, result) => {
-
-      if (err) {
-        return res.status(400).send({
-              data: err,
-              msg:'failed'
-            });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
-      }
-
     }
   );
 });
@@ -1165,10 +1214,12 @@ app.post('/insertInvoiceItems', (req, res, next) => {
 });
 
 
+
 app.post('/insertorder_item', (req, res, next) => {
 
   let data = {qty: req.body.qty,
               unit_price: req.body.unit_price,
+              order_id: req.body.order_id,
               item_title: req.body.item_title,
               model: req.body.model,
               module: req.body.module,
@@ -1182,7 +1233,7 @@ app.post('/insertorder_item', (req, res, next) => {
               ref_code: req.body.ref_code,
               discount_type: req.body.discount_type,
               vat: req.body.vat,
-              site_id: req.body.site_id,
+              quote_items_id: req.body.quote_items_id,
               item_code_backup: req.body.item_code_backup,
               unit: req.body.unit,
               description: req.body.description,
