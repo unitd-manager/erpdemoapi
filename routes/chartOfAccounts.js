@@ -86,6 +86,31 @@ app.post('/editChartAc', (req, res, next) => {
   );
 });
 
+app.post('/insertChartAc', (req, res, next) => {
+
+  let data = {
+    title	: req.body.title	
+   , creation_date: req.body.creation_date
+   , acc_category_id: req.body.acc_category_id
+  };
+  let sql = "INSERT INTO acc_head SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
+    }
+  });
+});
+
+
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');
