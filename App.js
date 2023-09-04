@@ -86,6 +86,7 @@ const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
 const changerequest = require('./routes/changerequest.js');
+const document = require('./routes/document.js');
 
 
 
@@ -151,6 +152,7 @@ app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
+app.use('/document', document);
 
 
 
