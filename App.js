@@ -89,12 +89,9 @@ const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
 const labourrequest = require('./routes/labourrequest.js');
 const changerequest = require('./routes/changerequest.js');
-<<<<<<< HEAD
 const document = require('./routes/document.js');
 
-=======
 const chartOfAccounts = require('./routes/chartOfAccounts.js');
->>>>>>> 019120f090afd6c18c0af9ccc0208211f9e37f4c
 
 
 app.use('/invoice', invoice);
@@ -162,13 +159,10 @@ app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
-<<<<<<< HEAD
 app.use('/document', document);
 
 
-=======
 app.use('/chartOfAccounts', chartOfAccounts);
->>>>>>> 019120f090afd6c18c0af9ccc0208211f9e37f4c
 
 app.use(fileUpload({
     createParentPath: true
