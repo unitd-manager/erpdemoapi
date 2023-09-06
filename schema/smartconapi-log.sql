@@ -8087,3 +8087,85 @@ CREATE TABLE IF NOT EXISTS `labour_request` (
   `modified_by` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`labour_request_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+
+CREATE TABLE IF NOT EXISTS `material_request` (
+  `material_request_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) DEFAULT NULL,
+  `material_request_code` varchar(255) DEFAULT NULL,
+    `material_request_date` varchar(255) DEFAULT NULL,
+  `request_date` varchar(255) DEFAULT NULL,
+  `site_reference` varchar(255) DEFAULT NULL,
+  `request_by` varchar(255) DEFAULT NULL,
+  `approved_by` varchar(255) DEFAULT NULL,
+  `approved_date` varchar(255) DEFAULT NULL,
+  `shipping_method` varchar(255) DEFAULT NULL,
+  `payment_terms` varchar(255) DEFAULT NULL,
+    `delivery_terms` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`material_request_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `equipment_request` (
+  `equipment_request_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) DEFAULT NULL,
+  `equipment_request_code` varchar(255) DEFAULT NULL,
+    `equipment_request_date` varchar(255) DEFAULT NULL,
+  `request_date` varchar(255) DEFAULT NULL,
+  `site_reference` varchar(255) DEFAULT NULL,
+  `request_by` varchar(255) DEFAULT NULL,
+  `approved_by` varchar(255) DEFAULT NULL,
+  `approved_date` varchar(255) DEFAULT NULL,
+  `shipping_method` varchar(255) DEFAULT NULL,
+  `payment_terms` varchar(255) DEFAULT NULL,
+    `delivery_terms` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`equipment_request_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `material_request_item` (
+  `material_request_item_id` int(11) NOT NULL AUTO_INCREMENT,
+  `supplier_id` int(11) DEFAULT NULL,
+  `material_request_id` int(11) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+    `brand` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `quantity` varchar(255) DEFAULT NULL,
+   `unit_price` float(10,2) DEFAULT '0.00',
+  `amount` decimal(10,2) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`material_request_item_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `equipment_request_item` (
+  `equipment_request_item_id` int(11) NOT NULL AUTO_INCREMENT,
+  `supplier_id` int(11) DEFAULT NULL,
+  `equipment_request_id` int(11) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+    `brand` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `quantity` varchar(255) DEFAULT NULL,
+   `unit_price` float(10,2) DEFAULT '0.00',
+  `amount` decimal(10,2) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`equipment_request_item_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+

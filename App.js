@@ -88,6 +88,8 @@ const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
 const labourrequest = require('./routes/labourrequest.js');
+const materialrequest = require('./routes/materialrequest.js');
+const equipmentrequest = require('./routes/equipmentrequest.js');
 const changerequest = require('./routes/changerequest.js');
 
 
@@ -157,7 +159,8 @@ app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
-
+app.use('/materialrequest', materialrequest);
+app.use('/equipmentrequest', equipmentrequest);
 
 
 app.use(fileUpload({
