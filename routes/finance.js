@@ -18,6 +18,89 @@ app.use(fileUpload({
 }));
 
 
+app.get('/getFinances', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  , o.project_id
+  ,o.project_type
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  ,o.invoice_terms
+  ,o.notes
+  ,q.quote_id
+  ,q.quote_code
+  ,o.shipping_first_name
+  ,o.shipping_address1
+  ,o.shipping_address2
+  ,o.shipping_address_country
+  ,o.shipping_address_po_code 
+  ,o.delivery_date
+  ,o.delivery_terms
+  ,o.cust_address1
+  ,o.cust_address2
+  ,o.cust_address_country
+  ,o.cust_address_po_code
+  ,o.creation_date
+  ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
+  ,o.cust_company_name
+  ,c.company_name 
+  ,op.office_ref_no
+  from orders o
+  LEFT JOIN company c ON (c.company_id = o.company_id) 
+  LEFT JOIN quote q ON o.quote_id = q.quote_id 
+    LEFT JOIN opportunity op ON op.opportunity_id = q.opportunity_id 
+  WHERE o.order_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+app.post('/getInvoiceItemsById', (req, res, next) => {
+  db.query(`SELECT it.item_title,
+  it.invoice_item_id,
+i.invoice_id,
+it.description,
+it.total_cost,
+it.unit,
+it.qty,
+it.unit_price,
+it.remarks
+FROM invoice_item it
+LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
+WHERE i.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
+          (err, result) => {
+       
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
 app.post('/getFinancesById', (req, res, next) => {
   db.query(`SELECT 
   o.order_id,
@@ -215,40 +298,20 @@ app.post('/getOrdersByIds', (req, res, next) => {
 
 
 
-app.get('/getFinances', (req, res, next) => {
-  db.query(`SELECT o.order_id
-  ,o.order_date
-  , o.project_id
-  ,o.project_type
-  ,o.creation_date
-  ,o.order_status
-  ,o.invoice_terms
-  ,o.notes
-  ,q.quote_id
-  ,q.quote_code
-  ,o.shipping_first_name
-  ,o.shipping_address1
-  ,o.shipping_address2
-  ,o.shipping_address_country
-  ,o.shipping_address_po_code 
-  ,o.delivery_date
-  ,o.delivery_terms
-  ,o.cust_address1
-  ,o.cust_address2
-  ,o.cust_address_country
-  ,o.cust_address_po_code
-  ,o.creation_date
-  ,o.modification_date
-  ,o.created_by
-  ,o.modified_by
-  ,o.cust_company_name
-  ,c.company_name 
-  ,op.office_ref_no
-  from orders o
-  LEFT JOIN company c ON (c.company_id = o.company_id) 
-  LEFT JOIN quote q ON o.quote_id = q.quote_id 
-    LEFT JOIN opportunity op ON op.opportunity_id = q.opportunity_id 
-  WHERE o.order_id !=''`,
+app.get('/getInvoices', (req, res, next) => {
+  db.query(`SELECT i.invoice_id
+  ,i.invoice_code
+  ,co.company_name
+  ,i.status
+  ,i.invoice_date
+  ,i.invoice_amount
+  ,i.invoice_due_date
+  ,o.order_id
+  ,o.order_code
+  from invoice i
+  LEFT JOIN orders o ON (o.order_id = i.order_id) 
+  LEFT JOIN company co ON (co.company_id = o.company_id) 
+  WHERE i.invoice_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -511,6 +574,7 @@ app.post('/editFinances', (req, res, next) => {
   db.query(`UPDATE orders
             SET invoice_terms=${db.escape(req.body.invoice_terms)}
             ,notes=${db.escape(req.body.notes)}
+            ,company_id=${db.escape(req.body.company_id)}
             ,order_status=${db.escape(req.body.order_status)}
             ,order_date=${db.escape(req.body.order_date)}
             ,shipping_first_name=${db.escape(req.body.shipping_first_name)}
@@ -1019,7 +1083,7 @@ app.post('/insertInvoice', (req, res, next) => {
     , invoice_amount: req.body.invoice_amount
     , invoice_date: req.body.invoice_date
     , mode_of_payment: req.body.mode_of_payment
-    , status: req.body.status
+    , status: 'Due'
     , creation_date: req.body.creation_date
     , modification_date: req.body.modification_date
     , flag: req.body.flag
