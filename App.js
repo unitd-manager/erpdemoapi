@@ -92,8 +92,9 @@ const materialrequest = require('./routes/materialrequest.js');
 const equipmentrequest = require('./routes/equipmentrequest.js');
 const changerequest = require('./routes/changerequest.js');
 const document = require('./routes/document.js');
-
+const equipmentissue = require('./routes/equipmentissue.js');
 const chartOfAccounts = require('./routes/chartOfAccounts.js');
+const MaterialIssue = require('./routes/MaterialIssue.js');
 
 
 app.use('/invoice', invoice);
@@ -164,8 +165,10 @@ app.use('/changerequest', changerequest);
 app.use('/document', document);
 
 app.use('/materialrequest', materialrequest);
-app.use('/equipmentrequest', equipmentrequest);
+app.use('/MaterialIssue', MaterialIssue);
 
+app.use('/equipmentrequest', equipmentrequest);
+app.use('/equipmentissue', equipmentissue);
 app.use('/chartOfAccounts', chartOfAccounts);
 
 app.use(fileUpload({
