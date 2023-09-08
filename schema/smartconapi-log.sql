@@ -8169,3 +8169,35 @@ CREATE TABLE IF NOT EXISTS `equipment_request_item` (
   PRIMARY KEY (`equipment_request_item_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `equipment_issue` (
+  `equipment_issue_id` int(11) NOT NULL AUTO_INCREMENT,
+  `equipment_request_id` int(11) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `equipment_issue_date` varchar(255) DEFAULT NULL,
+    `reason_for_issue` varchar(255) DEFAULT NULL,
+  `auhorized_by` varchar(255) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`equipment_issue_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+
+CREATE TABLE IF NOT EXISTS `material_issue` (
+  `material_issue_id` int(11) NOT NULL AUTO_INCREMENT,
+  `material_request_id` int(11) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `material_issue_date` varchar(255) DEFAULT NULL,
+    `reason_for_issue` varchar(255) DEFAULT NULL,
+  `auhorized_by` varchar(255) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`material_issue_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
