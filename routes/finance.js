@@ -71,6 +71,39 @@ app.get('/getFinances', (req, res, next) => {
   );
 });
 
+
+app.get('/getSalesReturns', (req, res, next) => {
+  db.query(`SELECT o.sales_return_history_id 
+  ,o.return_date
+  , o.creation_date
+  ,o.modification_date
+  ,o.invoice_id
+  ,o.invoice_item_id
+  ,o.price
+  ,o.notes
+  ,o.qty_return
+  ,q.order_id
+  ,q.status
+  from sales_return_history o
+   WHERE o.sales_return_history_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.post('/getInvoiceItemsById', (req, res, next) => {
   db.query(`SELECT it.item_title,
   it.invoice_item_id,
