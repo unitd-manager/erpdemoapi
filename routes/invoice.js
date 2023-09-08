@@ -252,6 +252,37 @@ WHERE i.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
   );
 });
 
+app.post('/getSalesReturnId', (req, res, next) => {
+  db.query(`SELECT o.sales_return_history_id 
+  ,o.return_date
+  , o.creation_date
+  ,o.modification_date
+  ,o.invoice_id
+  ,o.invoice_item_id
+  ,o.price
+  ,o.notes
+  ,o.qty_return
+  ,o.order_id
+  ,o.status
+  from sales_return_history o
+   WHERE o.sales_return_history_id= ${db.escape(req.body.sales_return_history_id)}`,
+          (err, result) => {
+       
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
 app.post('/getInvoiceByInvoiceItemId', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.item_title
