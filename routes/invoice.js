@@ -115,7 +115,45 @@ ORDER BY i.invoice_date DESC`,
   );
 });
 
+app.get('/getInvoice', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.invoice_code 
+  ,i.invoice_due_date
+  ,i.invoice_date
+  ,i.invoice_amount
+  ,i.selling_company
+  ,i.start_date
+  ,i.end_date
+  ,i.quote_code
+  ,i.po_number
+  ,i.project_location
+  ,i.project_reference
+  ,i.so_ref_no
+  ,i.code
+  ,i.reference
+   ,i.invoice_terms
+   ,i.attention
+   ,i.status
+ from invoice i
+WHERE i.invoice_id !='' AND i.status != LOWER('Paid')
+ORDER BY i.invoice_date DESC`,
+    (err, result) => {
 
+      if (err) {
+        return res.status(400).send({
+             data: err,
+             msg:'Failed'
+           });
+     } else {
+           return res.status(200).send({
+             data: result,
+             msg:'Success'
+           });
+  
+     }
+   }
+  );
+});
 app.get('/getInvoiceItemsByItemsId/:invoiceItemId', (req, res, next) => {
   const invoiceItemId = req.params.invoiceItemId;
   db.query(
@@ -1245,6 +1283,39 @@ app.post('/insertInvoice', (req, res, next) => {
     , reference: req.body.reference
  };
   let sql = "INSERT INTO invoice SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      return res.status(400).send({
+           data: err,
+           msg:'Failed'
+         });
+   } else {
+         return res.status(200).send({
+           data: result[0],
+           msg:'Success'
+         });
+
+   }
+  });
+});
+
+
+app.post('/insertSalesReturn', (req, res, next) => {
+
+  let data = {
+    sales_return_history_id : req.body.sales_return_history_id 
+    , return_date: req.body.return_date
+    , creation_date: req.body.creation_date
+    , modification_date: req.body.modification_date
+    , invoice_id: req.body.invoice_id
+    , invoice_item_id: req.body.invoice_item_id
+    , price: req.body.price
+    , notes: req.body.notes
+    , qty_return: req.body.qty_return
+    ,order_id: req.body.order_id
+    ,status: req.body.status
+ };
+  let sql = "INSERT INTO sales_return_history SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
       return res.status(400).send({

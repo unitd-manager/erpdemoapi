@@ -82,8 +82,8 @@ app.get('/getSalesReturns', (req, res, next) => {
   ,o.price
   ,o.notes
   ,o.qty_return
-  ,q.order_id
-  ,q.status
+  ,o.order_id
+  ,o.status
   from sales_return_history o
    WHERE o.sales_return_history_id !=''`,
     (err, result) => {
