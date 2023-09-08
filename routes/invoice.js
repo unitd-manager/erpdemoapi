@@ -1318,19 +1318,19 @@ app.post('/insertSalesReturn', (req, res, next) => {
   let sql = "INSERT INTO sales_return_history SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
-      return res.status(400).send({
-           data: err,
-           msg:'Failed'
-         });
-   } else {
-         return res.status(200).send({
-           data: result[0],
-           msg:'Success'
-         });
-
-   }
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
   });
 });
+
 
 app.delete('/deleteInvoice', (req, res, next) => {
 
