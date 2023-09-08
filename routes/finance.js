@@ -406,8 +406,11 @@ app.get('/getGst', (req, res, next) => {
 app.post('/getFinanceById', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  , o.project_id
+  ,o.project_id
   ,o.project_type
+  ,q.opportunity_id
+  ,c.company_id
+  ,c.company_name
   ,o.creation_date
   ,o.order_status
   ,o.invoice_terms
@@ -417,17 +420,10 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.shipping_address2
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
-  
-  ,(SELECT (SUM(oi.unit_price * oi.qty) + o.shipping_charge) 
-  FROM order_item oi 
-  WHERE oi.order_id = o.order_id) AS order_amount
-  ,q.quote_code,p.project_code FROM orders o 
-  LEFT JOIN geo_country gc2 ON (o.shipping_address_country_code = gc2.country_code) 
-  LEFT JOIN company c ON (o.company_id = c.company_id) 
-  LEFT JOIN invoice i  ON (i.order_id = o.order_id) 
-  LEFT JOIN geo_country gc3 ON (c.address_country = gc3.country_code) 
+  ,q.quote_code FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
-  LEFT JOIN project p ON o.project_id = p.project_id WHERE o.order_id = ${db.escape(req.body.order_id)} `,
+  LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
+  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id = ${db.escape(req.body.order_id)} `,
     (err, result) => {
       if (err) {
          return res.status(400).send({
@@ -1335,25 +1331,25 @@ app.post('/insertorder_item', (req, res, next) => {
 });
 
 
-app.delete('/deleteorder_item', (req, res, next) => {
+app.delete('/deleteorder_item/:quoteId', (req, res) => {
+  const quoteId = req.params.quoteId;
 
-  let data = {order_item_id : req.body.order_item_id };
-  let sql = "DELETE FROM order_item  WHERE ?";
-  let query = db.query(sql, data,(err, result) => {
+  // Construct and execute the SQL query to delete old order items by quote_id
+  const sql = "DELETE FROM order_item WHERE quote_id = ?";
+  db.query(sql, [quoteId], (err, result) => {
     if (err) {
-      return res.status(400).send({
-              data: err,
-              msg:'failed'
-            });
-    } else {
-          return res.status(200).send({
-            data: result,
-            msg:'Success'
-          });
+      console.error('Error deleting order items:', err);
+      return res.status(500).json({
+        error: 'Failed to delete order items',
+      });
     }
+
+    console.log(`Deleted old order items with quote_id ${quoteId}`);
+    return res.status(200).json({
+      message: 'Order items deleted successfully',
+    });
   });
 });
-
 
 app.post('/insertreceipt', (req, res, next) => {
 

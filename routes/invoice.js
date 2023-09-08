@@ -116,7 +116,7 @@ ORDER BY i.invoice_date DESC`,
 });
 
 
-app.get('/getInvoiceItemById:invoiceItemId', (req, res, next) => {
+app.get('/getInvoiceItemsByItemsId/:invoiceItemId', (req, res, next) => {
   const invoiceItemId = req.params.invoiceItemId;
   db.query(
     `SELECT it.item_title,
@@ -278,6 +278,7 @@ app.post('/getInvoiceByItemId', (req, res, next) => {
   ,i.total_cost
   ,i.qty
   ,i.unit_price
+  ,i.invoice_item_id
    from invoice_item i
    LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
  WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
@@ -495,6 +496,26 @@ app.post('/editInvoices', (req, res, next) => {
   );
 });
 
+app.post('/editInvoiceItems', (req, res, next) => {
+  db.query(`UPDATE invoice_item
+            SET item_title = ${db.escape(req.body.item_title)}
+             ,qty=${db.escape(req.body.qty)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+            ,total_cost=${db.escape(req.body.total_cost)}
+             WHERE invoice_item_id =  ${db.escape(req.body.invoice_item_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+  );
+});
 
 
 app.post('/getProjectInvoicePdf', (req, res, next) => {
@@ -1259,7 +1280,24 @@ app.delete('/deleteInvoice', (req, res, next) => {
   });
 });
 
+app.delete('/deleteInvoiceItem', (req, res, next) => {
 
+  let data = {invoice_item_id: req.body.invoice_item_id};
+  let sql = "DELETE FROM invoice_item WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 app.post('/insertBranch', (req, res, next) => {
   let data = {
     title: req.body.title
@@ -1282,6 +1320,8 @@ app.post('/insertBranch', (req, res, next) => {
     }
   });
 });
+
+
 
 app.delete('/deleteBranch', (req, res, next) => {
 
