@@ -8201,3 +8201,18 @@ CREATE TABLE IF NOT EXISTS `material_issue` (
   PRIMARY KEY (`material_issue_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+/* =================== Rafi - 01/09/2023 ===================== */
+CREATE TABLE IF NOT EXISTS `Inventory_history` (
+  `Inventory_history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `planning_cpanel_id` int(11) DEFAULT NULL,
+  `planning_bom_id` int(11) DEFAULT NULL,
+  `inventory_id` int(11) DEFAULT NULL,
+  `actual_stock` varchar(255) DEFAULT NULL,
+  `bom_qty` varchar(255) DEFAULT NULL,
+  `reserve_stock` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`Inventory_history_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+/* =================== SULFIYA - 08/09/2023 ===================== */
+ALTER TABLE `sales_return_history` CHANGE `date` `return_date` DATE NULL DEFAULT NULL; 

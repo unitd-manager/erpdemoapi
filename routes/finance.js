@@ -415,6 +415,7 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.order_status
   ,o.invoice_terms
   ,o.notes
+  ,o.order_code
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
   ,o.shipping_address2
