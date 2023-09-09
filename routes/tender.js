@@ -916,7 +916,16 @@ app.post("/getCodeValue", (req, res, next) => {
   }else if(type == 'quote'){
       key_text = 'nextQuoteCode';
       sql = "SELECT * FROM setting WHERE key_text='quoteCodePrefix' OR key_text='nextQuoteCode'";  
-  }
+  }else if(type == 'projectquote'){
+    key_text = 'nextProjectQuoteCode';
+    sql = "SELECT * FROM setting WHERE key_text='projectQuoteCodePrefix' OR key_text='nextProjectQuoteCode'";  
+}else if(type == 'materialrequest'){
+  key_text = 'nextMaterialRequestCode';
+  sql = "SELECT * FROM setting WHERE key_text='materialRequestCodePrefix' OR key_text='nextMaterialRequestCode'";  
+}else if(type == 'equipmentrequest'){
+  key_text = 'nextEquipmentRequestCode';
+  sql = "SELECT * FROM setting WHERE key_text='equipmentRequestCodePrefix' OR key_text='nextEquipmentRequestCode'";  
+}
   else if(type == 'creditNote'){
       key_text = 'nextCreditNoteCode';
       sql = "SELECT * FROM setting WHERE key_text='creditNotePrefix' OR key_text='nextCreditNoteCode'";  

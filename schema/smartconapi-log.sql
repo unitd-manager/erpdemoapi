@@ -1280,7 +1280,9 @@ CREATE TABLE `expense_sub_group` (
   `site_id` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+
+
+
 
 --
 -- Table structure for table `geo_country`
@@ -7823,3 +7825,396 @@ ALTER TABLE `quote` ADD `company_id` INT NULL DEFAULT NULL AFTER `show_project_m
 
 /* =================== Gokila - 26/08/2023 ===================== */
 ALTER TABLE `quote` ADD `contact_id` INT NULL DEFAULT NULL AFTER `company_id`
+
+ 
+/* =================== SULFIYA - 31/08/2023 ===================== */
+ALTER TABLE `order_item` CHANGE `discount_percentage` `discount_percentage` FLOAT(10,2) NOT NULL; 
+ALTER TABLE `order_item` CHANGE `qty_for_invoice` `qty_for_invoice` INT(10) NULL DEFAULT NULL; 
+ALTER TABLE `order_item` CHANGE `site_id` `site_id` INT(11) NULL DEFAULT NULL; 
+
+
+/*-- -------------------------Muthumari - 1/9/2023 -------------------------------*/
+
+--
+-- Table structure for table `goods_receipt`
+--
+ CREATE TABLE `goods_receipt` ( 
+`goods_receipt_id` int(11) NOT NULL AUTO_INCREMENT,`
+ goods_received_date` date DEFAULT NULL, 
+ `supplier_id` int(11) DEFAULT NULL, 
+ `purchase_order_id` int(11) DEFAULT NULL, 
+ `employee_id` int(11) DEFAULT NULL, 
+ `status` varchar(255) DEFAULT NULL, 
+ `total_amount` int(50) DEFAULT NULL, 
+ `creation_date` varchar(255) DEFAULT NULL, 
+ `modification_date` varchar(255) DEFAULT NULL,
+ `created_by` varchar(255) DEFAULT NULL,
+ `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`goods_receipt_id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- -- Table structure for table `goods_receipt_items` -- 
+--
+CREATE TABLE `goods_receipt_items` ( 
+`goods_receipt_items_id` int(11) NOT NULL AUTO_INCREMENT, 
+`goods_receipt_id` int(11) DEFAULT NULL, 
+`product_id` int(11) DEFAULT NULL, 
+`goods_received_qty` int(11) DEFAULT NULL, 
+`goods_damaged_qty` int(11) DEFAULT NULL, 
+`unit` varchar(255) DEFAULT NULL, 
+`serial_no` int(255) DEFAULT NULL, 
+`description` varchar(255) DEFAULT NULL, 
+`creation_date` varchar(255) DEFAULT NULL, 
+`modification_date` varchar(255) DEFAULT NULL, 
+`created_by` varchar(255) DEFAULT NULL, 
+`modified_by` varchar(255) DEFAULT NULL ,
+PRIMARY KEY (`goods_receipt_items_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- -- Table structure for table `change_request` -- 
+--
+ CREATE TABLE `change_request` ( 
+  `change_request_id` int(11) NOT NULL AUTO_INCREMENT , 
+  `project_id` int(11) DEFAULT NULL, 
+  `change_request_title` varchar(255) DEFAULT NULL, 
+  `submission_date` varchar(255) DEFAULT NULL, 
+  `proposed_implementation_date` varchar(255) DEFAULT NULL, 
+  `status` varchar(255) DEFAULT NULL, 
+  `description` varchar(255) DEFAULT NULL, 
+  `creation_date` varchar(255) DEFAULT NULL, 
+  `created_by` varchar(255) DEFAULT NULL, 
+  `modification_date` varchar(255) DEFAULT NULL, 
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`change_request_id`) 
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- -- Table structure for table `project_task` -- 
+--
+ CREATE TABLE `project_task` ( 
+  `project_task_id` int(11) NOT NULL AUTO_INCREMENT , 
+  `project_id` int(11) DEFAULT NULL, 
+  `employee_id` int(11) DEFAULT NULL, 
+  `start_date` varchar(255) DEFAULT NULL, 
+  `end_date` varchar(255) DEFAULT NULL, 
+  `completion` varchar(255) DEFAULT NULL, 
+  `task_title` varchar(255) DEFAULT NULL, 
+  `status` varchar(255) DEFAULT NULL, 
+  `media_id` int(11) DEFAULT NULL, 
+  `description` varchar(1000) DEFAULT NULL, 
+  `job_order_id` varchar(255) DEFAULT NULL, 
+  `estimated_hours` float DEFAULT NULL, 
+  `actual_completed_date` varchar(255) DEFAULT NULL, 
+  `task_type` varchar(255) DEFAULT NULL, 
+  `priority` varchar(255) DEFAULT NULL, 
+  `creation_date` varchar(50) DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL, 
+  `modification_date` varchar(50) DEFAULT NULL, 
+  `modified_by` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`project_task_id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+-- -- Table structure for table `job_order` -- 
+--
+CREATE TABLE `job_order` ( `
+job_order_id` int(50) NOT NULL AUTO_INCREMENT , 
+`job_order_code` varchar(50) DEFAULT NULL, 
+`project_id` int(50) DEFAULT NULL, 
+`job_order_title` varchar(255) DEFAULT NULL, 
+`created_by` varchar(255) DEFAULT NULL, 
+`creation_date` varchar(255) DEFAULT NULL, 
+`modified_by` varchar(255) DEFAULT NULL, 
+`modification_date` varchar(255) DEFAULT NULL, 
+`from_date` date DEFAULT NULL, 
+`to_date` date DEFAULT NULL,
+PRIMARY KEY (`job_order_id`) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+-- -- Table structure for table `purchase_request` -- 
+--
+ CREATE TABLE `purchase_request` ( 
+  `purchase_request_id` int(11) NOT NULL AUTO_INCREMENT , 
+ `purchase_request_code` varchar(255) DEFAULT NULL, 
+ `purchase_request_date` varchar(50) DEFAULT NULL, 
+ `purchase_delivery_date` varchar(50) DEFAULT NULL, 
+ `status` varchar(255) DEFAULT NULL, 
+ `quote_id` int(50) DEFAULT NULL, 
+ `product_id` int(50) DEFAULT NULL, 
+ `creation_date` varchar(255) DEFAULT NULL, 
+ `modification_date` varchar(255) DEFAULT NULL, 
+ `created_by` varchar(255) DEFAULT NULL, 
+ `modified_by` varchar(255) DEFAULT NULL, 
+ `department` varchar(255) DEFAULT NULL, 
+ `company_id` int(11) DEFAULT NULL, 
+ `priority` varchar(255) DEFAULT NULL, 
+ `description` varchar(255) DEFAULT NULL,
+ PRIMARY KEY (`purchase_request_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- -- Table structure for table `purchase_request_items` -- 
+--
+CREATE TABLE `purchase_request_items` ( 
+  `purchase_request_items_id` int(11) NOT NULL, 
+  `purchase_request_id` int(11) DEFAULT NULL, 
+  `product_id` int(11) DEFAULT NULL, 
+  `purchase_request_qty` int(50) DEFAULT NULL, 
+  `unit` varchar(255) DEFAULT NULL, 
+  `creation_date` varchar(255) DEFAULT NULL, 
+  `modification_date` varchar(255) DEFAULT NULL, 
+  `created_by` varchar(255) DEFAULT NULL, 
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`purchase_request_items_id`)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+ -- --------------------------------------------------------
+
+
+
+
+/* ********************FATHIMA(30/08/2023) ********************** */
+CREATE TABLE IF NOT EXISTS `project_quote` (
+  `project_quote_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_enquiry_id` int(10) DEFAULT NULL,
+  `project_id` int(10) DEFAULT NULL,
+  `quote_code` varchar(50) DEFAULT NULL,
+  `quote_date` varchar(255) DEFAULT NULL,
+  `quote_status` varchar(50) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `currency_item` varchar(50) DEFAULT NULL,
+  `note` text,
+  `quote_condition` text,
+  `quote_type` varchar(100) DEFAULT NULL,
+  `quote_sequence` tinyint(4) NOT NULL DEFAULT '1',
+  `template` tinyint(4) DEFAULT '0',
+  `template_title` varchar(255) DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL,
+  `sign_staff_id` int(11) DEFAULT NULL,
+  `flag` tinyint(4) DEFAULT '0',
+  `sort_order` int(11) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `signatory_name` varchar(25) DEFAULT NULL,
+  `signatory_position` varchar(25) DEFAULT NULL,
+  `quote_code_user` varchar(50) DEFAULT NULL,
+  `quote_intro_text_1` varchar(100) DEFAULT NULL,
+  `invoices_payment_terms` text,
+  `responsibility` text,
+  `provision_by_client` text,
+  `provision_by_krs` text,
+  `monday_to_friday_normal_timing` varchar(500) DEFAULT NULL,
+  `saturday_normal_timing` varchar(500) DEFAULT NULL,
+  `monday_to_friday_ot_timing` varchar(500) DEFAULT NULL,
+  `saturday_ot_timing` varchar(500) DEFAULT NULL,
+  `sunday_and_publicholiday_ot_timing` varchar(500) DEFAULT NULL,
+  `timesheet_type` varchar(50) DEFAULT NULL,
+  `site_address` varchar(255) DEFAULT NULL,
+  `project_location` varchar(255) DEFAULT NULL,
+  `project_reference` varchar(255) DEFAULT NULL,
+  `discount` decimal(10,2) DEFAULT NULL,
+  `gst` int(11) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `drawing_nos` tinyint(4) DEFAULT NULL,
+  `intro_quote` text,
+  `our_reference` varchar(255) DEFAULT NULL,
+  `total_amount` decimal(10,2) DEFAULT NULL,
+  `revision` varchar(100) DEFAULT NULL,
+  `employee_id` int(11) DEFAULT NULL,
+  `ref_no_quote` varchar(50) DEFAULT NULL,
+  `intro_drawing_quote` text,
+  `show_project_manager` int(1) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  `contact_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`project_quote_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `project_quote_items` (
+  `project_quote_items_id` int(11) NOT NULL AUTO_INCREMENT,
+  `quote_category_id` int(10) DEFAULT NULL,
+  `description` text,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `amount_other` decimal(10,0) DEFAULT NULL,
+  `item_type` varchar(200) DEFAULT NULL,
+  `sort_order` int(10) DEFAULT NULL,
+  `creation_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modification_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `title` text,
+  `project_quote_id` int(11) DEFAULT NULL,
+  `opportunity_id` int(11) DEFAULT NULL,
+  `actual_amount` int(11) DEFAULT NULL,
+  `supplier_amount` int(11) DEFAULT NULL,
+  `quantity` decimal(10,2) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `created_by` varchar(100) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `unit` varchar(25) DEFAULT NULL,
+  `remarks` text,
+  `part_no` varchar(255) DEFAULT NULL,
+  `nationality` varchar(100) DEFAULT NULL,
+  `ot_rate` decimal(10,2) DEFAULT NULL,
+  `ph_rate` decimal(10,2) DEFAULT NULL,
+  `scaffold_code` varchar(100) DEFAULT NULL,
+  `erection` decimal(10,2) DEFAULT NULL,
+  `dismantle` decimal(10,2) DEFAULT NULL,
+  `unit_price` decimal(10,2) DEFAULT NULL,
+  `drawing_number` varchar(255) DEFAULT NULL,
+  `drawing_title` text,
+  `drawing_revision` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`project_quote_items_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'The next quote code', 'nextProjectQuoteCode', '1', '', '', NULL, 'Number Field', '1', NULL, NULL, NULL, '0', '1'); 
+
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'The prefix used for quote code', 'projectQuoteCodePrefix', 'VIR/PQT/', '', '', 'Admin', 'Text Field', '1', NULL, NULL, NULL, '0', '1'); 
+
+
+CREATE TABLE IF NOT EXISTS `labour_request` (
+  `labour_request_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) DEFAULT NULL,
+  `request_by` varchar(255) DEFAULT NULL,
+    `request_urgency` varchar(255) DEFAULT NULL,
+  `request_type` varchar(255) DEFAULT NULL,
+  `job_description` varchar(255) DEFAULT NULL,
+  `skills_required` varchar(255) DEFAULT NULL,
+  `no_of_employees` varchar(255) DEFAULT NULL,
+  `department` varchar(255) DEFAULT NULL,
+  `request_date` varchar(255) DEFAULT NULL,
+  `request_start_date` varchar(255) DEFAULT NULL,
+    `request_end_date` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`labour_request_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+
+CREATE TABLE IF NOT EXISTS `material_request` (
+  `material_request_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) DEFAULT NULL,
+  `material_request_code` varchar(255) DEFAULT NULL,
+    `material_request_date` varchar(255) DEFAULT NULL,
+  `request_date` varchar(255) DEFAULT NULL,
+  `site_reference` varchar(255) DEFAULT NULL,
+  `request_by` varchar(255) DEFAULT NULL,
+  `approved_by` varchar(255) DEFAULT NULL,
+  `approved_date` varchar(255) DEFAULT NULL,
+  `shipping_method` varchar(255) DEFAULT NULL,
+  `payment_terms` varchar(255) DEFAULT NULL,
+    `delivery_terms` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`material_request_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `equipment_request` (
+  `equipment_request_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) DEFAULT NULL,
+  `equipment_request_code` varchar(255) DEFAULT NULL,
+    `equipment_request_date` varchar(255) DEFAULT NULL,
+  `request_date` varchar(255) DEFAULT NULL,
+  `site_reference` varchar(255) DEFAULT NULL,
+  `request_by` varchar(255) DEFAULT NULL,
+  `approved_by` varchar(255) DEFAULT NULL,
+  `approved_date` varchar(255) DEFAULT NULL,
+  `shipping_method` varchar(255) DEFAULT NULL,
+  `payment_terms` varchar(255) DEFAULT NULL,
+    `delivery_terms` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`equipment_request_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `material_request_item` (
+  `material_request_item_id` int(11) NOT NULL AUTO_INCREMENT,
+  `supplier_id` int(11) DEFAULT NULL,
+  `material_request_id` int(11) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+    `brand` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `quantity` varchar(255) DEFAULT NULL,
+   `unit_price` float(10,2) DEFAULT '0.00',
+  `amount` decimal(10,2) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`material_request_item_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `equipment_request_item` (
+  `equipment_request_item_id` int(11) NOT NULL AUTO_INCREMENT,
+  `supplier_id` int(11) DEFAULT NULL,
+  `equipment_request_id` int(11) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+    `brand` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `quantity` varchar(255) DEFAULT NULL,
+   `unit_price` float(10,2) DEFAULT '0.00',
+  `amount` decimal(10,2) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`equipment_request_item_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `equipment_issue` (
+  `equipment_issue_id` int(11) NOT NULL AUTO_INCREMENT,
+  `equipment_request_id` int(11) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `equipment_issue_date` varchar(255) DEFAULT NULL,
+    `reason_for_issue` varchar(255) DEFAULT NULL,
+  `auhorized_by` varchar(255) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`equipment_issue_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+
+CREATE TABLE IF NOT EXISTS `material_issue` (
+  `material_issue_id` int(11) NOT NULL AUTO_INCREMENT,
+  `material_request_id` int(11) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `material_issue_date` varchar(255) DEFAULT NULL,
+    `reason_for_issue` varchar(255) DEFAULT NULL,
+  `auhorized_by` varchar(255) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`material_issue_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+/* =================== Rafi - 01/09/2023 ===================== */
+CREATE TABLE IF NOT EXISTS `Inventory_history` (
+  `Inventory_history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `planning_cpanel_id` int(11) DEFAULT NULL,
+  `planning_bom_id` int(11) DEFAULT NULL,
+  `inventory_id` int(11) DEFAULT NULL,
+  `actual_stock` varchar(255) DEFAULT NULL,
+  `bom_qty` varchar(255) DEFAULT NULL,
+  `reserve_stock` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`Inventory_history_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+/* =================== SULFIYA - 08/09/2023 ===================== */
+ALTER TABLE `sales_return_history` CHANGE `date` `return_date` DATE NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `creation_date` `creation_date` VARCHAR(55) NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `modification_date` `modification_date` VARCHAR(55) NULL DEFAULT NULL; 

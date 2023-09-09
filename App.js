@@ -50,9 +50,11 @@ const expensehead = require('./routes/expensehead.js');
 const clients = require('./routes/client.js');
 const section = require('./routes/section.js');
 const accounts = require('./routes/accounts.js');
+const accountsMap = require('./routes/accountsMap.js');
 const product = require('./routes/product.js');
 const inventory = require('./routes/inventory.js');
 const tradingquote = require('./routes/tradingquote.js');
+const projectquote = require('./routes/projectquote.js');
 const goodsdelivery = require('./routes/goodsdelivery.js');
 const employeeModule = require('./routes/employeeModule.js');
 const payrollmanagement = require('./routes/payrollmanagement.js');
@@ -85,7 +87,14 @@ const projecttask = require('./routes/projecttask.js');
 const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
-
+const labourrequest = require('./routes/labourrequest.js');
+const materialrequest = require('./routes/materialrequest.js');
+const equipmentrequest = require('./routes/equipmentrequest.js');
+const changerequest = require('./routes/changerequest.js');
+const document = require('./routes/document.js');
+const equipmentissue = require('./routes/equipmentissue.js');
+const chartOfAccounts = require('./routes/chartOfAccounts.js');
+const MaterialIssue = require('./routes/MaterialIssue.js');
 
 
 app.use('/invoice', invoice);
@@ -101,6 +110,7 @@ app.use('/setting', setting);
 app.use('/supplier', supplier);
 app.use('/subcon', subcon);
 app.use('/accounts', accounts);
+app.use('/accountsMap', accountsMap);
 app.use('/inventory', inventory);
 app.use('/payrollmanagement', payrollmanagement);
 app.use('/employeeModule',employeeModule);
@@ -111,7 +121,9 @@ app.use('/api', Auth);
 app.use('/tender', tender);
 app.use('/employee', employee);
 app.use('/company', company);
+app.use('/labourrequest', labourrequest);
 app.use('/tradingquote', tradingquote);
+app.use('/projectquote', projectquote);
 app.use('/goodsdelivery', goodsdelivery);
 app.use('/projecttabcostingsummary', projecttabcostingsummary);
 app.use('/projecttabmaterialusedportal',projecttabmaterialusedportal);
@@ -149,8 +161,15 @@ app.use('/projecttask', projecttask);
 app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
+app.use('/changerequest', changerequest);
+app.use('/document', document);
 
+app.use('/materialrequest', materialrequest);
+app.use('/MaterialIssue', MaterialIssue);
 
+app.use('/equipmentrequest', equipmentrequest);
+app.use('/equipmentissue', equipmentissue);
+app.use('/chartOfAccounts', chartOfAccounts);
 
 app.use(fileUpload({
     createParentPath: true

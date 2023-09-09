@@ -115,6 +115,83 @@ ORDER BY i.invoice_date DESC`,
   );
 });
 
+app.get('/getInvoice', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.invoice_code 
+  ,i.invoice_due_date
+  ,i.invoice_date
+  ,i.invoice_amount
+  ,i.selling_company
+  ,i.start_date
+  ,i.end_date
+  ,i.quote_code
+  ,i.po_number
+  ,i.project_location
+  ,i.project_reference
+  ,i.so_ref_no
+  ,i.code
+  ,i.reference
+   ,i.invoice_terms
+   ,i.attention
+   ,i.status
+ from invoice i
+WHERE i.invoice_id !='' AND i.status != LOWER('Paid')
+ORDER BY i.invoice_date DESC`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+             data: err,
+             msg:'Failed'
+           });
+     } else {
+           return res.status(200).send({
+             data: result,
+             msg:'Success'
+           });
+  
+     }
+   }
+  );
+});
+app.get('/getInvoiceItemsByItemsId/:invoiceItemId', (req, res, next) => {
+  const invoiceItemId = req.params.invoiceItemId;
+  db.query(
+    `SELECT it.item_title,
+      it.invoice_item_id,
+      i.invoice_id,
+      it.description,
+      it.total_cost,
+      it.unit,
+      it.qty,
+      it.unit_price,
+      it.remarks
+    FROM invoice_item it
+    LEFT JOIN invoice i ON (i.invoice_id = it.invoice_id)
+    WHERE it.invoice_item_id = ${db.escape(invoiceItemId)}`,
+    (err, result) => {
+      if (err) {
+        // Handle database errors
+        console.error(err);
+        return res.status(500).send({
+          msg: 'Internal Server Error',
+        });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).send({
+          msg: 'Invoice item not found',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
+
 app.post('/getInvoiceItemsById', (req, res, next) => {
   db.query(`SELECT it.item_title,
   it.invoice_item_id,
@@ -145,6 +222,155 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
   );
 });
 
+app.post('/getInvoiceItemsByItemId', (req, res, next) => {
+  db.query(`SELECT it.item_title,
+  it.invoice_item_id,
+i.invoice_id,
+it.description,
+it.total_cost,
+it.unit,
+it.qty,
+it.unit_price,
+it.remarks
+FROM invoice_item it
+LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
+WHERE i.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
+          (err, result) => {
+       
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
+app.post('/getSalesReturnId', (req, res, next) => {
+  db.query(`SELECT o.sales_return_history_id 
+  ,o.return_date
+  , o.creation_date
+  ,o.modification_date
+  ,o.invoice_id
+  ,o.invoice_item_id
+  ,o.price
+  ,o.notes
+  ,o.qty_return
+  ,o.order_id
+  ,o.status
+  from sales_return_history o
+   WHERE o.sales_return_history_id= ${db.escape(req.body.sales_return_history_id)}`,
+          (err, result) => {
+       
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
+app.post('/getInvoiceByInvoiceItemId', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.item_title
+  ,o.invoice_code
+  ,i.description
+  ,i.total_cost
+   from invoice_item i
+   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
+ WHERE i.invoice_item_id= ${db.escape(req.body.invoice_item_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+app.post('/getInvoiceByItemsId', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.item_title
+  ,o.invoice_code
+  ,i.description
+  ,i.total_cost
+  ,i.qty
+  ,i.unit_price
+   from invoice_item i
+   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
+ WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+app.post('/getInvoiceByItemId', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.item_title
+  ,o.invoice_code
+  ,i.description
+  ,i.total_cost
+  ,i.qty
+  ,i.unit_price
+  ,i.invoice_item_id
+   from invoice_item i
+   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
+ WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+
 app.post('/getInvoiceById', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code  
@@ -165,9 +391,11 @@ app.post('/getInvoiceById', (req, res, next) => {
      ,i.attention
      ,i.site_code
      ,i.payment_terms
+     ,i.order_id
+     ,o.order_code
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
- WHERE i.order_id= ${db.escape(req.body.order_id)} AND i.status != LOWER('Cancelled')`,
+ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} `,
     (err, result) => {
 
       if (err) {
@@ -187,6 +415,22 @@ app.post('/getInvoiceById', (req, res, next) => {
   );
 });
 
+
+
+app.get("/getCompanyName", (req, res, next) => {
+  db.query(`SELECT company_name,company_id FROM company`, (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+      });
+    }
+  });
+});
 
 app.post('/getInvoicesById', (req, res, next) => {
   db.query(`select i.invoice_id
@@ -267,6 +511,78 @@ app.post('/getProjectInvoiceById', (req, res, next) => {
       }
 
     }
+  );
+});
+
+app.get("/getOrdersByCompanyId/:companyId", (req, res) => {
+  const companyId = req.params.companyId;
+
+  if (!companyId) {
+    return res.status(400).send({
+      msg: "Missing companyId parameter",
+    });
+  }
+
+  db.query(
+    `SELECT b.order_code, b.order_id 
+    FROM orders b 
+    LEFT JOIN company co ON (co.company_id = b.company_id)
+    WHERE b.company_id = ?`,
+    [companyId],
+    (err, result) => {
+      if (err) {
+        return res.status(500).send({
+          data: err,
+          msg: "Failed to fetch bookings",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+        });
+      }
+    }
+  );
+});
+
+
+app.post('/editInvoices', (req, res, next) => {
+  db.query(`UPDATE invoice 
+            SET status = ${db.escape(req.body.status)}
+             ,invoice_date=${db.escape(req.body.invoice_date)}
+            ,invoice_terms=${db.escape(req.body.invoice_terms)}
+             WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+  );
+});
+
+app.post('/editInvoiceItems', (req, res, next) => {
+  db.query(`UPDATE invoice_item
+            SET item_title = ${db.escape(req.body.item_title)}
+             ,qty=${db.escape(req.body.qty)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+            ,total_cost=${db.escape(req.body.total_cost)}
+             WHERE invoice_item_id =  ${db.escape(req.body.invoice_item_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
   );
 });
 
@@ -1014,6 +1330,39 @@ app.post('/insertInvoice', (req, res, next) => {
   });
 });
 
+
+app.post('/insertSalesReturn', (req, res, next) => {
+
+  let data = {
+    sales_return_history_id : req.body.sales_return_history_id 
+    , return_date: req.body.return_date
+    , creation_date: req.body.creation_date
+    , modification_date: req.body.modification_date
+    , invoice_id: req.body.invoice_id
+    , invoice_item_id: req.body.invoice_item_id
+    , price: req.body.price
+    , notes: req.body.notes
+    , qty_return: req.body.qty_return
+    ,order_id: req.body.order_id
+    ,status: req.body.status
+ };
+  let sql = "INSERT INTO sales_return_history SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
+
+
 app.delete('/deleteInvoice', (req, res, next) => {
 
   let data = {invoice_code: req.body.invoice_code};
@@ -1033,7 +1382,24 @@ app.delete('/deleteInvoice', (req, res, next) => {
   });
 });
 
+app.delete('/deleteInvoiceItem', (req, res, next) => {
 
+  let data = {invoice_item_id: req.body.invoice_item_id};
+  let sql = "DELETE FROM invoice_item WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 app.post('/insertBranch', (req, res, next) => {
   let data = {
     title: req.body.title
@@ -1056,6 +1422,8 @@ app.post('/insertBranch', (req, res, next) => {
     }
   });
 });
+
+
 
 app.delete('/deleteBranch', (req, res, next) => {
 
