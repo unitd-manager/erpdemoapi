@@ -495,6 +495,44 @@ app.post("/getInvoiceSummary", (req, res, next) => {
 });
 
 
+app.get('/getOrdersByIds', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.order_item_id 
+  ,r.record_id
+  ,r.order_id
+  ,o.order_code
+  ,r.qty
+  ,r.unit_price
+  ,r.item_title
+  ,r.model
+  ,r.module
+  ,r.supplier_id 
+  ,r.invoice_id 
+  ,r.cost_price
+  ,r.unit
+  ,r.quote_id
+  ,r.order_id 
+  FROM order_item r  
+ LEFT JOIN orders o ON (o.order_id = r.order_id) WHERE o.order_id !=''`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+
 
 app.post("/getInvoiceItemSummary", (req, res, next) => {
   db.query(
