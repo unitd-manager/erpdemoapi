@@ -124,6 +124,46 @@ app.post('/editGoodsReceipt', (req, res, next) => {
             }
           );
         });
+
+
+        app.post('/editGoodsReceiptItems', (req, res, next) => {
+          db.query(`UPDATE goods_receipt_items
+                    SET goods_receipt_id=${db.escape(req.body.goods_receipt_id)}
+                    ,product_id=${db.escape(req.body.product_id)}
+                    ,product_id=${db.escape(req.body.product_id)}
+                    ,po_code=${db.escape(req.body.po_code)}
+                    ,purchase_order_id=${db.escape(req.body.purchase_order_id)}
+                    ,item_title=${db.escape(req.body.item_title)}
+                    ,ordered_quantity=${db.escape(req.body.ordered_quantity)}
+                    ,goods_received_date=${db.escape(req.body.goods_received_date)}
+                    ,goods_received_qty=${db.escape(req.body.goods_received_qty)}
+                    ,unit_price=${db.escape(req.body.unit_price)}
+                    ,total_cost=${db.escape(req.body.total_cost)}
+                    ,goods_damaged_qty=${db.escape(req.body.goods_damaged_qty)}
+                    ,unit=${db.escape(req.body.unit)}
+                    ,serial_no=${db.escape(req.body.serial_no)}
+                    ,description=${db.escape(req.body.description)}
+                    ,creation_date=${db.escape(req.body.creation_date)}
+                    ,created_by=${db.escape(req.body.created_by)}
+                    ,modification_date=${db.escape(req.body.modification_date)}
+                    ,modified_by=${db.escape(req.body.modified_by)}
+                    WHERE goods_receipt_items_id = ${db.escape(req.body.goods_receipt_items_id)}`,
+                    (err, result) => {
+                      if (err) {
+                        console.log('error: ', err)
+                        return res.status(400).send({
+                          data: err,
+                          msg: 'failed',
+                        })
+                      } else {
+                        return res.status(200).send({
+                          data: result,
+                          msg: 'Success',
+                  })
+                }
+                    }
+                  );
+                });        
         
         
 app.post('/insertGoodsReceipt', (req, res, next) => {
@@ -161,7 +201,14 @@ app.post('/insertGoodsReceiptItems', (req, res, next) => {
   let data = {
       goods_receipt_id	: req.body.goods_receipt_id
     , product_id: req.body.product_id
+    , item_title: req.body.item_title
+    , purchase_order_id: req.body.purchase_order_id
+    , po_code: req.body.po_code
+    , po_product_id: req.body.po_product_id
+    , ordered_quantity: req.body.ordered_quantity
     , goods_received_qty: req.body.goods_received_qty
+    , unit_price: req.body.unit_price
+    , total_cost: req.body.total_cost
     , goods_damaged_qty	: req.body.goods_damaged_qty
     , unit: req.body.unit
     , serial_no: req.body.serial_no
@@ -173,6 +220,46 @@ app.post('/insertGoodsReceiptItems', (req, res, next) => {
  };
   let sql = "INSERT INTO goods_receipt_items SET ?";
   let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.post('/getGoodsReceiptItemsById', (req, res, next) => {
+  db.query(`SELECT
+   goods_receipt_items_id
+  ,goods_receipt_id
+  ,purchase_order_id
+  ,po_code
+  ,product_id
+  ,item_title
+  ,unit
+  ,ordered_quantity
+  ,goods_received_date
+  ,goods_received_qty
+  ,unit_price
+  ,total_cost
+  ,goods_damaged_qty
+  ,serial_no
+  ,description
+  ,creation_date
+  ,modification_date
+  ,created_by
+  ,modified_by
+  FROM goods_receipt_items
+  Where purchase_order_id=${db.escape(req.body.purchase_order_id)}`,
+  (err, result) => {
     if (err) {
       console.log('error: ', err)
       return res.status(400).send({
@@ -234,8 +321,7 @@ app.get('/getEmployeeName', (req, res, next) => {
  ,e.nric_no
  ,e.fin_no
  ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count
-  FROM employee e 
-  `,
+  FROM employee e `,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -253,173 +339,24 @@ app.get('/getEmployeeName', (req, res, next) => {
 );
 });
 
-app.post('/deletePurchaseRequest', (req, res, next) => {
 
-  let data = {project_task_id: req.body.project_task_id};
-  let sql = "DELETE FROM purchase_request WHERE ?";
-  let query = db.query(sql, data, (err, result) => {
-    if (err) {
-      console.log('error: ', err)
-      return res.status(400).send({
-        data: err,
-        msg: 'failed',
-      })
-    } else {
-      return res.status(200).send({
-        data: result,
-        msg: 'Success',
-})
-}
-  }
-);
-});
-
-app.post("/getCodeValue", (req, res, next) => {
-    var type = req.body.type;
-    let sql = '';
-    let key_text = '';
-    let withprefix = true;
-    if(type == 'opportunity'){
-        key_text = 'nextOpportunityCode';
-        sql = "SELECT * FROM setting WHERE key_text='opportunityCodePrefix' OR key_text='nextOpportunityCode'";
-    }else if(type == 'receipt'){
-        key_text = 'nextReceiptCode';
-        sql = "SELECT * FROM setting WHERE key_text='receiptCodePrefix' OR key_text='nextReceiptCode'";
-    }else if(type == 'lead'){
-        key_text = 'nextLeadsCode';
-        sql = "SELECT * FROM setting WHERE key_text='leadsPrefix' OR key_text='nextLeadsCode'";  
-    }else if(type == 'invoice'){
-        key_text = 'nextInvoiceCode';
-      sql = "SELECT * FROM setting WHERE key_text='invoiceCodePrefix' OR key_text='nextInvoiceCode'";  
-    }else if(type == 'subConworkOrder'){
-        key_text = 'nextSubconCode';
-      sql = "SELECT * FROM setting WHERE key_text='subconCodePrefix' OR key_text='nextSubconCode'";  
-    }
-    else if(type == 'project'){
-        key_text = 'nextProjectCode';
-        sql = "SELECT * FROM setting WHERE key_text='projectCodePrefix' OR key_text='nextProjectCode'";  
-    }else if(type == 'opportunityproject'){
-        key_text = 'nextOpportunityProjectCode';
-        sql = "SELECT * FROM setting WHERE key_text='opportunityprojectCodePrefix' OR key_text='nextOpportunityProjectCode'";  
-    }else if(type == 'quote'){
-        key_text = 'nextQuoteCode';
-        sql = "SELECT * FROM setting WHERE key_text='quoteCodePrefix' OR key_text='nextQuoteCode'";  
-    }
-    else if(type == 'creditNote'){
-        key_text = 'nextCreditNoteCode';
-        sql = "SELECT * FROM setting WHERE key_text='creditNotePrefix' OR key_text='nextCreditNoteCode'";  
-    }else if(type == 'employee'){
-      //   withprefix = false;
-        key_text = 'nextEmployeeCode';
-      sql = "SELECT * FROM setting WHERE key_text='employeeCodePrefix' OR key_text='nextEmployeeCode'";  
-    }
-    else if(type == 'claim'){
-        withprefix = false;
-        key_text = 'nextClaimCode';
-        sql = "SELECT * FROM setting WHERE  key_text='nextClaimCode'";  
-    }
-    else if(type == 'QuoteCodeOpp'){
-        withprefix = false;
-        key_text = 'nextQuoteCodeOpp';
-        sql = "SELECT * FROM setting WHERE  key_text='nextQuoteCodeOpp'";  
-    }
-    else if(type == 'wocode'){
-        key_text = 'nextWOCode';
-        sql = "SELECT * FROM setting WHERE key_text='wOCodePrefix' OR key_text='nextWOCode'";  
-    }
-    else if(type == 'ProductCode'){
-        key_text = 'nextProductCode';
-        sql = "SELECT * FROM setting WHERE key_text='nextProductCodePrefix' OR key_text='nextProductCode'";  
-    }
-    else if(type == 'InventoryCode'){
-        key_text = 'nextInventoryCode';
-        sql = "SELECT * FROM setting WHERE key_text='inventoryCodePrefix' OR key_text='nextInventoryCode'";  
-    }
-    else if(type == 'ItemCode'){
-        withprefix = false;
-        key_text = 'nextItemCode';
-        sql = "SELECT * FROM setting WHERE key_text='nextItemCode'"; 
-    }
-    else if(type == 'PurchaseRequestCode'){
-        key_text = 'nextPurchaseRequestCode';
-        sql = "SELECT * FROM setting WHERE key_text='nextPurchaseRequestCodePrefix' OR key_text='nextPurchaseRequestCode'";  
-    }
-    let query = db.query(sql, (err, result) => {
-        let old = result
-      if (err) {
-        return res.status(400).send({
-          data: err,
-          msg: "failed",
-        });
-      } else {
-         
-          var finalText = '';
-          var newvalue = 0
-          if(withprefix == true){
-              var codeObject = result.filter(obj => obj.key_text === key_text);
-              
-               var prefixObject = result.filter(obj => obj.key_text != key_text);
-              finalText = prefixObject[0].value + codeObject[0].value;
-              newvalue = parseInt(codeObject[0].value) + 1
-          }else{
-              finalText = result[0].value
-              newvalue = parseInt(result[0].value) + 1
-          }
-          newvalue = newvalue.toString()
-           let query = db.query(`UPDATE setting SET value=${db.escape(newvalue)} WHERE key_text = ${db.escape(key_text)}`, (err, result) => {
-              if (err) {
-                return res.status(400).send({
-                  data: err,
-                  msg: "failed",
-                });
-              } else {
-                return res.status(200).send({
-                  data: finalText,
-                  result:old
-                });
-              }
-          });
-      }
-    });
-  });
-
-  app.get('/PurchaseRequestLineItem', (req, res, next) => {
-    db.query(`SELECT
-    p.product_code
-    ,pr.unit
-    ,pr.purchase_request_qty
-    ,pr.modified_by
-    ,p.title
-    FROM purchase_request_items pr
-    LEFT JOIN (product p) ON (p.product_id = pr.product_id) 
-    WHERE pr.purchase_request_id !=''`,
-    (err, result) => {
-      if (err) {
-        return res.status(400).send({
-          data: err,
-        });
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: "Success",
-        });
-      }
-    }
-  );
-  });
-
-
-  app.post('/getPurchaseOrderedById', (req, res, next) => {
+  app.post('/getPurchaseOrderedByIdOLd', (req, res, next) => {
     db.query(`SELECT
     p.product_code
     ,p.product_id
+    ,p.unit
+    ,p.title
     ,po.unit
     ,po.item_title
     ,po.quantity
     ,po.po_product_id
     ,po.purchase_order_id
+    ,gci.goods_received_date
+    ,gci. goods_receipt_id 
+    ,gci.goods_received_qty
     FROM po_product po
     LEFT JOIN (product p) ON (p.product_id = po.product_id)
+    LEFT JOIN (goods_receipt_items gci) ON (gci.product_id = po.product_id)
     WHERE po.purchase_order_id = ${db.escape(req.body.purchase_order_id)}`,
     (err, result) => {
       if (err) {
@@ -436,19 +373,21 @@ app.post("/getCodeValue", (req, res, next) => {
   );
   });
 
-  app.post('/insertPurchaseRequestLineItem', (req, res, next) => {
-
-    let data = {
-       product_id:req.body.product_id,
-       purchase_request_qty:req.body.purchase_request_qty,
-       unit:req.body.unit,
-       creation_date:req.body.creation_date,
-       created_by:req.body.created_by,
-       purchase_request_id:req.body.purchase_request_id
-   };
-   console.log(data)
-    let sql = "INSERT INTO purchase_request_items SET ?";
-    let query = db.query(sql, data,(err, result) => {
+  app.post('/getPurchaseOrderedById', (req, res, next) => {
+    db.query(`SELECT
+    pop.unit
+    ,pop.item_title
+    ,pop.quantity
+    ,pop.po_product_id
+    ,pop.purchase_order_id
+    ,pop.po_product_id
+    ,pop.product_id
+    ,po.po_code
+    ,po.supplier_id
+    FROM po_product pop
+    LEFT JOIN (purchase_order po) ON (po.purchase_order_id = pop.purchase_order_id)
+    WHERE pop.purchase_order_id =${db.escape(req.body.purchase_order_id)}`,
+    (err, result) => {
       if (err) {
         return res.status(400).send({
           data: err,
@@ -462,6 +401,27 @@ app.post("/getCodeValue", (req, res, next) => {
     }
   );
   });
+
+  app.get('/checkReceiptItems', (req, res, next) => {
+    db.query(
+      `SELECT po_product_id FROM goods_receipt_items`,
+      (err, result) => {
+        if (err) {
+          return res.status(400).send({
+            data: err,
+            msg: 'Failed'
+          });
+        } else {
+          const quoteItemsIds = result.map((row) => row.po_product_id);
+          return res.status(200).send({
+            data: quoteItemsIds,
+            msg: 'Success'
+          });
+        }
+      }
+    );
+  });
+ 
 
   app.post('/deleteEditItem', (req, res, next) => {
 

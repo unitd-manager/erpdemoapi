@@ -868,7 +868,8 @@ app.post('/insertContact', (req, res, next) => {
     , department: req.body.department
     , phone_direct: req.body.phone_direct
     , fax: req.body.fax
-    , mobile: req.body.mobile,company_id:req.body.company_id};
+    , mobile: req.body.mobile
+    , company_id:req.body.company_id};
   let sql = "INSERT INTO contact SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
@@ -918,6 +919,15 @@ app.post("/getCodeValue", (req, res, next) => {
   }else if(type == 'projectquote'){
     key_text = 'nextProjectQuoteCode';
     sql = "SELECT * FROM setting WHERE key_text='projectQuoteCodePrefix' OR key_text='nextProjectQuoteCode'";  
+}else if(type == 'projectjob'){
+  key_text = 'nextProjectJobCode';
+  sql = "SELECT * FROM setting WHERE key_text='projectJobCodePrefix' OR key_text='nextProjectJobCode'";  
+}else if(type == 'materialrequest'){
+  key_text = 'nextMaterialRequestCode';
+  sql = "SELECT * FROM setting WHERE key_text='materialRequestCodePrefix' OR key_text='nextMaterialRequestCode'";  
+}else if(type == 'equipmentrequest'){
+  key_text = 'nextEquipmentRequestCode';
+  sql = "SELECT * FROM setting WHERE key_text='equipmentRequestCodePrefix' OR key_text='nextEquipmentRequestCode'";  
 }
   else if(type == 'creditNote'){
       key_text = 'nextCreditNoteCode';

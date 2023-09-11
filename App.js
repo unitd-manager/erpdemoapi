@@ -88,11 +88,19 @@ const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
 const labourrequest = require('./routes/labourrequest.js');
+const materialrequest = require('./routes/materialrequest.js');
+const equipmentrequest = require('./routes/equipmentrequest.js');
 const changerequest = require('./routes/changerequest.js');
 const document = require('./routes/document.js');
+<<<<<<< HEAD
 const proposal = require('./routes/proposal.js');
 
+=======
+const equipmentissue = require('./routes/equipmentissue.js');
+>>>>>>> e08c284c539f1b290c0ddd109631c4a39af15223
 const chartOfAccounts = require('./routes/chartOfAccounts.js');
+const MaterialIssue = require('./routes/MaterialIssue.js');
+const joborder = require('./routes/joborder.js');
 
 
 app.use('/invoice', invoice);
@@ -161,9 +169,16 @@ app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
 app.use('/document', document);
+<<<<<<< HEAD
 app.use('/proposal', proposal);
+=======
+app.use('/joborder', joborder);
+app.use('/materialrequest', materialrequest);
+app.use('/MaterialIssue', MaterialIssue);
+>>>>>>> e08c284c539f1b290c0ddd109631c4a39af15223
 
-
+app.use('/equipmentrequest', equipmentrequest);
+app.use('/equipmentissue', equipmentissue);
 app.use('/chartOfAccounts', chartOfAccounts);
 
 app.use(fileUpload({

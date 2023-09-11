@@ -6,5 +6,5 @@ var db = mysql.createConnection({
     password: '',
     database: 'erpdemo'
 });
-db.connect(); 
+
 module.exports = db;
