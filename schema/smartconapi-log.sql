@@ -8295,3 +8295,20 @@ INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creati
 
 INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'The prefix used for job code', 'projectJobCodePrefix', 'JBO-', '', '', 'Admin', 'Text Field', '1', NULL, NULL, NULL, '0', '1'); 
 
+/* =================== Rafi - 01/09/2023 ===================== */
+CREATE TABLE IF NOT EXISTS `Inventory_history` (
+  `Inventory_history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `planning_cpanel_id` int(11) DEFAULT NULL,
+  `planning_bom_id` int(11) DEFAULT NULL,
+  `inventory_id` int(11) DEFAULT NULL,
+  `actual_stock` varchar(255) DEFAULT NULL,
+  `bom_qty` varchar(255) DEFAULT NULL,
+  `reserve_stock` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`Inventory_history_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+/* =================== SULFIYA - 08/09/2023 ===================== */
+ALTER TABLE `sales_return_history` CHANGE `date` `return_date` DATE NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `creation_date` `creation_date` VARCHAR(55) NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `modification_date` `modification_date` VARCHAR(55) NULL DEFAULT NULL; 

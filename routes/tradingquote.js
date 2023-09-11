@@ -42,7 +42,7 @@ app.post('/getTradingquoteById', (req, res, next) => {
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id)   
+    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
     WHERE q.quote_id =${db.escape(req.body.quote_id)}  ORDER BY quote_code DESC
     `,
       (err, result) => {
@@ -76,14 +76,12 @@ app.post('/getTradingquoteById', (req, res, next) => {
     ,q.total_amount
     ,q.opportunity_id
     ,q.company_id
-    ,q.contact_id
     ,o.opportunity_code
     ,c.company_name
-    ,cont.first_name
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
+    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
     WHERE q.quote_id != '' 
     `,
       (err, result) => {
@@ -156,6 +154,31 @@ app.post('/getTradingquoteById', (req, res, next) => {
                }
             );
           });
+          app.post('/insertTradingContact', (req, res, next) => {
+
+            let data = {salutation: req.body.salutation
+              , first_name: req.body.first_name
+              , email: req.body.email
+              , position: req.body.position
+              , department: req.body.department
+              , phone_direct: req.body.phone_direct
+              , fax: req.body.fax
+              , mobile: req.body.mobile
+              , company_id:req.body.company_id};
+            let sql = "INSERT INTO contact SET ?";
+            let query = db.query(sql, data,(err, result) => {
+              if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+              } else {
+                    return res.status(200).send({
+                      data: result,
+                      msg:'New Tender has been created successfully'
+                    });
+              }
+            });
+          });
 
   app.post('/inserttradingquote', (req, res, next) => {
 
@@ -166,7 +189,6 @@ app.post('/getTradingquoteById', (req, res, next) => {
       , quote_date: req.body.quote_date
       , quote_status: 'new'
       , company_id: req.body.company_id
-      , contact_id: req.body.contact_id
       , project_location: req.body.project_location
       , project_reference: req.body.project_reference
       , discount: req.body.discount

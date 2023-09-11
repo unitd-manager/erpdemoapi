@@ -71,6 +71,39 @@ app.get('/getFinances', (req, res, next) => {
   );
 });
 
+
+app.get('/getSalesReturns', (req, res, next) => {
+  db.query(`SELECT o.sales_return_history_id 
+  ,o.return_date
+  , o.creation_date
+  ,o.modification_date
+  ,o.invoice_id
+  ,o.invoice_item_id
+  ,o.price
+  ,o.notes
+  ,o.qty_return
+  ,o.order_id
+  ,o.status
+  from sales_return_history o
+   WHERE o.sales_return_history_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.post('/getInvoiceItemsById', (req, res, next) => {
   db.query(`SELECT it.item_title,
   it.invoice_item_id,
@@ -415,6 +448,7 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.order_status
   ,o.invoice_terms
   ,o.notes
+  ,o.order_code
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
   ,o.shipping_address2
@@ -678,6 +712,44 @@ app.post("/getInvoiceSummary", (req, res, next) => {
           msg: "Success",
         });
       }
+    }
+  );
+});
+
+
+app.get('/getOrdersByIds', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.order_item_id 
+  ,r.record_id
+  ,r.order_id
+  ,o.order_code
+  ,r.qty
+  ,r.unit_price
+  ,r.item_title
+  ,r.model
+  ,r.module
+  ,r.supplier_id 
+  ,r.invoice_id 
+  ,r.cost_price
+  ,r.unit
+  ,r.quote_id
+  ,r.order_id 
+  FROM order_item r  
+ LEFT JOIN orders o ON (o.order_id = r.order_id) WHERE o.order_id !=''`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
     }
   );
 });

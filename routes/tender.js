@@ -868,7 +868,8 @@ app.post('/insertContact', (req, res, next) => {
     , department: req.body.department
     , phone_direct: req.body.phone_direct
     , fax: req.body.fax
-    , mobile: req.body.mobile,company_id:req.body.company_id};
+    , mobile: req.body.mobile
+    , company_id:req.body.company_id};
   let sql = "INSERT INTO contact SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
