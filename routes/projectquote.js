@@ -230,7 +230,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
 
   app.post('/deleteEditItem', (req, res, next) => {
 
-    let data = {poject_quote_items_id: req.body.project_quote_items_id};
+    let data = {project_quote_items_id: req.body.project_quote_items_id};
     let sql = "DELETE FROM project_quote_items WHERE ?";
     let query = db.query(sql, data,(err, result) => {
       if (err) {
