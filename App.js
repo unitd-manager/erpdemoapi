@@ -90,6 +90,7 @@ const goodsreceipt = require('./routes/goodsreceipt.js');
 const labourrequest = require('./routes/labourrequest.js');
 const changerequest = require('./routes/changerequest.js');
 const document = require('./routes/document.js');
+const proposal = require('./routes/proposal.js');
 
 const chartOfAccounts = require('./routes/chartOfAccounts.js');
 
@@ -160,6 +161,7 @@ app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
 app.use('/document', document);
+app.use('/proposal', proposal);
 
 
 app.use('/chartOfAccounts', chartOfAccounts);
