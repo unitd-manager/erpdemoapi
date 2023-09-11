@@ -918,6 +918,9 @@ app.post("/getCodeValue", (req, res, next) => {
   }else if(type == 'projectquote'){
     key_text = 'nextProjectQuoteCode';
     sql = "SELECT * FROM setting WHERE key_text='projectQuoteCodePrefix' OR key_text='nextProjectQuoteCode'";  
+}else if(type == 'projectjob'){
+  key_text = 'nextProjectJobCode';
+  sql = "SELECT * FROM setting WHERE key_text='projectJobCodePrefix' OR key_text='nextProjectJobCode'";  
 }else if(type == 'materialrequest'){
   key_text = 'nextMaterialRequestCode';
   sql = "SELECT * FROM setting WHERE key_text='materialRequestCodePrefix' OR key_text='nextMaterialRequestCode'";  
