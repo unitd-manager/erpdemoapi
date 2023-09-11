@@ -947,10 +947,13 @@ app.post("/getCodeValue", (req, res, next) => {
       key_text = 'nextQuoteCodeOpp';
       sql = "SELECT * FROM setting WHERE  key_text='nextQuoteCodeOpp'";  
   }
+
   else if(type == 'wocode'){
       key_text = 'nextWOCode';
       sql = "SELECT * FROM setting WHERE key_text='wOCodePrefix' OR key_text='nextWOCode'";  
   }
+  
+  
   let query = db.query(sql, (err, result) => {
       let old = result
     if (err) {
