@@ -25,15 +25,16 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
     ,gd.delivery_no
     ,gd.goods_delivery_date
     ,gd.order_id
+    ,gd.goods_delivery_code
     ,o.order_code
     ,gd.goods_ref_no
     ,gd.company_id
+    ,gd.contact_id
     ,c.company_name
     ,cont.first_name
     ,gd.goods_delivery_status
     ,gd.po_no
     ,gd.sales_man
-    ,gd.contact_id
     ,gd.department
     ,gd.creation_date
     ,gd.modification_date
@@ -45,7 +46,7 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
        FROM goods_delivery gd  
        LEFT JOIN (orders o) ON (o.order_id=gd.order_id)
        LEFT JOIN (company c) ON (c.company_id=gd.company_id)
-       LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id)
+       LEFT JOIN (contact cont) ON (gd.contact_id = cont.contact_id)
        LEFT JOIN (goods_delivery_item gi) ON (gi.goods_delivery_id = gd.goods_delivery_id)  
        WHERE gd.goods_delivery_id =${db.escape(req.body.goods_delivery_id)}
     `,
@@ -64,11 +65,32 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
   );
 });
 
+app.get('/checkDeliveryItems', (req, res, next) => {
+  db.query(
+    `SELECT order_item_id FROM goods_delivery_item`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.order_item_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
 app.get("/getgoodsdelivery", (req, res, next) => {
   db.query(
     `  SELECT gd.goods_delivery_id
     ,gd.delivery_no
     ,gd.goods_delivery_date
+    ,gd.goods_delivery_code
     ,gd.order_id
     ,o.order_code
     ,gd.goods_ref_no
@@ -87,7 +109,7 @@ app.get("/getgoodsdelivery", (req, res, next) => {
        FROM goods_delivery gd  
        LEFT JOIN (orders o) ON (o.order_id=gd.order_id)
        LEFT JOIN (company c) ON (c.company_id=gd.company_id)
-       LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
+       LEFT JOIN (contact cont) ON (gd.contact_id = cont.contact_id) 
        WHERE gd.goods_delivery_id != ''
     `,
     (err, result) => {
@@ -257,7 +279,6 @@ app.post("/edit-goodsdelivery", (req, res, next) => {
               ,po_no=${db.escape(req.body.po_no)}
               ,sales_man=${db.escape(req.body.sales_man)}
               ,department=${db.escape(req.body.department)}
-              ,creation_date=${db.escape(req.body.creation_date)}
               ,modification_date=${db.escape(req.body.modification_date)}
               ,created_by=${db.escape(req.body.created_by)}
               ,modified_by=${db.escape(req.body.modified_by)}              
@@ -330,6 +351,7 @@ app.post("/insertgoodsdelivery", (req, res, next) => {
     goods_delivery_id: req.body.goods_delivery_id,
     delivery_no: req.body.delivery_no,
     goods_delivery_date: req.body.goods_delivery_date,
+    goods_delivery_code: req.body.goods_delivery_code,
     order_id: req.body.order_id,
     goods_ref_no: req.body.goods_ref_no,
     company_id: req.body.company_id,
