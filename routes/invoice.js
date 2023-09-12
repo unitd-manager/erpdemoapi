@@ -141,7 +141,6 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
   );
 });
 
-
 app.get('/getInvoice', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code 
@@ -280,23 +279,20 @@ WHERE i.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
 });
 
 app.post('/getSalesReturnId', (req, res, next) => {
-  db.query(`SELECT o.sales_return_history_id 
+  db.query(`SELECT o.sales_return_id 
   ,o.return_date
   , o.creation_date
   ,o.modification_date
   ,o.invoice_id
   ,i.invoice_code
-  ,o.invoice_item_id
-  ,o.price
-  ,o.notes
-  ,o.qty_return
   ,o.order_id
   ,o.status
+  ,i.invoice_code
   ,(select sum(total_cost)) as InvoiceAmount
-  from sales_return_history o
+  from sales_return o
   LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
   LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
-   WHERE o.sales_return_history_id = ${db.escape(req.body.sales_return_history_id)}`,
+   WHERE o.sales_return_id = ${db.escape(req.body.sales_return_id)}`,
           (err, result) => {
        
       if (result.length === 0) {
@@ -1365,19 +1361,15 @@ app.post('/insertInvoice', (req, res, next) => {
 app.post('/insertSalesReturn', (req, res, next) => {
 
   let data = {
-    sales_return_history_id : req.body.sales_return_history_id 
+    sales_return_id : req.body.sales_return_id 
     , return_date: req.body.return_date
     , creation_date: req.body.creation_date
     , modification_date: req.body.modification_date
     , invoice_id: req.body.invoice_id
-    , invoice_item_id: req.body.invoice_item_id
-    , price: req.body.price
-    , notes: req.body.notes
-    , qty_return: req.body.qty_return
     ,order_id: req.body.order_id
     ,status: req.body.status
  };
-  let sql = "INSERT INTO sales_return_history SET ?";
+  let sql = "INSERT INTO sales_return SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
      return res.status(400).send({
