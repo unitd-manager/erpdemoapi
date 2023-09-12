@@ -8218,3 +8218,4 @@ CREATE TABLE IF NOT EXISTS `Inventory_history` (
 ALTER TABLE `sales_return_history` CHANGE `date` `return_date` DATE NULL DEFAULT NULL; 
 ALTER TABLE `sales_return_history` CHANGE `creation_date` `creation_date` VARCHAR(55) NULL DEFAULT NULL; 
 ALTER TABLE `sales_return_history` CHANGE `modification_date` `modification_date` VARCHAR(55) NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `return_date` `return_date` VARCHAR(55) NULL DEFAULT NULL; 

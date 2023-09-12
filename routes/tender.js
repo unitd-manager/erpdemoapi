@@ -73,7 +73,7 @@ app.post('/getTendersById', (req, res, next) => {
   ,o.price
    ,o.actual_closing
   ,o.itq_ref_no
-  
+  ,o.enquiry_date
   ,CONCAT_WS(' ', ref.first_name, ref.last_name) AS ref_contact_name 
   ,c.company_name 
   ,c.company_size 
@@ -425,6 +425,7 @@ app.post('/edit-Tenders', (req, res, next) => {
   db.query(`UPDATE opportunity 
             SET office_ref_no=${db.escape(req.body.office_ref_no)}
             ,company_id=${db.escape(req.body.company_id)}
+             ,enquiry_date=${db.escape(req.body.enquiry_date)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,actual_closing=${db.escape(req.body.actual_closing)}
             ,mode_of_submission=${db.escape(req.body.mode_of_submission)}
@@ -906,6 +907,10 @@ app.post("/getCodeValue", (req, res, next) => {
       key_text = 'nextSubconCode';
     sql = "SELECT * FROM setting WHERE key_text='subconCodePrefix' OR key_text='nextSubconCode'";  
   }
+  else if(type == 'goodsdelivery'){
+  key_text = 'nextGoodsDeliveryCode';
+  sql = "SELECT * FROM setting WHERE key_text='goodsDeliveryCodePrefix' OR key_text='nextGoodsDeliveryCode'";  
+}
   else if(type == 'project'){
       key_text = 'nextProjectCode';
       sql = "SELECT * FROM setting WHERE key_text='projectCodePrefix' OR key_text='nextProjectCode'";  
@@ -1245,6 +1250,7 @@ app.post('/insertQuoteItems', (req, res, next) => {
 
 app.get('/getTenderSummaryId', (req, res, next) => {
   db.query(`SELECT o.title, c.company_name , q.total_amount
+            ,o.enquiry_date
             FROM opportunity o 
             LEFT JOIN (company c)  ON (o.company_id  = c.company_id)  
             LEFT JOIN (quote q)  ON (q.quote_id  = o.opportunity_id)

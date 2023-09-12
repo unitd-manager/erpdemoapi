@@ -115,6 +115,33 @@ ORDER BY i.invoice_date DESC`,
   );
 });
 
+app.post('/getReturnItemsById', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.item_title
+  ,i.qty
+  ,i.unit_price
+  ,i.total_cost
+ from invoice_item i
+  LEFT JOIN invoice iv  ON iv.invoice_id=i.invoice_id
+WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+          (err, result) => {
+       
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
+
 app.get('/getInvoice', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code 
@@ -258,14 +285,18 @@ app.post('/getSalesReturnId', (req, res, next) => {
   , o.creation_date
   ,o.modification_date
   ,o.invoice_id
+  ,i.invoice_code
   ,o.invoice_item_id
   ,o.price
   ,o.notes
   ,o.qty_return
   ,o.order_id
   ,o.status
+  ,(select sum(total_cost)) as InvoiceAmount
   from sales_return_history o
-   WHERE o.sales_return_history_id= ${db.escape(req.body.sales_return_history_id)}`,
+  LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
+  LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
+   WHERE o.sales_return_history_id = ${db.escape(req.body.sales_return_history_id)}`,
           (err, result) => {
        
       if (result.length === 0) {
