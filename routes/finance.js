@@ -71,6 +71,25 @@ app.get('/getFinances', (req, res, next) => {
   );
 });
 
+app.post('/editSalesReturn', (req, res, next) => {
+  db.query(`UPDATE sales_return_history 
+            SET return_date = ${db.escape(req.body.return_date)}
+            ,status=${db.escape(req.body.status)}
+             WHERE sales_return_history_id =  ${db.escape(req.body.sales_return_history_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+  );
+});
+
 
 app.get('/getSalesReturns', (req, res, next) => {
   db.query(`SELECT o.sales_return_history_id 
@@ -78,14 +97,19 @@ app.get('/getSalesReturns', (req, res, next) => {
   , o.creation_date
   ,o.modification_date
   ,o.invoice_id
+  ,i.invoice_code
   ,o.invoice_item_id
   ,o.price
   ,o.notes
   ,o.qty_return
   ,o.order_id
   ,o.status
+  ,(select sum(total_cost)) as InvoiceAmount
   from sales_return_history o
-   WHERE o.sales_return_history_id !=''`,
+  LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
+  LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
+   WHERE o.sales_return_history_id !='' 
+   Group By sales_return_history_id`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -712,6 +736,44 @@ app.post("/getInvoiceSummary", (req, res, next) => {
           msg: "Success",
         });
       }
+    }
+  );
+});
+
+
+app.get('/getOrdersByIds', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.order_item_id 
+  ,r.record_id
+  ,r.order_id
+  ,o.order_code
+  ,r.qty
+  ,r.unit_price
+  ,r.item_title
+  ,r.model
+  ,r.module
+  ,r.supplier_id 
+  ,r.invoice_id 
+  ,r.cost_price
+  ,r.unit
+  ,r.quote_id
+  ,r.order_id 
+  FROM order_item r  
+ LEFT JOIN orders o ON (o.order_id = r.order_id) WHERE o.order_id !=''`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
     }
   );
 });
