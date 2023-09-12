@@ -121,7 +121,7 @@ app.post('/editClients', (req, res, next) => {
             ,website=${db.escape(req.body.website)}
             ,email=${db.escape(req.body.email)}
             ,modification_date=${db.escape(req.body.modification_date)}
-            ,modified_by=${db.escape(req.staff)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,fax=${db.escape(req.body.fax)}
             ,address_flat=${db.escape(req.body.address_flat)}
             ,address_street=${db.escape(req.body.address_street)}
@@ -165,7 +165,7 @@ app.post('/insertCompany', (req, res, next) => {
    , mobile	: req.body.mobile	
    , flag: req.body.flag
    , address_flat: req.body.address_flat
-   , status: req.body.status
+   , status: 'current'
    , website: req.body.website
    , category: req.body.category
    , comment_by	: req.body.comment_by

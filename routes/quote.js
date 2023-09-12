@@ -183,7 +183,7 @@ app.post('/editPurchseQuote', (req, res, next) => {
   qr.total_cost,
   qr.purchase_quote_items_id,
   qr.amount,
-  qr.rq_code,
+  q.rq_code,
   (SELECT SUM(q2.amount) FROM purchase_quote_items q2  WHERE q2.purchase_quote_id = q.purchase_quote_id ) AS total_amount_all_quotes
 FROM
   purchase_quote q
@@ -350,7 +350,7 @@ app.post('/RequestLineItemById', (req, res, next) => {
     ,pq.unit
     ,pq.purchase_quote_items_id
     ,pq.description
-    ,pq.rq_code
+    ,q.rq_code
     FROM purchase_quote q
     LEFT JOIN (purchase_request r) ON (r.purchase_request_id = q.purchase_request_id) 
     LEFT JOIN (purchase_quote_items pq) ON (pq.purchase_quote_id = q.purchase_quote_id) 
