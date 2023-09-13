@@ -393,20 +393,42 @@ app.get('/checkOrderItem', (req, res, next) => {
   );
 });
 
+app.get('/checkInvoiceItem', (req, res, next) => {
+  db.query(
+    `SELECT invoice_item_id FROM sales_return_history`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.invoice_item_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
 
 app.get('/getQuote', (req, res, next) => {
-  db.query(`SELECT q.quote_id 
-  ,q.opportunity_id
-  ,q.project_id
-  ,q.quote_code
-  ,q.quote_date
-  ,q.quote_status
-  ,q.creation_date
-  ,q.modification_date
-  ,q.currency_item
-  ,q.note
-  FROM quote q 
-  WHERE q.quote_id !=''`,
+  db.query(`SELECT q.quote_id,
+       q.opportunity_id,
+       q.project_id,
+       q.quote_code,
+       q.quote_date,
+       q.quote_status,
+       q.creation_date,
+       q.modification_date,
+       q.currency_item,
+       q.note
+FROM quote q
+LEFT JOIN orders o ON o.quote_id = q.quote_id
+WHERE q.quote_id != '' 
+      AND q.quote_status != 'Cancelled' 
+      AND o.quote_id IS NULL`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
