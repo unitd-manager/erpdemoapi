@@ -21,38 +21,30 @@ app.use(fileUpload({
 app.get('/getFinances', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  , o.project_id
+  ,o.project_id
   ,o.project_type
-  ,o.order_code
+  ,q.opportunity_id
+  ,opt.office_ref_no
+  ,c.company_id
+  ,c.company_name
   ,o.creation_date
   ,o.order_status
   ,o.invoice_terms
   ,o.notes
-  ,q.quote_id
-  ,q.quote_code
+  ,(select sum(it.total_cost)) as amount
+  ,o.order_code
   ,o.shipping_first_name
-  ,o.shipping_address1
+  ,o.cust_address1 AS shipping_address1
   ,o.shipping_address2
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
-  ,o.delivery_date
-  ,o.delivery_terms
-  ,o.cust_address1
-  ,o.cust_address2
-  ,o.cust_address_country
-  ,o.cust_address_po_code
-  ,o.creation_date
-  ,o.modification_date
-  ,o.created_by
-  ,o.modified_by
-  ,o.cust_company_name
-  ,c.company_name 
-  ,op.office_ref_no
-  from orders o
-  LEFT JOIN company c ON (c.company_id = o.company_id) 
+  ,q.quote_code FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
-    LEFT JOIN opportunity op ON op.opportunity_id = q.opportunity_id 
-  WHERE o.order_id !=''`,
+  LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
+  LEFT JOIN invoice i ON (i.order_id = o.order_id) 
+  LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
+  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id !=''
+  GROUP BY o.order_id `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -72,10 +64,10 @@ app.get('/getFinances', (req, res, next) => {
 });
 
 app.post('/editSalesReturn', (req, res, next) => {
-  db.query(`UPDATE sales_return_history 
+  db.query(`UPDATE sales_return
             SET return_date = ${db.escape(req.body.return_date)}
             ,status=${db.escape(req.body.status)}
-             WHERE sales_return_history_id =  ${db.escape(req.body.sales_return_history_id)}`,
+             WHERE sales_return_id =  ${db.escape(req.body.sales_return_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -90,26 +82,22 @@ app.post('/editSalesReturn', (req, res, next) => {
   );
 });
 
-
 app.get('/getSalesReturns', (req, res, next) => {
-  db.query(`SELECT o.sales_return_history_id 
+  db.query(`SELECT o.sales_return_id 
   ,o.return_date
   , o.creation_date
   ,o.modification_date
   ,o.invoice_id
   ,i.invoice_code
-  ,o.invoice_item_id
-  ,o.price
-  ,o.notes
-  ,o.qty_return
   ,o.order_id
   ,o.status
+  ,i.invoice_code
   ,(select sum(total_cost)) as InvoiceAmount
-  from sales_return_history o
+  from sales_return o
   LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
   LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
-   WHERE o.sales_return_history_id !='' 
-   Group By sales_return_history_id`,
+   WHERE o.sales_return_id !=''
+   Group by o.sales_return_id`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -236,28 +224,22 @@ GROUP BY o.order_id; `,
 });
 
 app.post('/getInvoiceById', (req, res, next) => {
-  db.query(`select i.invoice_id
-  ,i.invoice_code  
+  db.query(`SELECT i.invoice_id
+  ,i.invoice_code
+  ,co.company_name
   ,i.status
   ,i.invoice_date
-   ,i.invoice_amount
-   ,i.gst_percentage
-   ,i.gst_value
-   ,i.discount
-   ,i.quote_code
-   ,i.po_number
-    ,i.project_location
-    ,i.project_reference
-    ,i.so_ref_no
-    ,i.code
-    ,i.reference
-     ,i.invoice_terms
-     ,i.attention
-     ,i.site_code
-     ,i.payment_terms
-   from invoice i
-  LEFT JOIN orders o ON o.order_id=i.order_id
- WHERE i.order_id= ${db.escape(req.body.order_id)} `,
+  ,i.invoice_amount
+  ,i.invoice_due_date
+  ,o.order_id
+  ,o.order_code
+  ,(select sum(it.total_cost)) as InvoiceAmount
+  from invoice i
+  LEFT JOIN orders o ON (o.order_id = i.order_id) 
+   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
+  LEFT JOIN company co ON (co.company_id = o.company_id) 
+  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} 
+  Group by i.invoice_id`,
     (err, result) => {
 
       if (err) {
@@ -365,10 +347,13 @@ app.get('/getInvoices', (req, res, next) => {
   ,i.invoice_due_date
   ,o.order_id
   ,o.order_code
+  ,(select sum(it.total_cost)) as InvoiceAmount
   from invoice i
   LEFT JOIN orders o ON (o.order_id = i.order_id) 
+   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company co ON (co.company_id = o.company_id) 
-  WHERE i.invoice_id !=''`,
+  WHERE i.invoice_id !=''
+  Group by i.invoice_id`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -408,20 +393,42 @@ app.get('/checkOrderItem', (req, res, next) => {
   );
 });
 
+app.get('/checkInvoiceItem', (req, res, next) => {
+  db.query(
+    `SELECT invoice_item_id FROM sales_return_history`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.invoice_item_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
 
 app.get('/getQuote', (req, res, next) => {
-  db.query(`SELECT q.quote_id 
-  ,q.opportunity_id
-  ,q.project_id
-  ,q.quote_code
-  ,q.quote_date
-  ,q.quote_status
-  ,q.creation_date
-  ,q.modification_date
-  ,q.currency_item
-  ,q.note
-  FROM quote q 
-  WHERE q.quote_id !=''`,
+  db.query(`SELECT q.quote_id,
+       q.opportunity_id,
+       q.project_id,
+       q.quote_code,
+       q.quote_date,
+       q.quote_status,
+       q.creation_date,
+       q.modification_date,
+       q.currency_item,
+       q.note
+FROM quote q
+LEFT JOIN orders o ON o.quote_id = q.quote_id
+WHERE q.quote_id != '' 
+      AND q.quote_status != 'Cancelled' 
+      AND o.quote_id IS NULL`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -466,12 +473,14 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
+  ,opt.office_ref_no
   ,c.company_id
   ,c.company_name
   ,o.creation_date
   ,o.order_status
   ,o.invoice_terms
   ,o.notes
+  ,(select sum(it.total_cost)) as amount
   ,o.order_code
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
@@ -481,6 +490,8 @@ app.post('/getFinanceById', (req, res, next) => {
   ,q.quote_code FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
+  LEFT JOIN invoice i ON (i.order_id = o.order_id) 
+  LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id = ${db.escape(req.body.order_id)} `,
     (err, result) => {
       if (err) {
@@ -736,44 +747,6 @@ app.post("/getInvoiceSummary", (req, res, next) => {
           msg: "Success",
         });
       }
-    }
-  );
-});
-
-
-app.get('/getOrdersByIds', (req, res, next) => {
-  db.query(`SELECT DISTINCT r.order_item_id 
-  ,r.record_id
-  ,r.order_id
-  ,o.order_code
-  ,r.qty
-  ,r.unit_price
-  ,r.item_title
-  ,r.model
-  ,r.module
-  ,r.supplier_id 
-  ,r.invoice_id 
-  ,r.cost_price
-  ,r.unit
-  ,r.quote_id
-  ,r.order_id 
-  FROM order_item r  
- LEFT JOIN orders o ON (o.order_id = r.order_id) WHERE o.order_id !=''`,
-    (err, result) => {
-
-      if (err) {
-        return res.status(400).send({
-              data: err,
-              msg:'failed'
-            });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
-      }
-
     }
   );
 });
