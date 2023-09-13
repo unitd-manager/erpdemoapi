@@ -418,5 +418,24 @@ app.post("/getCodeValue", (req, res, next) => {
     }
   });
 });
+app.get('/checkQuoteItems', (req, res, next) => {
+  db.query(
+    `SELECT purchase_request_id FROM purchase_quote_items`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.purchase_request_items_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
 
 module.exports = app;
