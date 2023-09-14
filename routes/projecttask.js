@@ -24,6 +24,7 @@ app.get('/getProjectTask', (req, res, next) => {
   db.query(`SELECT
   pt.project_task_id
   ,pt.project_id
+  ,pt.company_id
   ,pt.employee_id
   ,pt.start_date
   ,pt.end_date
@@ -72,6 +73,7 @@ app.post('/getProjectTaskById', (req, res, next) => {
     db.query(`SELECT
     pt.project_task_id
     ,pt.project_id
+    ,pt.company_id
     ,pt.employee_id
     ,pt.start_date
     ,pt.end_date

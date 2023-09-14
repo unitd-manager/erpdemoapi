@@ -95,6 +95,7 @@ const document = require('./routes/document.js');
 const equipmentissue = require('./routes/equipmentissue.js');
 const chartOfAccounts = require('./routes/chartOfAccounts.js');
 const MaterialIssue = require('./routes/MaterialIssue.js');
+const purchaseinvoice = require('./routes/purchaseinvoice.js');
 
 
 app.use('/invoice', invoice);
@@ -163,6 +164,7 @@ app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
 app.use('/document', document);
+app.use('/purchaseinvoice', purchaseinvoice);
 
 app.use('/materialrequest', materialrequest);
 app.use('/MaterialIssue', MaterialIssue);
