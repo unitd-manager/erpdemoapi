@@ -24,6 +24,7 @@ app.get('/getFinances', (req, res, next) => {
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
+  ,q.quote_id
   ,opt.office_ref_no
   ,c.company_id
   ,c.company_name
@@ -62,6 +63,34 @@ app.get('/getFinances', (req, res, next) => {
     }
   );
 });
+
+
+app.get('/getOrders', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  FROM orders o 
+  WHERE o.order_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 
 app.post('/editSalesReturn', (req, res, next) => {
   db.query(`UPDATE sales_return
@@ -238,7 +267,7 @@ app.post('/getInvoiceById', (req, res, next) => {
   LEFT JOIN orders o ON (o.order_id = i.order_id) 
    LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company co ON (co.company_id = o.company_id) 
-  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} 
+  WHERE i.order_id = ${db.escape(req.body.order_id)} 
   Group by i.invoice_id`,
     (err, result) => {
 
@@ -1414,6 +1443,26 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
     }
 
     console.log(`Deleted old order items with quote_id ${quoteId}`);
+    return res.status(200).json({
+      message: 'Order items deleted successfully',
+    });
+  });
+});
+
+app.delete('/deleteinvoice_item/:invoiceId', (req, res) => {
+  const invoiceId = req.params.invoiceId;
+
+  // Construct and execute the SQL query to delete old order items by quote_id
+  const sql = "DELETE FROM invoice_item WHERE invoice_id = ?";
+  db.query(sql, [invoiceId], (err, result) => {
+    if (err) {
+      console.error('Error deleting order items:', err);
+      return res.status(500).json({
+        error: 'Failed to delete order items',
+      });
+    }
+
+    console.log(`Deleted old order items with quote_id ${invoiceId}`);
     return res.status(200).json({
       message: 'Order items deleted successfully',
     });
