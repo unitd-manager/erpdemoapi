@@ -62,29 +62,110 @@ app.post('/getProjectquoteById', (req, res, next) => {
     );
   });
 
-  app.get('/getProjectquote', (req, res, next) => {
-    db.query(` SELECT q.quote_date
-    ,q.project_quote_id
-    ,q.quote_code
-    ,q.quote_status
-    ,q.ref_no_quote
-    ,q.project_location
-    ,q.project_reference
-    ,q.payment_method
-    ,q.revision
-    ,q.intro_drawing_quote 
-    ,q.total_amount
-    ,q.project_enquiry_id
-    ,q.company_id
-    ,q.contact_id
-    ,o.enquiry_code
-    ,c.company_name
-    ,cont.first_name
-    FROM project_quote q  
-    LEFT JOIN (project_enquiry o) ON (o.project_enquiry_id=q.project_enquiry_id)
-    LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
-    WHERE q.project_quote_id != '' 
+
+  app.get('/getPurchaseInvoice', (req, res, next) => {
+    db.query(`select i.purchase_invoice_id
+    ,i.purchase_invoice_code 
+    ,i.purchase_invoice_date
+    ,i.invoice_amount
+   
+     ,i.status
+   from purchase_invoice i
+  WHERE i.purchase_invoice_id !='' AND i.status != LOWER('Paid')
+  ORDER BY i.purchase_invoice_date DESC`,
+      (err, result) => {
+  
+        if (err) {
+          return res.status(400).send({
+               data: err,
+               msg:'Failed'
+             });
+       } else {
+             return res.status(200).send({
+               data: result,
+               msg:'Success'
+             });
+    
+       }
+     }
+    );
+  });
+
+  app.post('/insertPurchaseReturn', (req, res, next) => {
+    let data = {
+      purchase_return_id: req.body.purchase_return_id,
+      creation_date: req.body.creation_date,
+      modification_date: req.body.modification_date,
+      purchase_invoice_id: req.body.purchase_invoice_id,
+      purchase_order_id: req.body.purchase_order_id,
+      status: req.body.status,
+    };
+  
+    // Insert data into sales_return_history table
+    let sql = "INSERT INTO purchase_return SET ?";
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        // Retrieve records from invoice_item table based on invoice_id
+        let invoiceItemId = req.body.purchase_invoice_id; // Assuming this is the field that contains invoice_id
+        let selectQuery = "SELECT * FROM purchase_invoice_items WHERE purchase_invoice_id = ?";
+        db.query(selectQuery, [invoiceItemId], (err, invoiceItems) => {
+          if (err) {
+            return res.status(400).send({
+              data: err,
+              msg: 'failed',
+            });
+          } else {
+            // Insert retrieved invoice_items into sales_return_history_item table
+            let salesReturnHistoryItemId = result.insertId; // Assuming you have an auto-incremented primary key in sales_return_history
+            let salesReturnHistoryItemData = invoiceItems.map((item) => ({
+              purchase_return_id: salesReturnHistoryItemId,
+              // Add other fields from invoice_item as needed
+              item_title: item.item_title,
+              ordered_quantity: item.ordered_quantity,
+              // Add more fields as needed
+            }));
+  
+            let insertItemsQuery =
+            "INSERT INTO purchase_return_items (purchase_return_id, item_title, ordered_quantity) VALUES ?";
+          let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id, item.item_title, item.ordered_quantity]);
+          
+          db.query(insertItemsQuery, [values], (err, itemResult) => {
+          
+              if (err) {
+                return res.status(400).send({
+                  data: err,
+                  msg: 'failed',
+                });
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: 'Success',
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  });
+  
+
+  app.get('/getPurchaseReturn', (req, res, next) => {
+    db.query(` SELECT 
+    q.purchase_return_id
+    ,q.purchase_return_date
+    ,q.purchase_invoice_id
+   ,q.status
+    ,pi.purchase_invoice_date
+    ,pi.purchase_invoice_code
+    FROM purchase_return q  
+    LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
+    WHERE q.purchase_return_id != '' 
     `,
       (err, result) => {
        
@@ -102,6 +183,38 @@ app.post('/getProjectquoteById', (req, res, next) => {
       }
     );
   });
+  app.post('/getPurchaseReturnById', (req, res, next) => {
+    db.query(` SELECT 
+    q.purchase_return_id
+    ,q.purchase_return_date
+    ,q.purchase_invoice_id
+   ,q.status
+    ,pi.purchase_invoice_date
+    ,pi.purchase_invoice_code
+    FROM purchase_return q  
+    LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
+    WHERE q.purchase_return_id =  ${db.escape(req.body.purchase_return_id)}`,
+    
+      (err, result) => {
+       
+        if (err) {
+          console.log('error: ', err)
+          return res.status(400).send({
+            data: err,
+            msg: 'failed',
+          })
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: 'Success',
+              });
+  
+          }
+   
+      }
+    );
+  });
+  
 
   app.get('/getEnquiryCode', (req, res, next) => {
     db.query(`  SELECT enquiry_code,project_enquiry_id from project_enquiry `,
@@ -120,29 +233,13 @@ app.post('/getProjectquoteById', (req, res, next) => {
          }
     );
   });
-  app.post('/edit-Tradingquote', (req, res, next) => {
-    db.query(`UPDATE project_quote 
-              SET quote_date=${db.escape(req.body.quote_date)}
-              ,quote_code=${db.escape(req.body.quote_code)}
-              ,quote_status=${db.escape(req.body.quote_status)}
-              ,project_location=${db.escape(req.body.project_location)}
-              ,project_reference=${db.escape(req.body.project_reference)}
-              ,payment_method=${db.escape(req.body.payment_method)}
-              ,revision=${db.escape(req.body.revision)}
-              ,intro_drawing_quote=${db.escape(req.body.intro_drawing_quote)}
-              ,quote_condition=${db.escape(req.body.quote_condition)}
-              ,show_project_manager=${db.escape(req.body.show_project_manager)}
-              ,our_reference=${db.escape(req.body.our_reference)}
-              ,drawing_nos=${db.escape(req.body.drawing_nos)}
-              ,ref_no_quote=${db.escape(req.body.ref_no_quote)}
-              ,discount=${db.escape(req.body.discount)}
-              ,total_amount=${db.escape(req.body.total_amount)}
-              ,project_enquiry_id=${db.escape(req.body.project_enquiry_id)}
-              ,company_id=${db.escape(req.body.company_id)}
-              ,contact_id=${db.escape(req.body.contact_id)}
+  app.post('/editpurchasereturn', (req, res, next) => {
+    db.query(`UPDATE purchase_return 
+              SET purchase_return_date=${db.escape(req.body.purchase_return_date)}
+              ,status=${db.escape(req.body.status)}
               ,modification_date=${db.escape(req.body.modification_date)}
               ,modified_by=${db.escape(req.body.modified_by)}
-              WHERE project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
+              WHERE purchase_return_id =  ${db.escape(req.body.purchase_return_id)}`,
               (err, result) =>{
                 if (err) {
                   console.log("error: ", err);
@@ -203,14 +300,14 @@ app.post('/getProjectquoteById', (req, res, next) => {
   app.post('/getQuoteLineItemsById', (req, res, next) => {
     db.query(`SELECT
               qt.* 
-              ,qt.project_quote_id
-              ,qt.project_quote_items_id
+              ,qt.purchase_return_id
+              ,qt.purchase_return_items_id
               ,qt.creation_date
               ,qt.modification_date
               ,qt.created_by
               ,qt.modified_by
-              FROM project_quote_items qt 
-              WHERE qt.project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
+              FROM purchase_return_items qt 
+              WHERE qt.purchase_return_id =  ${db.escape(req.body.purchase_return_id)}`,
             (err, result) => {
          
         if (err) {

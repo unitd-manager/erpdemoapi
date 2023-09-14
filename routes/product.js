@@ -86,7 +86,7 @@ app.get("/getProductsbySearchFilter", (req, res, next) => {
   const { keyword } = req.query; // Extract query parameters
 
   db.query(
-    `SELECT DISTINCT p.product_id
+    `SELECT p.product_id
   ,p.category_id
   ,p.sub_category_id
   ,p.title
@@ -130,8 +130,7 @@ app.get("/getProductsbySearchFilter", (req, res, next) => {
   LEFT JOIN (product_company pc) ON (pc.product_id = p.product_id) 
   LEFT JOIN (supplier co) ON (co.supplier_id = pc.company_id)
     where p.title LIKE CONCAT('%',  ${db.escape(keyword)}, '%') AND p.published=1 
-     GROUP BY p.product_id 
-     LIMIT 10`,
+     GROUP BY p.product_id`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);

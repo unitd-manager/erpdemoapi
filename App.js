@@ -92,10 +92,13 @@ const materialrequest = require('./routes/materialrequest.js');
 const equipmentrequest = require('./routes/equipmentrequest.js');
 const changerequest = require('./routes/changerequest.js');
 const document = require('./routes/document.js');
+const proposal = require('./routes/proposal.js');
 const equipmentissue = require('./routes/equipmentissue.js');
 const chartOfAccounts = require('./routes/chartOfAccounts.js');
 const MaterialIssue = require('./routes/MaterialIssue.js');
 const purchaseinvoice = require('./routes/purchaseinvoice.js');
+const joborder = require('./routes/joborder.js');
+const purchasereturn = require('./routes/purchasereturn.js');
 
 
 app.use('/invoice', invoice);
@@ -164,11 +167,11 @@ app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
 app.use('/document', document);
-app.use('/purchaseinvoice', purchaseinvoice);
-
+app.use('/proposal', proposal);
+app.use('/joborder', joborder);
 app.use('/materialrequest', materialrequest);
 app.use('/MaterialIssue', MaterialIssue);
-
+app.use('/purchasereturn', purchasereturn);
 app.use('/equipmentrequest', equipmentrequest);
 app.use('/equipmentissue', equipmentissue);
 app.use('/chartOfAccounts', chartOfAccounts);

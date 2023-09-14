@@ -8201,3 +8201,115 @@ CREATE TABLE IF NOT EXISTS `material_issue` (
   PRIMARY KEY (`material_issue_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+
+
+CREATE TABLE IF NOT EXISTS `project_job` (
+  `project_job_id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(10) DEFAULT NULL,
+  `job_code` varchar(50) DEFAULT NULL,
+  `job_date` varchar(255) DEFAULT NULL,
+  `job_status` varchar(50) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `currency_item` varchar(50) DEFAULT NULL,
+  `note` text,
+  `job_condition` text,
+  `job_type` varchar(100) DEFAULT NULL,
+  `job_sequence` tinyint(4) NOT NULL DEFAULT '1',
+  `template` tinyint(4) DEFAULT '0',
+  `template_title` varchar(255) DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL,
+  `sign_staff_id` int(11) DEFAULT NULL,
+  `flag` tinyint(4) DEFAULT '0',
+  `sort_order` int(11) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `signatory_name` varchar(25) DEFAULT NULL,
+  `signatory_position` varchar(25) DEFAULT NULL,
+  `job_code_user` varchar(50) DEFAULT NULL,
+  `job_intro_text_1` varchar(100) DEFAULT NULL,
+  `invoices_payment_terms` text,
+  `responsibility` text,
+  `provision_by_client` text,
+  `provision_by_krs` text,
+  `monday_to_friday_normal_timing` varchar(500) DEFAULT NULL,
+  `saturday_normal_timing` varchar(500) DEFAULT NULL,
+  `monday_to_friday_ot_timing` varchar(500) DEFAULT NULL,
+  `saturday_ot_timing` varchar(500) DEFAULT NULL,
+  `sunday_and_publicholiday_ot_timing` varchar(500) DEFAULT NULL,
+  `timesheet_type` varchar(50) DEFAULT NULL,
+  `site_address` varchar(255) DEFAULT NULL,
+  `project_location` varchar(255) DEFAULT NULL,
+  `project_reference` varchar(255) DEFAULT NULL,
+  `discount` decimal(10,2) DEFAULT NULL,
+  `gst` int(11) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `drawing_nos` tinyint(4) DEFAULT NULL,
+  `intro_job` text,
+  `our_reference` varchar(255) DEFAULT NULL,
+  `total_amount` decimal(10,2) DEFAULT NULL,
+  `revision` varchar(100) DEFAULT NULL,
+  `employee_id` int(11) DEFAULT NULL,
+  `ref_no_job` varchar(50) DEFAULT NULL,
+  `intro_drawing_job` text,
+  `show_project_manager` int(1) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
+  `contact_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`project_job_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `project_job_items` (
+  `project_job_items_id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` text,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `amount_other` decimal(10,0) DEFAULT NULL,
+  `item_type` varchar(200) DEFAULT NULL,
+  `sort_order` int(10) DEFAULT NULL,
+  `creation_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modification_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `title` text,
+  `project_job_id` int(11) DEFAULT NULL,
+  `actual_amount` int(11) DEFAULT NULL,
+  `supplier_amount` int(11) DEFAULT NULL,
+  `quantity` decimal(10,2) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `created_by` varchar(100) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `unit` varchar(25) DEFAULT NULL,
+  `remarks` text,
+  `part_no` varchar(255) DEFAULT NULL,
+  `nationality` varchar(100) DEFAULT NULL,
+  `ot_rate` decimal(10,2) DEFAULT NULL,
+  `ph_rate` decimal(10,2) DEFAULT NULL,
+  `scaffold_code` varchar(100) DEFAULT NULL,
+  `erection` decimal(10,2) DEFAULT NULL,
+  `dismantle` decimal(10,2) DEFAULT NULL,
+  `unit_price` decimal(10,2) DEFAULT NULL,
+  `drawing_number` varchar(255) DEFAULT NULL,
+  `drawing_title` text,
+  `drawing_revision` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`project_job_items_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'The next job code', 'nextProjectJobCode', '1', '', '', NULL, 'Number Field', '1', NULL, NULL, NULL, '0', '1'); 
+
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'The prefix used for job code', 'projectJobCodePrefix', 'JBO-', '', '', 'Admin', 'Text Field', '1', NULL, NULL, NULL, '0', '1'); 
+
+/* =================== Rafi - 01/09/2023 ===================== */
+CREATE TABLE IF NOT EXISTS `Inventory_history` (
+  `Inventory_history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `planning_cpanel_id` int(11) DEFAULT NULL,
+  `planning_bom_id` int(11) DEFAULT NULL,
+  `inventory_id` int(11) DEFAULT NULL,
+  `actual_stock` varchar(255) DEFAULT NULL,
+  `bom_qty` varchar(255) DEFAULT NULL,
+  `reserve_stock` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`Inventory_history_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+/* =================== SULFIYA - 08/09/2023 ===================== */
+ALTER TABLE `sales_return_history` CHANGE `date` `return_date` DATE NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `creation_date` `creation_date` VARCHAR(55) NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `modification_date` `modification_date` VARCHAR(55) NULL DEFAULT NULL; 
+ALTER TABLE `sales_return_history` CHANGE `return_date` `return_date` VARCHAR(55) NULL DEFAULT NULL; 

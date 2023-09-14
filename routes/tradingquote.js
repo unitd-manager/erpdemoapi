@@ -1,24 +1,27 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../config/Database.js');
-const userMiddleware = require('../middleware/UserModel.js');
-var md5 = require('md5');
-const fileUpload = require('express-fileupload');
-const _ = require('lodash');
-const mime = require('mime-types')
-var bodyParser = require('body-parser');
-var cors = require('cors');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const db = require("../config/Database.js");
+const userMiddleware = require("../middleware/UserModel.js");
+var md5 = require("md5");
+const fileUpload = require("express-fileupload");
+const _ = require("lodash");
+const mime = require("mime-types");
+var bodyParser = require("body-parser");
+var cors = require("cors");
 var app = express();
 app.use(cors());
 
-app.use(fileUpload({
-    createParentPath: true
-}));
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 
-app.post('/getTradingquoteById', (req, res, next) => {
-    db.query(` SELECT q.quote_date
+app.post("/getTradingquoteById", (req, res, next) => {
+  db.query(
+    `SELECT q.quote_date
     ,q.quote_id
     ,q.quote_code
     ,q.quote_status
@@ -42,28 +45,27 @@ app.post('/getTradingquoteById', (req, res, next) => {
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id)   
-    WHERE q.quote_id =${db.escape(req.body.quote_id)}  ORDER BY quote_code DESC
-    `,
-      (err, result) => {
-       
-        if (result.length == 0) {
-          return res.status(400).send({
-            msg: 'No result found'
-          });
-        } else {
-              return res.status(200).send({
-                data: result,
-                msg:'Success'
-              });
-          }
-   
+    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
+    WHERE q.quote_id =${db.escape(req.body.quote_id)}  ORDER BY quote_code DESC`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result[0],
+          msg: "Success",
+        });
       }
-    );
-  });
+    }
+  );
+});
 
-  app.get('/getTradingquote', (req, res, next) => {
-    db.query(` SELECT q.quote_date
+
+app.get("/getTradingquote", (req, res, next) => {
+  db.query(
+    ` SELECT q.quote_date
     ,q.quote_id
     ,q.quote_code
     ,q.quote_status
@@ -76,52 +78,49 @@ app.post('/getTradingquoteById', (req, res, next) => {
     ,q.total_amount
     ,q.opportunity_id
     ,q.company_id
-    ,q.contact_id
     ,o.opportunity_code
     ,c.company_name
-    ,cont.first_name
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
+    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
     WHERE q.quote_id != '' 
     `,
-      (err, result) => {
-       
-        if (result.length == 0) {
-          return res.status(400).send({
-            msg: 'No result found'
-          });
-        } else {
-              return res.status(200).send({
-                data: result,
-                msg:'Success'
-              });
-          }
-   
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
       }
-    );
-  });
+    }
+  );
+});
 
-  app.get('/getEnquiryCode', (req, res, next) => {
-    db.query(`  SELECT opportunity_code,opportunity_id from opportunity `,
-      (err, result) => {
-       
-        if (result.length == 0) {
-          return res.status(400).send({
-            msg: 'No result found'
-          });
-        } else {
-              return res.status(200).send({
-                data: result,
-                msg:'Success'
-              });
-          }
-         }
-    );
-  });
-  app.post('/edit-Tradingquote', (req, res, next) => {
-    db.query(`UPDATE quote 
+app.get("/getEnquiryCode", (req, res, next) => {
+  db.query(
+    `  SELECT opportunity_code,opportunity_id from opportunity `,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+app.post("/edit-Tradingquote", (req, res, next) => {
+  db.query(
+    `UPDATE quote 
               SET quote_date=${db.escape(req.body.quote_date)}
               ,quote_code=${db.escape(req.body.quote_code)}
               ,quote_status=${db.escape(req.body.quote_status)}
@@ -143,66 +142,89 @@ app.post('/getTradingquoteById', (req, res, next) => {
               ,modification_date=${db.escape(req.body.modification_date)}
               ,modified_by=${db.escape(req.body.modified_by)}
               WHERE quote_id =  ${db.escape(req.body.quote_id)}`,
-              (err, result) =>{
-                if (err) {
-                  console.log("error: ", err);
-                  return;
-                } else {
-                      return res.status(200).send({
-                        data: result,
-                        msg:'Success'
-                      });
-                }
-               }
-            );
-          });
-
-  app.post('/inserttradingquote', (req, res, next) => {
-
-    let data = {
-        opportunity_id: req.body.opportunity_id
-      , project_id: req.body.project_id
-      , quote_code: req.body.quote_code
-      , quote_date: req.body.quote_date
-      , quote_status: 'new'
-      , company_id: req.body.company_id
-      , contact_id: req.body.contact_id
-      , project_location: req.body.project_location
-      , project_reference: req.body.project_reference
-      , discount: req.body.discount
-      , gst: req.body.gst
-      , payment_method: req.body.payment_method
-      , drawing_nos: req.body.drawing_nos
-      , intro_quote: req.body.intro_quote
-      , our_reference: req.body.our_reference
-      , total_amount: req.body.total_amount
-      , revision: req.body.revision
-      , employee_id: req.body.employee_id
-      , ref_no_quote: req.body.ref_no_quote
-      , intro_drawing_quote: req.body.intro_drawing_quote
-      , show_project_manager: req.body.show_project_manager
-      , creation_date: req.body.creation_date
-      , modification_date: null
-      , created_by: req.body.created_by
-    };
-    let sql = "INSERT INTO quote SET ?";
-    let query = db.query(sql, data,(err, result) => {
+    (err, result) => {
       if (err) {
         console.log("error: ", err);
         return;
       } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
       }
-    });
+    }
+  );
+});
+app.post("/insertTradingContact", (req, res, next) => {
+  let data = {
+    salutation: req.body.salutation,
+    first_name: req.body.first_name,
+    email: req.body.email,
+    position: req.body.position,
+    department: req.body.department,
+    phone_direct: req.body.phone_direct,
+    fax: req.body.fax,
+    mobile: req.body.mobile,
+    company_id: req.body.company_id,
+  };
+  let sql = "INSERT INTO contact SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "New Tender has been created successfully",
+      });
+    }
   });
-  
-          
-          
-  app.post('/getQuoteLineItemsById', (req, res, next) => {
-    db.query(`SELECT
+});
+
+app.post("/inserttradingquote", (req, res, next) => {
+  let data = {
+    opportunity_id: req.body.opportunity_id,
+    project_id: req.body.project_id,
+    quote_code: req.body.quote_code,
+    quote_date: req.body.quote_date,
+    quote_status: "new",
+    company_id: req.body.company_id,
+    project_location: req.body.project_location,
+    project_reference: req.body.project_reference,
+    discount: req.body.discount,
+    gst: req.body.gst,
+    payment_method: req.body.payment_method,
+    drawing_nos: req.body.drawing_nos,
+    intro_quote: req.body.intro_quote,
+    our_reference: req.body.our_reference,
+    total_amount: req.body.total_amount,
+    revision: req.body.revision,
+    employee_id: req.body.employee_id,
+    ref_no_quote: req.body.ref_no_quote,
+    intro_drawing_quote: req.body.intro_drawing_quote,
+    show_project_manager: req.body.show_project_manager,
+    creation_date: req.body.creation_date,
+    modification_date: null,
+    created_by: req.body.created_by,
+  };
+  let sql = "INSERT INTO quote SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return;
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  });
+});
+
+app.post("/getQuoteLineItemsById", (req, res, next) => {
+  db.query(
+    `SELECT
               qt.* 
               ,qt.quote_id
               ,qt.quote_items_id
@@ -212,73 +234,70 @@ app.post('/getTradingquoteById', (req, res, next) => {
               ,qt.modified_by
               FROM quote_items qt 
               WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
-            (err, result) => {
-         
-        if (result.length == 0) {
-          return res.status(400).send({
-            msg: 'No result found'
-          });
-        } else {
-              return res.status(200).send({
-                data: result,
-                msg:'Success'
-              });
-        }
-   
-      }
-    );
-  });
-
-  app.post('/insertQuoteItems', (req, res, next) => {
-
-    let data = {
-      quote_category_id:req.body.quote_category_id
-       ,description: req.body.description
-      , amount: req.body.amount
-      , amount_other: req.body.amount_other
-      , item_type: req.body.item_type
-      , sort_order: req.body.sort_order
-      , title: req.body.title
-      , quote_id: req.body.quote_id
-      , opportunity_id: req.body.opportunity_id
-      , actual_amount: req.body.actual_amount
-      , supplier_amount	: req.body.supplier_amount	
-      , quantity: req.body.quantity
-      , project_id: req.body.project_id
-      , created_by: req.body.created_by
-      , modified_by: req.body.modified_by
-      , unit: req.body.unit
-      , remarks: req.body.remarks
-      , part_no: req.body.part_no
-      , nationality: req.body.nationality
-      , ot_rate: req.body.ot_rate
-      , ph_rate: req.body.ph_rate
-      , scaffold_code: req.body.scaffold_code
-      , erection: req.body.erection
-      , dismantle: req.body.dismantle
-      , unit_price: req.body.unit_price
-      , drawing_number: req.body.drawing_number
-      , drawing_title: req.body.drawing_title
-      , drawing_revision: req.body.drawing_revision
-   };
-    let sql = "INSERT INTO quote_items SET ?";
-    let query = db.query(sql, data,(err, result) => {
-      if (err) {
-       return res.status(400).send({
-              data: err,
-              msg:'Failed'
-            });
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
       } else {
-            return res.status(200).send({
-              data: result,
-              msg:'New quote item has been created successfully'
-            });
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
       }
-    });
+    }
+  );
+});
+
+app.post("/insertQuoteItems", (req, res, next) => {
+  let data = {
+    quote_category_id: req.body.quote_category_id,
+    description: req.body.description,
+    amount: req.body.amount,
+    amount_other: req.body.amount_other,
+    item_type: req.body.item_type,
+    sort_order: req.body.sort_order,
+    title: req.body.title,
+    quote_id: req.body.quote_id,
+    opportunity_id: req.body.opportunity_id,
+    actual_amount: req.body.actual_amount,
+    supplier_amount: req.body.supplier_amount,
+    quantity: req.body.quantity,
+    project_id: req.body.project_id,
+    created_by: req.body.created_by,
+    modified_by: req.body.modified_by,
+    unit: req.body.unit,
+    remarks: req.body.remarks,
+    part_no: req.body.part_no,
+    nationality: req.body.nationality,
+    ot_rate: req.body.ot_rate,
+    ph_rate: req.body.ph_rate,
+    scaffold_code: req.body.scaffold_code,
+    erection: req.body.erection,
+    dismantle: req.body.dismantle,
+    unit_price: req.body.unit_price,
+    drawing_number: req.body.drawing_number,
+    drawing_title: req.body.drawing_title,
+    drawing_revision: req.body.drawing_revision,
+  };
+  let sql = "INSERT INTO quote_items SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "Failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "New quote item has been created successfully",
+      });
+    }
   });
-app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
+});
+app.get("/secret-route", userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
-  res.send('This is the secret content. Only logged in users can see that!');
+  res.send("This is the secret content. Only logged in users can see that!");
 });
 
 module.exports = app;
