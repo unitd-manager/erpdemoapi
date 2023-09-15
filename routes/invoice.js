@@ -72,6 +72,153 @@ app.get('/getMainInvoice', (req, res, next) => {
   );
 });
 
+app.post('/getInvoiceForReceipt', (req, res, next) => {
+  db.query(`
+    SELECT
+      i.invoice_code,
+      i.status,
+      i.invoice_id,
+      SUM(ii.total_cost) AS invoice_amount
+    FROM
+      invoice i
+      LEFT JOIN invoice_item ii ON ii.invoice_id = i.invoice_id
+      LEFT JOIN orders b ON b.order_id = i.order_id
+    WHERE b.order_id = ${db.escape(req.body.order_id)} AND i.status != 'Paid' AND ii.total_cost !=''
+   GROUP BY i.invoice_id `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'failed'
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
+app.post('/getOrderLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+            qt.* 
+            FROM order_item qt 
+            WHERE qt.order_id =  ${db.escape(req.body.order_id)}`,
+          (err, result) => {
+       
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
+app.delete('/deleteReceipt', (req, res, next) => {
+
+  let data = {receipt_id: req.body.receipt_id};
+  let sql = "DELETE FROM receipt WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
+
+
+app.post('/editReceipt', (req, res, next) => {
+  db.query(`UPDATE receipt 
+            SET amount = ${db.escape(req.body.amount)}
+             ,mode_of_payment=${db.escape(req.body.mode_of_payment)}
+            ,receipt_date=${db.escape(req.body.receipt_date)}
+             ,receipt_status=${db.escape(req.body.receipt_status)}
+            ,remarks=${db.escape(req.body.remarks)}
+             WHERE receipt_id =  ${db.escape(req.body.receipt_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+  );
+});
+
+app.get('/getReceipts', (req, res, next) => {
+  db.query(
+    `select i.receipt_id
+  ,i.remarks
+  ,i.creation_date
+  ,i.modification_date
+  ,i.created_by
+  ,i.modified_by
+  ,i.receipt_code  
+  ,i.receipt_status
+  ,i.amount
+  ,i.mode_of_payment
+  ,o.order_code
+   ,i.receipt_date
+   from receipt i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+ WHERE i.receipt_id != '' ORDER BY i.receipt_id DESC`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Staff has been removed successfully',
+        })
+     }
+   }
+  );
+});
+
+app.post('/editInvoice', (req, res, next) => {
+  db.query(`UPDATE invoice 
+            SET status = ${db.escape(req.body.status)}
+             ,invoice_date=${db.escape(req.body.invoice_date)}
+            ,invoice_terms=${db.escape(req.body.invoice_terms)}
+           WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+  );
+});
+
 app.get('/getInvoiceSummary', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code 
@@ -160,9 +307,14 @@ app.get('/getInvoice', (req, res, next) => {
    ,i.invoice_terms
    ,i.attention
    ,i.status
+   ,s.invoice_id
  from invoice i
-WHERE i.invoice_id !='' AND i.status != LOWER('Paid')
-ORDER BY i.invoice_date DESC`,
+WHERE
+        i.invoice_id != '' AND
+        i.status != LOWER('Paid') AND
+        s.invoice_id IS NULL
+      ORDER BY
+        i.invoice_date DESC`,
     (err, result) => {
 
       if (err) {
@@ -430,6 +582,36 @@ app.post('/getInvoiceByItemId', (req, res, next) => {
     }
   );
 });
+app.post('/getInvoiceByOrderItemId', (req, res, next) => {
+  db.query(`select i.invoice_id
+  ,i.item_title
+  ,o.invoice_code
+  ,i.description
+  ,i.total_cost
+  ,i.qty
+  ,i.unit_price
+  ,i.invoice_item_id
+   from invoice_item i
+   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
+ WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
 
 
 app.post('/getInvoiceById', (req, res, next) => {
@@ -454,8 +636,10 @@ app.post('/getInvoiceById', (req, res, next) => {
      ,i.payment_terms
      ,i.order_id
      ,o.order_code
+     ,(select sum(it.total_cost)) as amount
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
+ LEFT JOIN invoice_item it ON it.invoice_id=i.invoice_id
  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} `,
     (err, result) => {
 
@@ -606,25 +790,7 @@ app.get("/getOrdersByCompanyId/:companyId", (req, res) => {
 });
 
 
-app.post('/editInvoices', (req, res, next) => {
-  db.query(`UPDATE invoice 
-            SET status = ${db.escape(req.body.status)}
-             ,invoice_date=${db.escape(req.body.invoice_date)}
-            ,invoice_terms=${db.escape(req.body.invoice_terms)}
-             WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
-    (err, result) => {
-      if (err) {
-        console.log("error: ", err);
-        return;
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-      }
-     }
-  );
-});
+
 
 app.post('/editInvoiceItems', (req, res, next) => {
   db.query(`UPDATE invoice_item
@@ -729,9 +895,10 @@ app.post('/getReceiptCancel', (req, res, next) => {
     }
   );
 }); 
-app.post('/editInvoiceStatus', (req, res, next) => {
+app.post('/editInvoices', (req, res, next) => {
   db.query(`UPDATE invoice 
-            SET status = ${db.escape(req.body.status)}
+            SET invoice_date = ${db.escape(req.body.invoice_date)}
+             ,invoice_terms = ${db.escape(req.body.invoice_terms)}
              WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
     (err, result) => {
       if (err) {
