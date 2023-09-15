@@ -231,6 +231,8 @@ app.post('/getJobOrderById', (req, res, next) => {
               ,description=${db.escape(req.body.description)}
               ,quantity=${db.escape(req.body.quantity)}
               ,unit=${db.escape(req.body.unit)}
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
               ,unit_price=${db.escape(req.body.unit_price)}
               ,amount=${db.escape(req.body.amount)}
               WHERE project_job_items_id =  ${db.escape(req.body.project_job_items_id)}`,
@@ -262,7 +264,7 @@ app.post('/getJobOrderById', (req, res, next) => {
       , quantity: req.body.quantity
       , project_id: req.body.project_id
       , created_by: req.body.created_by
-      , modified_by: req.body.modified_by
+      , creation_date: req.body.creation_date
       , unit: req.body.unit
       , remarks: req.body.remarks
       , part_no: req.body.part_no
