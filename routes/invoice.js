@@ -309,7 +309,6 @@ app.get('/getInvoice', (req, res, next) => {
    ,i.status
    ,s.invoice_id
  from invoice i
- left JOIN sales_return s on s.invoice_id = i.invoice_id
 WHERE
         i.invoice_id != '' AND
         i.status != LOWER('Paid') AND
