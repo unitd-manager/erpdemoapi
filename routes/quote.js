@@ -428,7 +428,7 @@ app.get('/checkQuoteItems', (req, res, next) => {
           msg: 'Failed'
         });
       } else {
-        const quoteItemsIds = result.map((row) => row.purchase_request_items_id);
+        const quoteItemsIds = result.map((row) => row.purchase_request_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'
@@ -437,5 +437,24 @@ app.get('/checkQuoteItems', (req, res, next) => {
     }
   );
 });
+
+app.post('/SupplierQuote', (req, res, next) => {
+  db.query(
+    `SELECT supplier_id,rq_code FROM purchase_quote
+    WHERE supplier_id=${db.escape(req.body.supplier_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+  });
 
 module.exports = app;
