@@ -75,6 +75,8 @@ app.post('/getEquipmentRequestById', (req, res, next) => {
             ,lr.equipment_status
   ,lr.creation_date
   ,lr.modification_date
+  ,lr.created_by
+  ,lr.modified_by
   ,p.title AS proj_title
   ,p.project_code
   From equipment_request lr
@@ -246,6 +248,7 @@ app.post('/insertQuoteItems', (req, res, next) => {
     , supplier_id:req.body.supplier_id
 
     , quantity: req.body.quantity
+    , creation_date: req.body.creation_date
     , created_by: req.body.created_by
     , modified_by: req.body.modified_by
     , unit: req.body.unit
@@ -303,6 +306,8 @@ app.post('/editEquipmentRequestItem', (req, res, next) => {
             SET brand =${db.escape(req.body.brand)}
             ,quantity=${db.escape(req.body.quantity)}
             ,unit=${db.escape(req.body.unit)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,unit_price=${db.escape(req.body.unit_price)}
             ,amount=${db.escape(req.body.amount)}
             WHERE equipment_request_item_id = ${db.escape(req.body.equipment_request_item_id)}`,
