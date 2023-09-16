@@ -256,6 +256,8 @@ app.post('/getProjectquoteById', (req, res, next) => {
               ,unit=${db.escape(req.body.unit)}
               ,unit_price=${db.escape(req.body.unit_price)}
               ,amount=${db.escape(req.body.amount)}
+              ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
               WHERE project_quote_items_id =  ${db.escape(req.body.project_quote_items_id)}`,
       (err, result) =>{
         if (err) {
@@ -286,7 +288,6 @@ app.post('/getProjectquoteById', (req, res, next) => {
       , quantity: req.body.quantity
       , project_id: req.body.project_id
       , created_by: req.body.created_by
-      , modified_by: req.body.modified_by
       , unit: req.body.unit
       , remarks: req.body.remarks
       , part_no: req.body.part_no
@@ -300,6 +301,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
       , drawing_number: req.body.drawing_number
       , drawing_title: req.body.drawing_title
       , drawing_revision: req.body.drawing_revision
+      , creation_date: req.body.creation_date
    };
     let sql = "INSERT INTO project_quote_items SET ?";
     let query = db.query(sql, data,(err, result) => {

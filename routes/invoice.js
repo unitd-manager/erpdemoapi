@@ -307,9 +307,14 @@ app.get('/getInvoice', (req, res, next) => {
    ,i.invoice_terms
    ,i.attention
    ,i.status
+   ,s.invoice_id
  from invoice i
-WHERE i.invoice_id !='' AND i.status != LOWER('Paid')
-ORDER BY i.invoice_date DESC`,
+WHERE
+        i.invoice_id != '' AND
+        i.status != LOWER('Paid') AND
+        s.invoice_id IS NULL
+      ORDER BY
+        i.invoice_date DESC`,
     (err, result) => {
 
       if (err) {
@@ -631,8 +636,10 @@ app.post('/getInvoiceById', (req, res, next) => {
      ,i.payment_terms
      ,i.order_id
      ,o.order_code
+     ,(select sum(it.total_cost)) as amount
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
+ LEFT JOIN invoice_item it ON it.invoice_id=i.invoice_id
  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} `,
     (err, result) => {
 
@@ -888,9 +895,10 @@ app.post('/getReceiptCancel', (req, res, next) => {
     }
   );
 }); 
-app.post('/editInvoiceStatus', (req, res, next) => {
+app.post('/editInvoices', (req, res, next) => {
   db.query(`UPDATE invoice 
-            SET status = ${db.escape(req.body.status)}
+            SET invoice_date = ${db.escape(req.body.invoice_date)}
+             ,invoice_terms = ${db.escape(req.body.invoice_terms)}
              WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
     (err, result) => {
       if (err) {

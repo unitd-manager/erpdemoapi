@@ -35,8 +35,11 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
   ,po.payment_status
   ,po.supplier_inv_code
   ,po.po_code
+  ,rq.purchase_quote_id
+  ,rq.rq_code
   ,s.company_name
   FROM purchase_order po 
+  LEFT JOIN purchase_quote rq ON po.purchase_quote_id = rq.purchase_quote_id
   LEFT JOIN (supplier s) ON (po.supplier_id = s.supplier_id) WHERE po.purchase_order_id != ''  ORDER BY po.purchase_order_id ASC;`,
   (err, result) => {
     if (err) {
@@ -116,7 +119,10 @@ app.post('/getPurchaseOrderById', (req, res, next) => {
   ,po.project
   ,po.shipping_method
   ,s.company_name AS supplier_name
+  ,rq.purchase_quote_id
+  ,rq.rq_code
   FROM purchase_order po 
+  LEFT JOIN purchase_quote rq ON po.purchase_quote_id = rq.purchase_quote_id
   LEFT JOIN (supplier s) ON (po.supplier_id = s.supplier_id) WHERE po.purchase_order_id = ${db.escape(req.body.purchase_order_id)}`,
   (err, result) => {
     if (err) {
@@ -184,6 +190,7 @@ app.post('/editTabPurchaseOrder', (req, res, next) => {
             ,payment=${db.escape(req.body.payment)}
             ,project=${db.escape(req.body.project)}
             ,shipping_method=${db.escape(req.body.shipping_method)}
+            ,purchase_quote_id=${db.escape(req.body.purchase_quote_id)}
             WHERE purchase_order_id = ${db.escape(req.body.purchase_order_id)}`,
             (err, result) => {
               if (err) {
@@ -262,7 +269,8 @@ app.post('/insertPurchaseOrder', (req, res, next) => {
    , mobile: req.body.mobile
    , payment: req.body.payment
    , project: req.body.project
-    
+   , purchase_quote_id: req.body.purchase_quote_id
+
  };
   let sql = "INSERT INTO purchase_order SET ?";
   let query = db.query(sql, data,(err, result) => {
