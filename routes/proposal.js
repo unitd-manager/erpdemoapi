@@ -134,10 +134,10 @@ app.post("/editProposal", (req, res, next) => {
             ,quote_id=${db.escape(req.body.quote_id)}
             ,company_id=${db.escape(req.body.company_id)}
             ,contact_id=${db.escape(req.body.contact_id)}
-            ,proposal_date${db.escape(req.body.proposal_date)}
+            ,proposal_date=${db.escape(req.body.proposal_date)}
             ,status=${db.escape(req.body.status)}
             ,est_start_date=${db.escape(req.body.est_start_date)}
-             ,est_end_date=${db.escape(req.body.est_end_date)}
+            ,est_end_date=${db.escape(req.body.est_end_date)}
             ,budget=${db.escape(req.body.budget)}
             ,project_manager=${db.escape(req.body.project_manager)}
             ,no_of_employees=${db.escape(req.body.no_of_employees)}

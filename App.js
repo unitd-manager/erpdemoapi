@@ -175,6 +175,7 @@ app.use('/purchasereturn', purchasereturn);
 app.use('/equipmentrequest', equipmentrequest);
 app.use('/equipmentissue', equipmentissue);
 app.use('/chartOfAccounts', chartOfAccounts);
+app.use('/purchaseinvoice', purchaseinvoice);
 
 app.use(fileUpload({
     createParentPath: true

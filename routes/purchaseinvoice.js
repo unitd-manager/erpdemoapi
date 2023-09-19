@@ -17,9 +17,9 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
-app.get('/grtPurchaseInvoice', (req, res, next) => {
+app.get('/getPurchaseInvoice', (req, res, next) => {
   db.query(`SELECT 
-   pi.purchase_invoice_id 
+    pi.purchase_invoice_id 
    ,pi.purchase_invoice_code
    ,pi.purchase_invoice_date
    ,pi.due_date
@@ -60,7 +60,7 @@ app.get('/grtPurchaseInvoice', (req, res, next) => {
 );
 });
 
-app.post('/grtPurchaseInvoiceById', (req, res, next) => {
+app.post('/getPurchaseInvoiceById', (req, res, next) => {
   db.query(`SELECT 
   pi.purchase_invoice_id 
   ,pi.purchase_invoice_code
@@ -114,7 +114,7 @@ app.post('/editPurchaseInvoice', (req, res, next) => {
             ,created_by=${db.escape(req.body.created_by)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
-            WHERE document_id = ${db.escape(req.body.document_id)}`,
+            WHERE purchase_invoice_id = ${db.escape(req.body.purchase_invoice_id)}`,
             (err, result) => {
               if (err) {
                 console.log('error: ', err)
@@ -140,6 +140,7 @@ app.post('/insertPurchaseInvoice', (req, res, next) => {
     , due_date	: req.body.due_date
     , purchase_order_id: req.body.purchase_order_id
     , project_id: req.body.project_id
+    , company_id: req.body.company_id
     , supplier_id: req.body.supplier_id
     , mode_of_payment	: req.body.mode_of_payment
     , terms_and_condition : req.body.terms_and_condition
@@ -168,12 +169,148 @@ app.post('/insertPurchaseInvoice', (req, res, next) => {
 );
 });
 
-app.post('/getPurchaseOrderById', (req, res, next) => {
+app.post('/editPurchaseInvoiceItems', (req, res, next) => {
+  db.query(`UPDATE purchase_invoice_items
+            SET purchase_invoice_id=${db.escape(req.body.purchase_invoice_id)}
+            ,purchase_order_id=${db.escape(req.body.purchase_order_id)}
+            ,po_product_id=${db.escape(req.body.po_product_id)}
+            ,item_title=${db.escape(req.body.item_title)}
+            ,unit=${db.escape(req.body.unit)}
+            ,cost_price=${db.escape(req.body.cost_price)}
+            ,ordered_quantity=${db.escape(req.body.ordered_quantity)}
+            ,supplier_id=${db.escape(req.body.supplier_id)}
+            ,total_cost=${db.escape(req.body.total_cost)}
+            ,description=${db.escape(req.body.description)}
+            ,creation_date=${db.escape(req.body.creation_date)}
+            ,created_by=${db.escape(req.body.created_by)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+            WHERE purchase_invoice_items_id = ${db.escape(req.body.purchase_invoice_items_id)}`,
+            (err, result) => {
+              if (err) {
+                console.log('error: ', err)
+                return res.status(400).send({
+                  data: err,
+                  msg: 'failed',
+                })
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: 'Success',
+          })
+        }
+            }
+          );
+        });   
+
+        app.post('/insertPurchaseInvoiceItems', (req, res, next) => {
+          let data = {
+            purchase_invoice_id	: req.body.purchase_invoice_id
+            , purchase_order_id: req.body.purchase_order_id
+            , item_title: req.body.item_title
+            , po_product_id: req.body.po_product_id
+            , ordered_quantity: req.body.ordered_quantity
+            , unit: req.body.unit
+            , cost_price: req.body.cost_price
+            , supplier_id: req.body.supplier_id
+            , total_cost	: req.body.total_cost
+            , description: req.body.description
+            , creation_date: req.body.creation_date
+            , created_by:req.body.created_by
+            , modification_date:req.body.modification_date
+            , modified_by:req.body.modified_by
+         };
+          let sql = "INSERT INTO purchase_invoice_items SET ?";
+          let query = db.query(sql, data, (err, result) => {
+            if (err) {
+              console.log('error: ', err)
+              return res.status(400).send({
+                data: err,
+                msg: 'failed',
+              })
+            } else {
+              return res.status(200).send({
+                data: result,
+                msg: 'Success',
+        })
+        }
+          }
+        );
+        });
+
+
+        app.post('/getPurchaseInvoiceItemsById', (req, res, next) => {
+          db.query(`SELECT
+          purchase_invoice_items_id
+          ,purchase_invoice_id
+          ,purchase_order_id
+          ,item_title
+          ,unit
+          ,ordered_quantity
+          ,cost_price
+          ,supplier_id
+          ,total_cost
+          ,description
+          ,creation_date
+          ,modification_date
+          ,created_by
+          ,modified_by
+          FROM purchase_invoice_items
+          Where purchase_order_id=${db.escape(req.body.purchase_order_id)}`,
+          (err, result) => {
+            if (err) {
+              console.log('error: ', err)
+              return res.status(400).send({
+                data: err,
+                msg: 'failed',
+              })
+            } else {
+              return res.status(200).send({
+                data: result,
+                msg: 'Success',
+        })
+        }
+          }
+        );
+        });
+
+        app.post('/getPoProductById', (req, res, next) => {
+          db.query(`SELECT
+          pop.unit
+          ,pop.item_title
+          ,pop.quantity
+          ,pop.po_product_id
+          ,pop.purchase_order_id
+          ,pop.po_product_id
+          ,pop.product_id
+          ,pop.cost_price
+          ,po.supplier_id
+          FROM po_product pop
+          LEFT JOIN (purchase_order po) ON (po.purchase_order_id = pop.purchase_order_id)
+          WHERE pop.purchase_order_id =${db.escape(req.body.purchase_order_id)}`,
+          (err, result) => {
+            if (err) {
+              return res.status(400).send({
+                data: err,
+              });
+            } else {
+              return res.status(200).send({
+                data: result,
+                msg: "Success",
+              });
+            }
+          }
+        );
+        });
+
+        app.post('/getPurchaseOrderById', (req, res, next) => {
   db.query(`SELECT
-   project_id 
-  ,supplier_id
-  FROM purchase_order
-  WHERE purchase_order_id=${db.escape(req.body.purchase_order_id)}`,
+  po.project_id 
+ ,po.supplier_id
+ ,p.company_id
+ FROM purchase_order po
+ LEFT JOIN project p ON p.project_id=po.project_id
+ WHERE purchase_order_id=${db.escape(req.body.purchase_order_id)}`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -189,6 +326,26 @@ app.post('/getPurchaseOrderById', (req, res, next) => {
 }
   }
 );
+});
+
+app.get('/checkInvoiceItems', (req, res, next) => {
+  db.query(
+    `SELECT po_product_id FROM purchase_invoice_items`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.po_product_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
 });
 
 app.post("/getCodeValue", (req, res, next) => {
