@@ -213,8 +213,7 @@ app.post('/editPriceListItem', (req, res, next) => {
   app.post('/insertPriceListItem', (req, res, next) => {
 
   let data = {
-    price_list_item_id:req.body.price_list_item_id	
-   , price_list_id:req.body.price_list_id
+   price_list_id:req.body.price_list_id
    , product_id: req.body.product_id
    , title	: req.body.title	
    , price: req.body.price
