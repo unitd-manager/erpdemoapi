@@ -37,6 +37,12 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,q.contact_id
     ,o.opportunity_code
     ,c.company_name
+    ,c.address_flat
+    ,c.address_street
+    ,c.address_town
+    ,c.address_country
+    ,c.address_po_code
+    ,c.phone
     ,cont.first_name
     ,q.creation_date
     ,q.modification_date
@@ -62,6 +68,30 @@ app.post("/getTradingquoteById", (req, res, next) => {
   );
 });
 
+app.post('/edit-TradingQuoteLine', (req, res, next) => {
+  db.query(`UPDATE quote_items
+            SET title=${db.escape(req.body.title)}
+            ,description=${db.escape(req.body.description)}
+            ,quantity=${db.escape(req.body.quantity)}
+            ,unit=${db.escape(req.body.unit)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+            ,amount=${db.escape(req.body.amount)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+            WHERE quote_items_id =  ${db.escape(req.body.quote_items_id)}`,
+    (err, result) =>{
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+  );
+});
 
 app.get("/getTradingquote", (req, res, next) => {
   db.query(
@@ -265,7 +295,8 @@ app.post("/insertQuoteItems", (req, res, next) => {
     quantity: req.body.quantity,
     project_id: req.body.project_id,
     created_by: req.body.created_by,
-    modified_by: req.body.modified_by,
+    creation_date: req.body.creation_date,
+    modification_date: null,
     unit: req.body.unit,
     remarks: req.body.remarks,
     part_no: req.body.part_no,
