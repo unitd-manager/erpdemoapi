@@ -87,6 +87,8 @@ app.post('/getTendersById', (req, res, next) => {
   ,c.phone
   ,o.creation_date
   ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
   ,e.team,p.project_code,ser.title AS service_title 
   ,CONCAT_WS(' ', s.first_name, s.last_name) AS project_manager_name 
   FROM opportunity o 

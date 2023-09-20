@@ -289,32 +289,35 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
 });
 
 app.get('/getInvoice', (req, res, next) => {
-  db.query(`select i.invoice_id
-  ,i.invoice_code 
-  ,i.invoice_due_date
-  ,i.invoice_date
-  ,i.invoice_amount
-  ,i.selling_company
-  ,i.start_date
-  ,i.end_date
-  ,i.quote_code
-  ,i.po_number
-  ,i.project_location
-  ,i.project_reference
-  ,i.so_ref_no
-  ,i.code
-  ,i.reference
-   ,i.invoice_terms
-   ,i.attention
-   ,i.status
-   ,s.invoice_id
- from invoice i
+  db.query(`SELECT
+  i.invoice_id,
+  i.invoice_code,
+  i.invoice_due_date,
+  i.invoice_date,
+  i.invoice_amount,
+  i.selling_company,
+  i.start_date,
+  i.end_date,
+  i.quote_code,
+  i.po_number,
+  i.project_location,
+  i.project_reference,
+  i.so_ref_no,
+  i.code,
+  i.reference,
+  i.invoice_terms,
+  i.attention,
+  i.status
+FROM
+  invoice i
+LEFT JOIN
+  sales_return sr ON i.invoice_id = sr.invoice_id
 WHERE
-        i.invoice_id != '' AND
-        i.status != LOWER('Paid') AND
-        s.invoice_id IS NULL
-      ORDER BY
-        i.invoice_date DESC`,
+  i.invoice_id != '' AND
+  i.status != LOWER('Paid') AND
+  sr.invoice_id IS NULL
+ORDER BY
+  i.invoice_date DESC`,
     (err, result) => {
 
       if (err) {
