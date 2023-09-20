@@ -278,7 +278,40 @@ app.post('/insert-SupplierReceipt', (req, res, next) => {
 );
 });
 
-
+app.get('/getSupplierReceipts', (req, res, next) => {
+  db.query(
+    `select i.supplier_receipt_id
+    ,i.remarks
+    ,i.creation_date
+    ,i.modification_date
+    ,i.created_by
+    ,i.modified_by
+    ,i.receipt_code  
+    ,o.payment_status
+    ,i.amount
+    ,i.mode_of_payment
+    ,o.po_code
+     ,i.date
+     from supplier_receipt i
+    LEFT JOIN supplier s ON s.supplier_id=i.supplier_id
+      LEFT JOIN purchase_order o ON o.supplier_id=s.supplier_id
+   WHERE i.supplier_receipt_id != '' ORDER BY i.supplier_receipt_id DESC;`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Staff has been removed successfully',
+        })
+     }
+   }
+  );
+});
 
 
 app.post('/deleteSupplier', (req, res, next) => {
@@ -406,6 +439,41 @@ AND (i.payment_status = 'Due' || i.payment_status = 'Partially Paid' || i.paymen
 }
 );
 });
+
+app.post('/getMakePayment', (req, res, next) => {
+  db.query(`SELECT i.po_code,
+  i.purchase_order_id,
+  i.supplier_id,
+  i.payment_status
+  ,(SELECT SUM(pop.cost_price*pop.quantity) AS prev_sum 
+    FROM po_product pop
+    WHERE pop.purchase_order_id =  i.purchase_order_id) as prev_inv_amount
+    ,(SELECT SUM(supHist.amount) AS prev_sum 
+  FROM supplier_receipt_history supHist 
+  LEFT JOIN supplier_receipt r ON (r.supplier_receipt_id = supHist.supplier_receipt_id) 
+  WHERE supHist.purchase_order_id = i.purchase_order_id AND r.receipt_status != 'Cancelled' ) as prev_amount 
+FROM purchase_order i 
+LEFT JOIN supplier o ON (i.supplier_id = o.supplier_id)
+WHERE i.supplier_id!=''
+AND (i.payment_status = 'Due' || i.payment_status = 'Partially Paid' || i.payment_status IS NULL)
+`,
+(err, result) => {
+  if (err) {
+    console.log('error: ', err)
+    return res.status(400).send({
+      data: err,
+      msg: 'failed',
+    })
+  } else {
+    return res.status(200).send({
+      data: result,
+      msg: 'Success',
+})
+}
+}
+);
+});
+
 
 app.post('/getPurchaseOrderLinkedss', (req, res, next) => {
   db.query(`SELECT p.*
