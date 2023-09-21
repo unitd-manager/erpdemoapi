@@ -409,16 +409,18 @@ app.post("/getCodeValue", (req, res, next) => {
 
   app.post('/PurchaseRequestLineItemById', (req, res, next) => {
     db.query(`SELECT
-    p.product_code
-    ,pr.unit
-    ,pr.purchase_request_qty
-    ,pr.modified_by
-    ,pr.purchase_request_items_id
-    ,pr.purchase_request_id
-    ,p.title
-    FROM purchase_request_items pr
-    LEFT JOIN (product p) ON (p.product_id = pr.product_id) 
-    WHERE pr.purchase_request_id = ${db.escape(req.body.purchase_request_id)}`,
+      purchase_request_items_id 
+    , purchase_request_id
+    , product_id
+    , title
+    , purchase_request_qty
+    , unit
+    , creation_date
+    , modification_date
+    , created_by
+    , modified_by
+    FROM purchase_request_items
+    WHERE purchase_request_id = ${db.escape(req.body.purchase_request_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -434,10 +436,41 @@ app.post("/getCodeValue", (req, res, next) => {
   );
   });
 
+
+  app.post('/editPurchaseRequestItems', (req, res, next) => {
+    db.query(`UPDATE purchase_request_items 
+              SET purchase_request_id=${db.escape(req.body.purchase_request_id)}
+              ,product_id=${db.escape(req.body.product_id)}
+              ,title=${db.escape(req.body.title)} 
+              ,purchase_request_qty=${db.escape(req.body.purchase_request_qty)}
+              ,unit=${db.escape(req.body.unit)}
+              ,creation_date=${db.escape(req.body.creation_date)}
+              ,created_by=${db.escape(req.body.created_by)}
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
+              WHERE purchase_request_items_id  = ${db.escape(req.body.purchase_request_items_id )}`,
+              (err, result) => {
+                if (err) {
+                  console.log('error: ', err)
+                  return res.status(400).send({
+                    data: err,
+                    msg: 'failed',
+                  })
+                } else {
+                  return res.status(200).send({
+                    data: result,
+                    msg: 'Success',
+            })
+          }
+              }
+            );
+          });
+
   app.post('/insertPurchaseRequestLineItem', (req, res, next) => {
 
     let data = {
        product_id:req.body.product_id,
+       title:req.body.title,
        purchase_request_qty:req.body.purchase_request_qty,
        unit:req.body.unit,
        creation_date:req.body.creation_date,
