@@ -457,4 +457,31 @@ app.post('/SupplierQuote', (req, res, next) => {
   );
   });
 
+  app.get('/getSupplierPurchase', (req, res, next) => {
+    db.query(`SELECT o.purchase_order_id
+    ,o.po_date
+    ,o.po_code
+    ,o.creation_date
+    ,o.payment_status
+    FROM purchase_order o 
+    WHERE o.purchase_order_id !=''`,
+      (err, result) => {
+        if (err) {
+          return res.status(400).send({
+                data: err,
+                msg:'Failed'
+              });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+  
+        }
+  
+      }
+    );
+  });
+  
+
 module.exports = app;
