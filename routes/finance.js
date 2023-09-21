@@ -95,6 +95,8 @@ app.get('/getOrders', (req, res, next) => {
 app.post('/editSalesReturn', (req, res, next) => {
   db.query(`UPDATE sales_return
             SET return_date = ${db.escape(req.body.return_date)}
+            ,modification_date = ${db.escape(req.body.modification_date)}
+            ,modified_by = ${db.escape(req.body.modified_by)}
             ,status=${db.escape(req.body.status)}
              WHERE sales_return_id =  ${db.escape(req.body.sales_return_id)}`,
     (err, result) => {
@@ -508,6 +510,9 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.creation_date
   ,o.order_status
   ,o.invoice_terms
+  ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
   ,o.notes
   ,(select sum(it.total_cost)) as amount
   ,o.order_code
@@ -668,6 +673,7 @@ app.post('/editFinances', (req, res, next) => {
   db.query(`UPDATE orders
             SET invoice_terms=${db.escape(req.body.invoice_terms)}
             ,notes=${db.escape(req.body.notes)}
+             ,modified_by=${db.escape(req.body.modified_by)}
             ,company_id=${db.escape(req.body.company_id)}
             ,order_status=${db.escape(req.body.order_status)}
             ,order_date=${db.escape(req.body.order_date)}
@@ -678,9 +684,7 @@ app.post('/editFinances', (req, res, next) => {
             ,shipping_address_po_code=${db.escape(req.body.shipping_address_po_code)}
             ,delivery_date=${db.escape(req.body.delivery_date)}
             ,creation_date=${db.escape(req.body.creation_date)}
-            ,modification_date=${db.escape(
-              new Date().toISOString().slice(0, 19).replace('T', ' '),
-            )}
+            ,modification_date=${db.escape(req.body.modification_date)}
             ,delivery_terms=${db.escape(req.body.delivery_terms)}
             WHERE order_id =  ${db.escape(req.body.order_id)}`,
     (err, result) => {
@@ -1092,7 +1096,8 @@ app.post('/insertOrder', (req, res, next) => {
     quote_title: req.body.quote_title,
     project_type: req.body.project_type,
     cust_fax: req.body.cust_fax,
-    shipping_fax: req.body.shipping_fax};
+    created_by: req.body.created_by,
+   shipping_fax: req.body.shipping_fax};
 
   let sql = "INSERT INTO orders SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -1178,7 +1183,7 @@ app.post('/insertInvoice', (req, res, next) => {
     , invoice_date: req.body.invoice_date
     , mode_of_payment: req.body.mode_of_payment
     , status: 'Due'
-    , creation_date: req.body.creation_date
+    ,creation_date: new Date().toISOString().slice(0, 19).replace('T', ' ')
     , modification_date: req.body.modification_date
     , flag: req.body.flag
     , created_by: req.body.created_by
@@ -1263,7 +1268,7 @@ app.delete('/deleteInvoice', (req, res, next) => {
 
 
 
-app.post('/insertInvoiceItem', (req, res, next) => {
+app.post('/insertInvoicesItem', (req, res, next) => {
 
   let data = {
        qty: req.body.qty
