@@ -33,9 +33,10 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,q.intro_drawing_quote 
     ,q.total_amount
     ,q.opportunity_id
-    ,q.company_id
-    ,q.contact_id
+    ,c.company_id
+    ,cont.contact_id
     ,o.opportunity_code
+    ,o.office_ref_no
     ,c.company_name
     ,c.address_flat
     ,c.address_street
@@ -48,10 +49,12 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,q.modification_date
     ,q.created_by
     ,q.modified_by
+    ,(SELECT SUM(amount) FROM quote_items WHERE quote_id=q.quote_id) AS totalamount
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
-    LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
+    LEFT JOIN (company c) ON (o.company_id=c.company_id)
+    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
+    
     WHERE q.quote_id =${db.escape(req.body.quote_id)}  ORDER BY quote_code DESC`,
     (err, result) => {
       if (err) {
@@ -107,13 +110,17 @@ app.get("/getTradingquote", (req, res, next) => {
     ,q.intro_drawing_quote 
     ,q.total_amount
     ,q.opportunity_id
-    ,q.company_id
+    ,c.company_id
     ,o.opportunity_code
     ,c.company_name
+    ,cont.contact_id
+    ,cont.first_name
+    ,o.office_ref_no
+    ,(SELECT SUM(amount) FROM quote_items WHERE quote_id=q.quote_id) AS totalamount
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
-    LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
+    LEFT JOIN (company c) ON (o.company_id=c.company_id)
+    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
     WHERE q.quote_id != '' 
     `,
     (err, result) => {
@@ -133,7 +140,15 @@ app.get("/getTradingquote", (req, res, next) => {
 
 app.get("/getEnquiryCode", (req, res, next) => {
   db.query(
-    `  SELECT opportunity_code,opportunity_id from opportunity `,
+    `  
+    SELECT 
+  o.opportunity_code,
+  o.opportunity_id 
+  from opportunity o   
+  LEFT JOIN (quote q) ON o.opportunity_id = q.opportunity_id
+  WHERE
+  o.opportunity_id != '' 
+  AND q.opportunity_id IS NULL`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -148,6 +163,8 @@ app.get("/getEnquiryCode", (req, res, next) => {
     }
   );
 });
+
+
 app.post("/edit-Tradingquote", (req, res, next) => {
   db.query(
     `UPDATE quote 
