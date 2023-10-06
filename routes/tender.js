@@ -427,6 +427,7 @@ app.post('/edit-Tenders', (req, res, next) => {
   db.query(`UPDATE opportunity 
             SET office_ref_no=${db.escape(req.body.office_ref_no)}
             ,company_id=${db.escape(req.body.company_id)}
+            ,modified_by=${db.escape(req.body.modified_by)}
              ,enquiry_date=${db.escape(req.body.enquiry_date)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,actual_closing=${db.escape(req.body.actual_closing)}

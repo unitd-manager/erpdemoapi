@@ -56,6 +56,77 @@ WHERE i.inventory_id != ''`,
   );
 });
 
+app.post('/import/excel', ( req, res ) => {
+  const { data } = req.body;
+  const parsed_data = JSON.parse(data);
+
+  const limit = parsed_data.length;
+  const count = [];
+  const connection = db;
+  
+  connection.beginTransaction(
+      ( err ) => {
+          if ( err )
+          {
+              connection.rollback(() => {console.log(err);});
+          }else
+          {
+              insertRows(connection);
+          }
+      }
+  )
+  function insertRows(connection) {
+      connection.query(
+          "INSERT INTO product (title, product_code, qty_in_stock, product_type,price,unit,description) VALUES (?,?,?,?,?,?,?);",
+          [parsed_data[count.length].ProductName, parsed_data[count.length].ProductCode, parsed_data[count.length].Stock, parsed_data[count.length].Category,parsed_data[count.length].Price, parsed_data[count.length].Unit, parsed_data[count.length].Description],
+          ( err, rslt ) => {
+              if( err ){
+                  connection.rollback(() => {console.log(err);});
+                  res.send(err);
+                  res.end();
+              }else 
+              {
+                  connection.query(
+                      "INSERT INTO inventory (product_id,actual_stock) VALUES (?,?);",
+                      [rslt.insertId,parsed_data[count.length].Stock],
+                      ( err ) => {
+                          if( err ){
+                              connection.rollback(() => {console.log(err);});
+                              res.send(err);
+                              res.end();
+                          }else 
+                          {
+                              next(connection, parsed_data[count.length].title);
+                          }
+                      }
+                  );
+              }
+          }
+      );
+  };
+
+  function next(connection, title) {
+      if ( ( count.length + 1 ) === limit )
+      {
+          connection.commit((err) => {
+              if ( err ) {
+                  connection.rollback(() => {console.log(err);});
+                  res.send('err');
+                  res.end();
+              }else
+              {
+                  console.log("RECORDS INSERTED!!!");
+                  res.send('SUCCESS');
+                  res.end();
+              }
+          });
+      }else {
+          count.push(1);
+          insertRows(connection);
+   }
+ }
+});
+
 app.post('/getinventoryById', (req, res, next) => {
   db.query(`SELECT i.inventory_code
   ,i.inventory_id

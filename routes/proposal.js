@@ -24,11 +24,11 @@ app.get("/getProposal", (req, res, next) => {
     `SELECT 
              pr.proposal_id
             ,pr.title
-            ,proposal_code
-            ,proposal_date
-            ,pr.quote_id
+            ,pr.proposal_code
+            ,pr.proposal_date
+            ,q.project_quote_id
             ,q.quote_code
-            ,pr.company_id
+            ,q.company_id
             ,c.company_name 
             ,pr.contact_id
             ,cont.first_name
@@ -44,8 +44,8 @@ app.get("/getProposal", (req, res, next) => {
             ,pr.created_by
             ,pr.modified_by
             FROM proposal pr 
-            LEFT JOIN (quote q)  ON (q.quote_id  = pr.quote_id)
-            LEFT JOIN (company c)  ON (c.company_id  = pr.company_id)  
+            LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
+            LEFT JOIN (company c)  ON (c.company_id  = q.company_id)  
             LEFT JOIN (contact cont) ON (pr.contact_id = cont.contact_id) 
             
 
@@ -72,9 +72,9 @@ app.post("/getProposalById", (req, res, next) => {
   ,pr.title
   ,pr.proposal_code
   ,proposal_date
- ,pr.quote_id
+ ,pr.project_quote_id
  ,q.quote_code
- ,pr.company_id
+ ,q.company_id
  ,c.company_name 
  ,pr.contact_id
  ,cont.first_name
@@ -90,7 +90,7 @@ app.post("/getProposalById", (req, res, next) => {
  ,pr.created_by
  ,pr.modified_by
  FROM proposal pr 
- LEFT JOIN (quote q)  ON (q.quote_id  = pr.quote_id)
+ LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
  LEFT JOIN (company c)  ON (c.company_id  = pr.company_id)  
  LEFT JOIN (contact cont) ON (pr.contact_id = cont.contact_id)   
   
@@ -111,8 +111,8 @@ app.post("/getProposalById", (req, res, next) => {
   );
 });
 
-app.get("/getQuoteCode", (req, res, next) => {
-  db.query(`  SELECT quote_code,quote_id from quote `, (err, result) => {
+app.get("/getProjectQuoteCode", (req, res, next) => {
+  db.query(`SELECT quote_code,project_quote_id,company_id from project_quote `, (err, result) => {
     if (result.length == 0) {
       return res.status(400).send({
         msg: "No result found",
@@ -131,7 +131,7 @@ app.post("/editProposal", (req, res, next) => {
     `UPDATE proposal
             SET title=${db.escape(req.body.title)}
             ,proposal_code=${db.escape(req.body.proposal_code)}
-            ,quote_id=${db.escape(req.body.quote_id)}
+            ,project_quote_id=${db.escape(req.body.project_quote_id)}
             ,company_id=${db.escape(req.body.company_id)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,proposal_date=${db.escape(req.body.proposal_date)}
@@ -142,6 +142,10 @@ app.post("/editProposal", (req, res, next) => {
             ,project_manager=${db.escape(req.body.project_manager)}
             ,no_of_employees=${db.escape(req.body.no_of_employees)}
             ,description=${db.escape(req.body.description)}
+            ,created_by=${db.escape(req.body.created_by)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+            ,creation_date=${db.escape(req.body.creation_date)}
+            ,modification_date=${db.escape(req.body.modification_date)}
             
             WHERE proposal_id =${db.escape(req.body.proposal_id)}`,
     (err, result) => {
@@ -163,7 +167,7 @@ app.post("/insertproposal", (req, res, next) => {
     title: req.body.title,
     proposal_id: req.body.proposal_id,
     proposal_code: req.body.proposal_code,
-    quote_id: req.body.quote_id,
+    project_quote_id: req.body.project_quote_id,
     proposal_date: req.body.proposal_date,
     status: "new",
     company_id: req.body.company_id,
@@ -197,16 +201,16 @@ app.post("/insertproposal", (req, res, next) => {
 app.post("/getQuoteLineItemsById", (req, res, next) => {
   db.query(
     `SELECT
-            pr.quote_id
+            pr.project_quote_id
             ,pr.proposal_code
-            ,qt.quote_items_id
+            ,qt.project_quote_items_id
             ,qt.title
             ,qt.amount
             ,qt.quantity
             ,qt.description
             ,qt.unit_price
             FROM proposal pr 
-            LEFT JOIN (quote_items qt)  ON (qt.quote_id  = pr.quote_id)
+            LEFT JOIN (project_quote_items qt)  ON (qt.project_quote_id  = pr.project_quote_id)
             WHERE pr.proposal_id =  ${db.escape(req.body.proposal_id)}`,
     (err, result) => {
       if (result.length == 0) {
@@ -224,30 +228,82 @@ app.post("/getQuoteLineItemsById", (req, res, next) => {
 });
 
 
-app.post("/getEmployeeById", (req, res, next) => {
+app.post("/getTimesheetStaffById", (req, res, next) => {
   db.query(
-    `SELECT
-            pr.employee_id
-            ,e.first_name
-            ,e.position
-            ,e.employee_id
-            FROM proposal pr 
-            LEFT JOIN (employee e)  ON (e.employee_id  = pr.employee_id)
-            WHERE pr.proposal_id =  ${db.escape(req.body.proposal_id)}`,
+    `SELECT * FROM employee_timesheet et 
+    INNER JOIN employee e ON e.employee_id = et.employee_id 
+    INNER JOIN proposal pr ON pr.proposal_id = et.proposal_id
+    WHERE et.proposal_id = ${db.escape(req.body.proposal_id)}`,
     (err, result) => {
-      if (result.length == 0) {
+      if (err) {
+        console.log('error: ', err)
         return res.status(400).send({
-          msg: "No result found",
-        });
+          data: err,
+          msg: 'failed',
+        })
       } else {
         return res.status(200).send({
-          data: result,
-          msg: "Success",
-        });
+           data: result,
+          msg: 'Success',
+        })
       }
+
     }
   );
 });
+app.post("/insertTimesheetEmployee", (req, res, next) => {
+  let data = {
+    proposal_id: req.body.proposal_id,
+    employee_id: req.body.employee_id,
+    creation_date: req.body.creation_date,
+    month: req.body.month,
+    year: req.body.year,
+    day: req.body.day,
+  };
+  let sql = "INSERT INTO employee_timesheet SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+      })
+    }
+
+  });
+});
+
+app.post('/insertContact', (req, res, next) => {
+
+  let data = {salutation: req.body.salutation
+    , first_name: req.body.first_name
+    , email: req.body.email
+    , position: req.body.position
+    , department: req.body.department
+    , phone_direct: req.body.phone_direct
+    , fax: req.body.fax
+    , mobile: req.body.mobile,company_id:req.body.company_id};
+  let sql = "INSERT INTO contact SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'New Tender has been created successfully'
+          });
+    }
+  });
+});
+
+
 app.get("/secret-route", userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send("This is the secret content. Only logged in users can see that!");

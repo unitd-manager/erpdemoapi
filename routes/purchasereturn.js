@@ -62,16 +62,67 @@ app.post('/getProjectquoteById', (req, res, next) => {
     );
   });
 
+  app.post('/getInvoiceItemsById', (req, res, next) => {
+    db.query(`SELECT it.*
+  ,i.purchase_invoice_id
+  ,o.purchase_order_id
+  FROM purchase_invoice_items it
+  LEFT JOIN (purchase_invoice i) ON (i.purchase_invoice_id=it.purchase_invoice_id)
+  LEFT JOIN (purchase_order o) ON (o.purchase_order_id=i.purchase_order_id)
+  WHERE i.purchase_invoice_id = ${db.escape(req.body.purchase_invoice_id)}`,
+            (err, result) => {
+         
+        if (err) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+        }
+   
+      }
+    );
+  });
+  
+
+  app.post('/getReturnInvoiceItemsById', (req, res, next) => {
+    db.query(`SELECT it.*
+  FROM purchase_return_items it
+  LEFT JOIN (purchase_return i) ON (i.purchase_invoice_id=it.purchase_invoice_id)
+  LEFT JOIN (purchase_invoice_items iv) ON (iv.invoice_items_id=it.purchase_invoice_items_id)
+  WHERE i.purchase_invoice_id = ${db.escape(req.body.purchase_invoice_id)}`,
+            (err, result) => {
+         
+        if (err) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+        }
+   
+      }
+    );
+  });
+
 
   app.get('/getPurchaseInvoice', (req, res, next) => {
     db.query(`select i.purchase_invoice_id
     ,i.purchase_invoice_code 
     ,i.purchase_invoice_date
     ,i.invoice_amount
-   
      ,i.status
    from purchase_invoice i
-  WHERE i.purchase_invoice_id !='' AND i.status != LOWER('Paid')
+   LEFT JOIN purchase_return sr ON i.purchase_invoice_id = sr.purchase_invoice_id
+  WHERE i.purchase_invoice_id !='' 
+  AND i.status != LOWER('Paid')
+  AND sr.purchase_invoice_id IS NULL
   ORDER BY i.purchase_invoice_date DESC`,
       (err, result) => {
   

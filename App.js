@@ -19,11 +19,14 @@ var cors = require('cors');
 const _ = require('lodash');
 const mime = require('mime-types')
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: "50mb"}));
 app.use(cors());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb", extended: true, parameterLimit:50000
+})
+);
+
 const project = require('./routes/project.js');
 const Arouter = require('./routes/attachment.js');
 const Auth = require('./routes/auth.js');
