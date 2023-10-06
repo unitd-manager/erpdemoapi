@@ -289,32 +289,35 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
 });
 
 app.get('/getInvoice', (req, res, next) => {
-  db.query(`select i.invoice_id
-  ,i.invoice_code 
-  ,i.invoice_due_date
-  ,i.invoice_date
-  ,i.invoice_amount
-  ,i.selling_company
-  ,i.start_date
-  ,i.end_date
-  ,i.quote_code
-  ,i.po_number
-  ,i.project_location
-  ,i.project_reference
-  ,i.so_ref_no
-  ,i.code
-  ,i.reference
-   ,i.invoice_terms
-   ,i.attention
-   ,i.status
-   ,s.invoice_id
- from invoice i
+  db.query(`SELECT
+  i.invoice_id,
+  i.invoice_code,
+  i.invoice_due_date,
+  i.invoice_date,
+  i.invoice_amount,
+  i.selling_company,
+  i.start_date,
+  i.end_date,
+  i.quote_code,
+  i.po_number,
+  i.project_location,
+  i.project_reference,
+  i.so_ref_no,
+  i.code,
+  i.reference,
+  i.invoice_terms,
+  i.attention,
+  i.status
+FROM
+  invoice i
+LEFT JOIN
+  sales_return sr ON i.invoice_id = sr.invoice_id
 WHERE
-        i.invoice_id != '' AND
-        i.status != LOWER('Paid') AND
-        s.invoice_id IS NULL
-      ORDER BY
-        i.invoice_date DESC`,
+  i.invoice_id != '' AND
+  i.status != LOWER('Paid') AND
+  sr.invoice_id IS NULL
+ORDER BY
+  i.invoice_date DESC`,
     (err, result) => {
 
       if (err) {
@@ -468,6 +471,8 @@ app.post('/getSalesReturnId', (req, res, next) => {
   db.query(`SELECT o.sales_return_id 
   ,o.return_date
   , o.creation_date
+  ,o.created_by
+  ,o.modified_by
   ,o.modification_date
   ,o.invoice_id
   ,i.invoice_code
@@ -617,6 +622,10 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
 app.post('/getInvoiceById', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code  
+  ,i.creation_date
+  ,i.created_by
+  ,i.modification_date
+  ,i.modified_by
   ,i.status
   ,i.invoice_date
    ,i.invoice_amount
@@ -772,7 +781,8 @@ app.get("/getOrdersByCompanyId/:companyId", (req, res) => {
     `SELECT b.order_code, b.order_id 
     FROM orders b 
     LEFT JOIN company co ON (co.company_id = b.company_id)
-    WHERE b.company_id = ?`,
+    WHERE b.company_id = ? 
+    AND b.order_id NOT IN (SELECT DISTINCT order_id FROM invoice)`,
     [companyId],
     (err, result) => {
       if (err) {
@@ -797,6 +807,8 @@ app.post('/editInvoiceItems', (req, res, next) => {
             SET item_title = ${db.escape(req.body.item_title)}
              ,qty=${db.escape(req.body.qty)}
             ,unit_price=${db.escape(req.body.unit_price)}
+             ,unit=${db.escape(req.body.unit)}
+              ,remarks=${db.escape(req.body.remarks)}
             ,total_cost=${db.escape(req.body.total_cost)}
              WHERE invoice_item_id =  ${db.escape(req.body.invoice_item_id)}`,
     (err, result) => {
@@ -896,9 +908,12 @@ app.post('/getReceiptCancel', (req, res, next) => {
   );
 }); 
 app.post('/editInvoices', (req, res, next) => {
+     const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
   db.query(`UPDATE invoice 
             SET invoice_date = ${db.escape(req.body.invoice_date)}
              ,invoice_terms = ${db.escape(req.body.invoice_terms)}
+             ,modified_by = ${db.escape(req.body.modified_by)}
+             ,modification_date = '${currentDateTime}' 
              WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
     (err, result) => {
       if (err) {
@@ -1569,6 +1584,7 @@ app.post('/insertSalesReturn', (req, res, next) => {
     , invoice_id: req.body.invoice_id
     ,order_id: req.body.order_id
     ,status: req.body.status
+    ,created_by: req.body.created_by
  };
   let sql = "INSERT INTO sales_return SET ?";
   let query = db.query(sql, data,(err, result) => {
