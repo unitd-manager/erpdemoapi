@@ -186,8 +186,8 @@ app.post('/getPriceListItemLinkedById', (req, res, next) => {
 
 app.post('/editPriceListItem', (req, res, next) => {
   db.query(`UPDATE price_list_item 
-            SET product_name =${db.escape(req.body.product_name)}
-            ,product_id=${db.escape(req.body.product_id)}
+            SET 
+            product_id=${db.escape(req.body.product_id)}
             ,price=${db.escape(req.body.price)}
             ,unit=${db.escape(req.body.unit)}
             WHERE price_list_item_id = ${db.escape(req.body.price_list_item_id)}`,
@@ -213,8 +213,7 @@ app.post('/editPriceListItem', (req, res, next) => {
   app.post('/insertPriceListItem', (req, res, next) => {
 
   let data = {
-    price_list_item_id:req.body.price_list_item_id	
-   , price_list_id:req.body.price_list_id
+   price_list_id:req.body.price_list_id
    , product_id: req.body.product_id
    , title	: req.body.title	
    , price: req.body.price

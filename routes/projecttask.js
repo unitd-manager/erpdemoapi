@@ -24,6 +24,7 @@ app.get('/getProjectTask', (req, res, next) => {
   db.query(`SELECT
   pt.project_task_id
   ,pt.project_id
+  ,pt.company_id
   ,pt.employee_id
   ,pt.start_date
   ,pt.end_date
@@ -34,6 +35,7 @@ app.get('/getProjectTask', (req, res, next) => {
   ,pt.description
   ,pt.job_order_id
   ,pt.estimated_hours
+  ,pt.actual_hours
   ,pt.actual_completed_date
   ,pt.task_type
   ,pt.priority
@@ -72,6 +74,7 @@ app.post('/getProjectTaskById', (req, res, next) => {
     db.query(`SELECT
     pt.project_task_id
     ,pt.project_id
+    ,pt.company_id
     ,pt.employee_id
     ,pt.start_date
     ,pt.end_date
@@ -82,6 +85,7 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,pt.description
     ,pt.job_order_id
     ,pt.estimated_hours
+    ,pt.actual_hours
     ,pt.actual_completed_date
     ,pt.task_type
     ,pt.priority
@@ -190,6 +194,7 @@ app.get("/getProjectTitle", (req, res, next) => {
     db.query(`UPDATE project_task 
               SET project_id=${db.escape(req.body.project_id)}
               ,employee_id=${db.escape(req.body.employee_id)}
+              ,company_id=${db.escape(req.body.company_id)}
               ,start_date=${db.escape(req.body.start_date)}
               ,end_date=${db.escape(req.body.end_date)}
               ,completion=${db.escape(req.body.completion)}
@@ -200,6 +205,7 @@ app.get("/getProjectTitle", (req, res, next) => {
               ,job_order_id=${db.escape(req.body.job_order_id)}
               ,estimated_hours=${db.escape(req.body.estimated_hours)}
               ,actual_completed_date=${db.escape(req.body.actual_completed_date)}
+              ,actual_hours=${db.escape(req.body.actual_hours)}
               ,task_type=${db.escape(req.body.task_type)}
               ,priority=${db.escape(req.body.priority)}
               ,creation_date=${db.escape(req.body.creation_date)}

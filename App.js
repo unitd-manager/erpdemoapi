@@ -19,11 +19,14 @@ var cors = require('cors');
 const _ = require('lodash');
 const mime = require('mime-types')
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: "50mb"}));
 app.use(cors());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb", extended: true, parameterLimit:50000
+})
+);
+
 const project = require('./routes/project.js');
 const Arouter = require('./routes/attachment.js');
 const Auth = require('./routes/auth.js');
@@ -90,8 +93,17 @@ const projectenquiry = require('./routes/projectenquiry.js');
 const purchaserequest = require('./routes/purchaserequest.js');
 const goodsreceipt = require('./routes/goodsreceipt.js');
 const labourrequest = require('./routes/labourrequest.js');
+const materialrequest = require('./routes/materialrequest.js');
+const equipmentrequest = require('./routes/equipmentrequest.js');
 const changerequest = require('./routes/changerequest.js');
+const document = require('./routes/document.js');
+const proposal = require('./routes/proposal.js');
+const equipmentissue = require('./routes/equipmentissue.js');
 const chartOfAccounts = require('./routes/chartOfAccounts.js');
+const MaterialIssue = require('./routes/MaterialIssue.js');
+const purchaseinvoice = require('./routes/purchaseinvoice.js');
+const joborder = require('./routes/joborder.js');
+const purchasereturn = require('./routes/purchasereturn.js');
 
 
 app.use('/invoice', invoice);
@@ -161,7 +173,16 @@ app.use('/projectenquiry', projectenquiry);
 app.use('/purchaserequest', purchaserequest);
 app.use('/goodsreceipt', goodsreceipt);
 app.use('/changerequest', changerequest);
+app.use('/document', document);
+app.use('/proposal', proposal);
+app.use('/joborder', joborder);
+app.use('/materialrequest', materialrequest);
+app.use('/MaterialIssue', MaterialIssue);
+app.use('/purchasereturn', purchasereturn);
+app.use('/equipmentrequest', equipmentrequest);
+app.use('/equipmentissue', equipmentissue);
 app.use('/chartOfAccounts', chartOfAccounts);
+app.use('/purchaseinvoice', purchaseinvoice);
 
 app.use(fileUpload({
     createParentPath: true
