@@ -252,9 +252,12 @@ app.post('/getProjectById', (req, res, next) => {
 
 app.get("/getProjectTitle", (req, res, next) => {
   db.query(`SELECT
-   project_id
-   ,title 
-   FROM project`, 
+   p.project_id
+  ,p.title 
+  FROM project p
+  LEFT JOIN document d ON d.project_id=p.project_id
+  WHERE p.project_id !=''
+  AND d.project_id IS NULL`, 
    (err, result) => {
     if (err) {
       return res.status(400).send({
