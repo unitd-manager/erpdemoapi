@@ -29,7 +29,7 @@ app.get('/getPurchaseInvoice', (req, res, next) => {
    ,pi.company_id
    ,pi.mode_of_payment
    ,pi.terms_and_condition
-   ,pi.invoice_amount
+   ,COALESCE(SUM(pit.total_cost), 0) as invoice_amount
    ,pi.status
    ,pi.creation_date
    ,pi.created_by
@@ -40,9 +40,11 @@ app.get('/getPurchaseInvoice', (req, res, next) => {
    ,c.company_id
    ,c.company_name
   FROM purchase_invoice pi
-  LEFT JOIN project p ON p.project_id=pi.project_id
-  LEFT JOIN company c ON c.company_id=pi.company_id
-  WHERE pi.purchase_invoice_id !=''`,
+  LEFT JOIN project p ON (p.project_id=pi.project_id)
+  LEFT JOIN purchase_invoice_items pit ON (pit.purchase_invoice_id = pi.purchase_invoice_id) 
+  LEFT JOIN company c ON (c.company_id=pi.company_id)
+  WHERE pi.purchase_invoice_id !=''
+  GROUP BY pi.purchase_invoice_id`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -63,25 +65,30 @@ app.get('/getPurchaseInvoice', (req, res, next) => {
 app.post('/getPurchaseInvoiceById', (req, res, next) => {
   db.query(`SELECT 
   pi.purchase_invoice_id 
-  ,pi.purchase_invoice_code
-  ,pi.purchase_invoice_date
-  ,pi.due_date
-  ,pi.purchase_order_id
-  ,pi.supplier_id
-  ,pi.project_id
-  ,pi.mode_of_payment
-  ,pi.terms_and_condition
-  ,pi.invoice_amount
-  ,pi.status
-  ,pi.creation_date
-  ,pi.created_by
-  ,pi.modification_date
-  ,pi.modified_by
-  ,p.title
-  ,p.project_id
- FROM purchase_invoice pi
- LEFT JOIN project p ON p.project_id=pi.project_id
- WHERE pi.purchase_invoice_id=${db.escape(req.body.purchase_invoice_id)}`,
+ ,pi.purchase_invoice_code
+ ,pi.purchase_invoice_date
+ ,pi.due_date
+ ,pi.purchase_order_id
+ ,pi.supplier_id
+ ,pi.project_id
+ ,pi.company_id
+ ,pi.mode_of_payment
+ ,pi.terms_and_condition
+ ,COALESCE(SUM(pit.total_cost), 0) as invoice_amount
+ ,pi.status
+ ,pi.creation_date
+ ,pi.created_by
+ ,pi.modification_date
+ ,pi.modified_by
+ ,p.title
+ ,p.project_id
+ ,c.company_id
+ ,c.company_name
+FROM purchase_invoice pi
+LEFT JOIN project p ON (p.project_id=pi.project_id)
+LEFT JOIN purchase_invoice_items pit ON (pit.purchase_invoice_id = pi.purchase_invoice_id) 
+LEFT JOIN company c ON (c.company_id=pi.company_id)
+WHERE pi.purchase_invoice_id=${db.escape(req.body.purchase_invoice_id)}`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
