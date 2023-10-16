@@ -76,7 +76,7 @@ app.get('/getLabourRequestSummary', (req, res, next) => {
   p.project_code
   From labour_request lr
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
-  WHERE lr.request_type = 'Skilled' OR lr.request_type='Unskilled' OR lr.request_type='Temporary' AND lr.labour_request_id!=''`,
+  WHERE lr.request_type = 'Skilled' OR lr.request_type='UnSkilled' OR lr.request_type='Temporary' AND lr.labour_request_id!=''`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
