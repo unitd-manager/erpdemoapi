@@ -54,6 +54,45 @@ app.get('/getTenders', (req, res, next) => {
     }
   );
 });
+app.get('/getEnquirySummary', (req, res, next) => {
+  db.query(`SELECT 
+    c.company_id,
+    c.company_name,
+    o.opportunity_code,
+   o.opportunity_id ,
+   q.quote_code,
+   q.quote_date,
+   g.goods_delivery_date,
+    SUM(qi.amount) AS quoteAmount,
+   SUM(gi.amount ) AS deliveryAmount
+FROM company c
+LEFT JOIN opportunity o ON c.company_id = o.company_id
+LEFT JOIN quote q ON o.opportunity_id = q.opportunity_id
+LEFT JOIN quote_items qi ON q.quote_id = qi.quote_id
+LEFT JOIN orders os ON q.quote_id = os.quote_id
+LEFT JOIN goods_delivery g ON os.order_id = g.order_id
+LEFT JOIN goods_delivery_item gi ON g.goods_delivery_id = gi.goods_delivery_id
+WHERE o.opportunity_id !=''
+GROUP BY 
+    o.opportunity_id,
+    g.goods_delivery_id`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+             data: err,
+             msg:'Failed'
+           });
+     } else {
+           return res.status(200).send({
+             data: result,
+             msg:'Success'
+           });
+  
+     }
+   }
+  );
+});
 app.post('/getTendersById', (req, res, next) => {
   db.query(`SELECT 
   o.title
