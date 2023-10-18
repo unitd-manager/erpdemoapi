@@ -56,6 +56,46 @@ app.get('/getLabourRequest', (req, res, next) => {
   );
 });
 
+app.get('/getLabourRequestSummary', (req, res, next) => {
+  db.query(`select
+  lr.labour_request_id
+  ,lr.project_id
+  ,lr.request_urgency
+  ,lr.request_date
+  ,lr.request_start_date
+  ,lr.request_end_date
+  ,lr.request_by
+  ,lr.job_description
+  ,lr.request_type
+            ,lr.no_of_employees
+            ,lr.skills_required
+            ,lr.department
+  ,lr.creation_date
+  ,lr.modification_date
+  ,p.title,
+  p.project_code
+  From labour_request lr
+  LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
+  WHERE lr.request_type = 'Skilled' OR lr.request_type='UnSkilled' OR lr.request_type='Temporary' AND lr.labour_request_id!=''`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
+    }
+  );
+});
+
 
 app.post('/getLabourRequestById', (req, res, next) => {
   db.query(`select

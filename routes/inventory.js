@@ -221,8 +221,6 @@ WHERE i.inventory_id != '';
   );
 });
 
-
-
 app.post('/editinventoryMain', (req, res, next) => {
   db.query(`UPDATE inventory  
             SET minimum_order_level =${db.escape(req.body.minimum_order_level)}
@@ -291,7 +289,6 @@ app.post('/updateInventoryStock', (req, res, next) => {
   );
 });
 
-
 app.post('/insertinventory', (req, res, next) => {
 
   let data = {creation_date: new Date().toISOString().slice(0, 19).replace("T", " "),
@@ -328,8 +325,6 @@ app.post('/insertinventory', (req, res, next) => {
     }
   });
 });
-
-
 
 app.delete('/deleteInventory', (req, res, next) => {
 
@@ -372,7 +367,6 @@ app.post('/insertsite', (req, res, next) => {
               ad_ops_site_name: req.body.ad_ops_site_name,
               additional_meta_tags: req.body.additional_meta_tags,
               additional_analytics_script: req.body.additional_analytics_script,
-            
           };
 
   let sql = "INSERT INTO site SET ?";
@@ -575,7 +569,6 @@ app.post('/getAdjustStock', (req, res, next) => {
   );
 });
 
-
 app.get('/getAdjustStockMain', (req, res, next) => {
   db.query(`SELECT adjust_stock_log_id
            adjust_stock,
@@ -712,8 +705,6 @@ WHERE
     }
   );
 });
-
-
 
 app.post('/getUsedMaterials', (req, res, next) => {
   db.query(`SELECT

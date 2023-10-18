@@ -386,7 +386,7 @@ app.get('/getEmployeeName', (req, res, next) => {
     ,po.supplier_id
     FROM po_product pop
     LEFT JOIN (purchase_order po) ON (po.purchase_order_id = pop.purchase_order_id)
-    WHERE pop.purchase_order_id =${db.escape(req.body.purchase_order_id)}`,
+    WHERE pop.purchase_order_id = ${db.escape(req.body.purchase_order_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({

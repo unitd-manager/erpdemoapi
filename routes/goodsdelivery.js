@@ -28,12 +28,11 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
     ,gd.goods_delivery_code
     ,o.order_code
     ,gd.goods_ref_no
-    ,gd.company_id
-    ,gd.contact_id
+    ,c.company_id
     ,c.company_name
-    ,cont.first_name
     ,gd.goods_delivery_status
     ,gd.po_no
+    ,opt.office_ref_no
     ,gd.sales_man
     ,gd.department
     ,gd.creation_date
@@ -44,9 +43,10 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
     ,gi.title
     ,gi.description  
        FROM goods_delivery gd  
-       LEFT JOIN (orders o) ON (o.order_id=gd.order_id)
-       LEFT JOIN (company c) ON (c.company_id=gd.company_id)
-       LEFT JOIN (contact cont) ON (gd.contact_id = cont.contact_id)
+       LEFT JOIN (orders o) ON (o.order_id=gd.order_id)  
+       LEFT JOIN quote q ON (o.quote_id = q.quote_id )
+       LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)    
+       LEFT JOIN (company c) ON (c.company_id=opt.company_id)      
        LEFT JOIN (goods_delivery_item gi) ON (gi.goods_delivery_id = gd.goods_delivery_id)  
        WHERE gd.goods_delivery_id =${db.escape(req.body.goods_delivery_id)}
     `,
@@ -94,13 +94,12 @@ app.get("/getgoodsdelivery", (req, res, next) => {
     ,gd.order_id
     ,o.order_code
     ,gd.goods_ref_no
-    ,gd.company_id
+    ,c.company_id
     ,c.company_name
-    ,cont.first_name
+    ,opt.office_ref_no
     ,gd.goods_delivery_status
     ,gd.po_no
     ,gd.sales_man
-    ,gd.contact_id
     ,gd.department
     ,gd.creation_date
     ,gd.modification_date
@@ -108,8 +107,9 @@ app.get("/getgoodsdelivery", (req, res, next) => {
     ,gd.modified_by    
        FROM goods_delivery gd  
        LEFT JOIN (orders o) ON (o.order_id=gd.order_id)
-       LEFT JOIN (company c) ON (c.company_id=gd.company_id)
-       LEFT JOIN (contact cont) ON (gd.contact_id = cont.contact_id) 
+       LEFT JOIN quote q ON (o.quote_id = q.quote_id )
+       LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)    
+       LEFT JOIN (company c) ON (c.company_id=opt.company_id)  
        WHERE gd.goods_delivery_id != ''
     `,
     (err, result) => {
@@ -126,8 +126,17 @@ app.get("/getgoodsdelivery", (req, res, next) => {
     }
   );
 });
+
+
 app.get("/getOrderCode", (req, res, next) => {
-  db.query(`  SELECT order_code,order_id from orders `, (err, result) => {
+  db.query(`  SELECT 
+  o.order_code,
+  o.order_id 
+  from orders o   
+  LEFT JOIN (goods_delivery gd) ON o.order_id = gd.order_id
+  WHERE
+  o.order_id != '' 
+  AND gd.order_id IS NULL`, (err, result) => {
     if (result.length == 0) {
       return res.status(400).send({
         msg: "No result found",

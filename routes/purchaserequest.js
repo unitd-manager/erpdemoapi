@@ -514,6 +514,157 @@ app.post("/getCodeValue", (req, res, next) => {
     });
   });
 
+
+  app.post('/insertProduct', (req, res, next) => {
+
+    let data = {category_id: req.body.category_id
+      , sub_category_id : req.body.sub_category_id 
+      , title: req.body.title
+      , product_code: req.body.product_code
+      , description: req.body.description
+      , qty_in_stock: req.body.qty
+      , price: req.body.price
+      , published:1
+      , member_only: req.body.member_only
+      , creation_date: req.body.creation_date
+      , modification_date: null
+      , chi_title: req.body.chi_title
+      , chi_description: req.body.chi_description
+      , sort_order: req.body.sort_order
+      , meta_title: req.body.meta_title
+      , meta_description: req.body.meta_description
+      , meta_keyword: req.body.meta_keyword
+      , latest : req.body. latest 
+      , description_short: req.body.description_short
+      , chi_description_short: req.body.chi_description_short
+      , general_quotation: req.body.general_quotation
+      , unit: req.body.unit
+      , product_group_id: req.body.product_group_id
+      , department_id: req.body.department_id
+      , item_code: req.body.item_code
+      , modified_by: req.body.modified_by
+      , created_by: req.body.created_by
+      , part_number: req.body.part_number
+      , price_from_supplier: req.body.price_from_supplier
+      , model: req.body.model
+      , carton_no: req.body.carton_no
+      , batch_no: req.body.batch_no
+      , vat: req.body.vat
+      , fc_price_code: req.body.fc_price_code
+      , batch_import: req.body.batch_import
+      , commodity_code: req.body.commodity_code
+      , show_in_website: req.body.show_in_website
+      , most_selling_product: req.body.most_selling_product
+      , site_id: req.body.site_id
+      , damaged_qty: req.body.damaged_qty
+      , item_code_backup: req.body.item_code_backup
+      , hsn_sac: req.body.hsn_sac
+      , deals_of_week: req.body.deals_of_week
+      , top_seller: req.body.top_seller
+      , hot_deal: req.body.hot_deal
+      , most_popular : req.body. most_popular 
+      , top_rating: req.body.top_rating
+      , section_id: req.body.section_id
+      , discount_type: req.body.discount_type
+      , discount_percentage: req.body.discount_percentage
+      , discount_amount: req.body.discount_amount
+      , hsn: req.body.hsn
+      , gst: req.body.gst
+      , product_weight: req.body.product_weight
+      , tam_title: req.body.tam_title
+      , tam_description: req.body.tam_description
+      , tam_description_short: req.body.tam_description_short
+      , supplier_id: req.body.supplier_id
+      , product_type: req.body.product_typenode
+      , bar_code: req.body.bar_code
+      , tag_no: req.body.tag_no
+      , pack_size : req.body. pack_size 
+      , discount_from_date: req.body.discount_from_date
+      , discount_to_date: req.body.discount_to_date
+      , mrp: req.body.mrp};
+    let sql = "INSERT INTO product SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+    });
+  });
+
+  app.get("/getProductsbySearchFilter", (req, res, next) => {
+    const { keyword } = req.query; // Extract query parameters
+  
+    db.query(
+      `SELECT p.product_id
+    ,p.category_id
+    ,p.sub_category_id
+    ,p.title
+    ,p.description,
+    p.qty_in_stock
+    ,p.price
+    ,p.published
+    ,p.creation_date
+    ,p.modification_date
+    ,p.description_short
+    ,p.general_quotation
+    ,p.unit
+    ,p.product_group_id
+    ,p.item_code
+    ,p.modified_by
+    ,p.created_by
+    ,p.part_number
+    ,p.price_from_supplier
+    ,p.latest
+    ,p.section_id
+    ,p.hsn_sac
+    ,p.gst
+    ,p.mrp
+    ,p.tag_no
+    ,p.product_type
+    ,p.bar_code
+    ,p.product_code
+    ,p.discount_type
+    ,p.discount_percentage
+    ,p.discount_amount
+    ,p.discount_from_date
+    ,p.discount_to_date
+    ,s.section_title
+    ,c.category_title
+    ,sc.sub_category_title,co.company_name,co.supplier_id,(SELECT GROUP_CONCAT(co.company_name ORDER BY co.company_name SEPARATOR ', ') 
+    FROM supplier co, product_company pc 
+    WHERE co.supplier_id = pc.company_id AND pc.product_id = p.product_id) AS company_records
+    FROM product p LEFT JOIN (category c) ON (p.category_id = c.category_id) 
+    LEFT JOIN (section s) ON (p.section_id = s.section_id) 
+    LEFT JOIN (sub_category sc) ON (p.sub_category_id  = sc.sub_category_id)
+    LEFT JOIN (product_company pc) ON (pc.product_id = p.product_id) 
+    LEFT JOIN (supplier co) ON (co.supplier_id = pc.company_id)
+      where p.title LIKE CONCAT('%',  ${db.escape(keyword)}, '%') AND p.published=1 
+       GROUP BY p.product_id`,
+      (err, result) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(400).send({
+            data: err,
+            msg: "failed",
+          });
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: "Success",
+          });
+        }
+      }
+    );
+  });
+
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');
