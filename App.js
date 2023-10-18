@@ -102,8 +102,9 @@ const MaterialIssue = require('./routes/MaterialIssue.js');
 const purchaseinvoice = require('./routes/purchaseinvoice.js');
 const joborder = require('./routes/joborder.js');
 const purchasereturn = require('./routes/purchasereturn.js');
+const supplierpricelistitem = require('./routes/supplierpricelistitem.js');
 
-
+app.use('/supplierpricelistitem', supplierpricelistitem);
 app.use('/invoice', invoice);
 app.use('/vehicle', vehicle);
 app.use('/note', note);

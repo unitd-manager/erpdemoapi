@@ -178,12 +178,15 @@ app.post('/getProjectquoteById', (req, res, next) => {
               // Add other fields from invoice_item as needed
               item_title: item.item_title,
               ordered_quantity: item.ordered_quantity,
+              unit:item.unit,
+              cost_price:item.cost_price,
+              total_cost:item.total_cost
               // Add more fields as needed
             }));
   
             let insertItemsQuery =
-            "INSERT INTO purchase_return_items (purchase_return_id, item_title, ordered_quantity) VALUES ?";
-          let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id, item.item_title, item.ordered_quantity]);
+            "INSERT INTO purchase_return_items (purchase_return_id, item_title, ordered_quantity,unit,cost_price,total_cost) VALUES ?";
+          let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id,item.cost_price,item.total_cost, item.unit,item.item_title, item.ordered_quantity]);
           
           db.query(insertItemsQuery, [values], (err, itemResult) => {
           
