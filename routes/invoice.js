@@ -18,6 +18,166 @@ app.use(fileUpload({
 }));
 
 
+app.get('/getReturnsStats', (req, res, next) => {
+  db.query(`SELECT
+    s.sales_return_id,
+    s.status,
+    c.company_id,
+    c.company_name,
+    i.invoice_id,
+    i.invoice_code,
+    o.order_id,
+    o.order_code
+FROM company c
+LEFT JOIN orders o ON c.company_id = o.company_id
+LEFT JOIN invoice i ON o.order_id = i.order_id
+INNER JOIN sales_return s ON i.invoice_id = s.invoice_id
+WHERE c.company_id !=''`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+             data: err,
+             msg:'Failed'
+           });
+     } else {
+           return res.status(200).send({
+             data: result,
+             msg:'Success'
+           });
+  
+     }
+   }
+  );
+});
+app.post('/getOrdersStats', (req, res, next) => {
+  db.query(`SELECT o.order_id,
+ o.order_status,
+ c.company_id,
+c.company_name
+FROM orders o
+LEFT JOIN company c ON o.company_id = c.company_id
+WHERE o.company_id=${db.escape(req.body.company_id)}
+ORDER BY o.order_id`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
+    }
+  );
+});
+app.get('/getTradingInvoiceSummary', (req, res, next) => {
+  db.query(`SELECT 
+    c.company_id,
+    c.company_name,
+    i.invoice_id,
+    i.invoice_code,
+    i.invoice_due_date,
+    i.invoice_date,
+    i.status,
+    o.order_id,
+    o.order_code,
+    SUM(ir.total_cost) AS invoice_amount,
+   SUM(r.amount ) AS paid_Amount
+FROM orders o
+LEFT JOIN invoice i ON o.order_id = i.order_id
+LEFT JOIN invoice_item ir ON i.invoice_id = ir.invoice_id
+LEFT JOIN receipt r ON o.order_id = r.order_id
+LEFT JOIN company c ON o.company_id = c.company_id
+WHERE o.order_id IS NOT NULL 
+ AND i.status !='' AND i.status != 'Cancelled'
+GROUP BY 
+    i.invoice_id`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+             data: err,
+             msg:'Failed'
+           });
+     } else {
+           return res.status(200).send({
+             data: result,
+             msg:'Success'
+           });
+  
+     }
+   }
+  );
+});
+app.post('/getOrdersStats', (req, res, next) => {
+  db.query(`SELECT o.order_id,
+ o.order_status,
+ c.company_id,
+c.company_name
+FROM orders o
+LEFT JOIN company c ON o.company_id = c.company_id
+WHERE o.company_id=${db.escape(req.body.company_id)}
+ORDER BY o.order_id`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
+    }
+  );
+});
+
+app.post('/getReturnStats', (req, res, next) => {
+  db.query(`SELECT
+    s.sales_return_id,
+    s.status AS sales_return_status,
+    c.company_id,
+    c.company_name,
+    i.invoice_id,
+    i.invoice_code,
+    o.order_id,
+    o.order_code
+FROM company c
+LEFT JOIN orders o ON c.company_id = o.company_id
+LEFT JOIN invoice i ON o.order_id = i.order_id
+INNER JOIN sales_return s ON i.invoice_id = s.invoice_id
+WHERE c.company_id = ${db.escape(req.body.company_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
+    }
+  );
+});
+
 app.get('/getMainInvoice', (req, res, next) => {
   db.query(
     `SELECT i.*

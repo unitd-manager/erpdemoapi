@@ -91,7 +91,85 @@ app.get('/getOrders', (req, res, next) => {
   );
 });
 
+app.get('/getDashboardOrders', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  ,c.company_id
+  ,c.company_name
+  FROM orders o 
+  left join company c on o.company_id = c.company_id 
+  WHERE c.company_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
 
+      }
+
+    }
+  );
+});
+
+app.get('/getDeliveryOrders', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  ,c.company_id
+  ,c.company_name
+  FROM orders o 
+  left join company c on o.company_id = c.company_id 
+  WHERE c.company_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+app.get('/getDashboardReturns', (req, res, next) => {
+  db.query(`SELECT DISTINCT c.company_id, c.company_name
+FROM company c
+WHERE c.company_id != ''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
 app.post('/editSalesReturn', (req, res, next) => {
   db.query(`UPDATE sales_return
             SET return_date = ${db.escape(req.body.return_date)}
@@ -143,6 +221,60 @@ app.get('/getSalesReturns', (req, res, next) => {
 
       }
 
+    }
+  );
+});
+
+app.post('/getOrdersStats', (req, res, next) => {
+  db.query(`SELECT o.order_id,
+ o.order_status,
+ c.company_id,
+c.company_name
+FROM orders o
+LEFT JOIN company c ON o.company_id = c.company_id
+WHERE o.company_id=${db.escape(req.body.company_id)}
+ORDER BY o.order_id`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
+    }
+  );
+});
+
+app.post('/getDeliveryStats', (req, res, next) => {
+  db.query(`SELECT
+  SUM(CASE WHEN g.goods_delivery_id IS NULL THEN 1 ELSE 0 END) AS orders_without_delivery,
+  SUM(CASE WHEN g.goods_delivery_id IS NOT NULL THEN 1 ELSE 0 END) AS orders_with_delivery
+FROM orders o
+LEFT JOIN goods_delivery g ON o.order_id = g.order_id
+WHERE o.company_id =  ${db.escape(req.body.company_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
     }
   );
 });
@@ -1311,7 +1443,7 @@ app.post('/insertInvoicesItem', (req, res, next) => {
   });
 });
 
-app.post('/insertInvoiceItems', (req, res, next) => {
+app.post('/insertInvoiceItem', (req, res, next) => {
   let data = {
     qty: req.body.qty,
     invoice_id: req.body.invoice_id,

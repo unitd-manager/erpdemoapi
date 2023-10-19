@@ -142,6 +142,105 @@ app.get("/getProjectTitle", (req, res, next) => {
     );
   });
 
+  app.post("/getProjectTitleId", (req, res, next) => {
+    db.query(
+      `SELECT
+    p.title,
+    p.project_id,
+    e.employee_id
+     From project p
+  LEFT JOIN project_task t ON t.project_id=p.project_id
+  LEFT JOIN employee e ON t.employee_id=e.employee_id
+  WHERE t.employee_id=${db.escape(req.body.employee_id)} 
+  GROUP BY p.project_id, e.employee_id`,
+      (err, result) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(400).send({
+            data: err,
+            msg: "failed",
+          });
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: "Success",
+          });
+        }
+      }
+    );
+  });
+
+  app.post('/getStatsEmployeeId', (req, res, next) => {
+    db.query(`SELECT
+    p.title,
+  e.first_name
+  FROM
+    project_task t
+  LEFT JOIN employee e ON t.employee_id = e.employee_id
+  LEFT JOIN project p ON t.project_id = p.project_id
+  WHERE
+    e.employee_id=${db.escape(req.body.employee_id)} AND p.project_id=${db.escape(req.body.project_id)}
+    GROUP BY e.employee_id,p.project_id`,
+      (err, result) => {
+        if (err) {
+          console.log('error: ', err)
+          return res.status(400).send({
+            data: err,
+            msg: 'failed',
+          })
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: 'Success',
+              });
+  
+          }
+   
+      }
+    );
+  });
+
+  app.post('/getStatsId', (req, res, next) => {
+    db.query(`SELECT
+    t.employee_id,
+    e.first_name,
+    e.employee_id AS employees_id,
+    p.project_id,
+    p.title,
+    SUM(t.completion) AS total_completion,
+    COUNT(*) AS total_tasks,
+    SUM(CASE WHEN t.status = 'Completed' THEN 1 ELSE 0 END) AS completed_tasks,
+    SUM(CASE WHEN t.status = 'Pending' THEN 1 ELSE 0 END) AS pending_tasks,
+    SUM(CASE WHEN t.status = 'InProgress' THEN 1 ELSE 0 END) AS in_progress_tasks,
+    SUM(CASE WHEN t.status = 'OnHold' THEN 1 ELSE 0 END) AS on_hold_tasks
+  FROM
+    project_task t
+  LEFT JOIN employee e ON t.employee_id = e.employee_id
+  LEFT JOIN project p ON t.project_id = p.project_id
+  WHERE
+    t.employee_id= ${db.escape(req.body.employee_id)} AND t.project_id= ${db.escape(req.body.project_id)}
+  GROUP BY
+    t.employee_id, e.first_name, p.project_id, p.title`,
+      (err, result) => {
+        if (err) {
+          console.log('error: ', err)
+          return res.status(400).send({
+            data: err,
+            msg: 'failed',
+          })
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: 'Success',
+              });
+  
+          }
+   
+      }
+    );
+  });
+
+  
 
   app.get("/getJobOrderTitle", (req, res, next) => {
     db.query(
