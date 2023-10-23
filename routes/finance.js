@@ -255,8 +255,8 @@ ORDER BY o.order_id`,
 
 app.post('/getDeliveryStats', (req, res, next) => {
   db.query(`SELECT
-  SUM(CASE WHEN g.goods_delivery_id IS NULL THEN 1 ELSE 0 END) AS orders_without_delivery,
-  SUM(CASE WHEN g.goods_delivery_id IS NOT NULL THEN 1 ELSE 0 END) AS orders_with_delivery
+  SUM(CASE WHEN g.goods_delivery_id IS NULL THEN 1 ELSE 0 END) AS ordersWithoutDelivery,
+  SUM(CASE WHEN g.goods_delivery_id IS NOT NULL THEN 1 ELSE 0 END) AS ordersWithDelivery
 FROM orders o
 LEFT JOIN goods_delivery g ON o.order_id = g.order_id
 WHERE o.company_id =  ${db.escape(req.body.company_id)}`,
