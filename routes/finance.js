@@ -121,15 +121,10 @@ app.get('/getDashboardOrders', (req, res, next) => {
 });
 
 app.get('/getDeliveryOrders', (req, res, next) => {
-  db.query(`SELECT o.order_id
-  ,o.order_date
-  ,o.order_code
-  ,o.creation_date
-  ,o.order_status
-  ,c.company_id
+  db.query(`SELECT 
+   c.company_id
   ,c.company_name
-  FROM orders o 
-  left join company c on o.company_id = c.company_id 
+  FROM company c
   WHERE c.company_id !=''`,
     (err, result) => {
       if (err) {
@@ -255,8 +250,8 @@ ORDER BY o.order_id`,
 
 app.post('/getDeliveryStats', (req, res, next) => {
   db.query(`SELECT
-  SUM(CASE WHEN g.goods_delivery_id IS NULL THEN 1 ELSE 0 END) AS ordersWithoutDelivery,
-  SUM(CASE WHEN g.goods_delivery_id IS NOT NULL THEN 1 ELSE 0 END) AS ordersWithDelivery
+  COUNT(DISTINCT o.order_id) as ordersWithoutDelivery,
+  COUNT(DISTINCT g.goods_delivery_id) as ordersWithDelivery
 FROM orders o
 LEFT JOIN goods_delivery g ON o.order_id = g.order_id
 WHERE o.company_id =  ${db.escape(req.body.company_id)}`,
@@ -269,7 +264,7 @@ WHERE o.company_id =  ${db.escape(req.body.company_id)}`,
         })
       } else {
         return res.status(200).send({
-          data: result,
+          data: result[0],
           msg: 'Success',
             });
 

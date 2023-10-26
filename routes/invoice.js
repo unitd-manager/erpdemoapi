@@ -81,24 +81,29 @@ app.get('/getTradingInvoiceSummary', (req, res, next) => {
   db.query(`SELECT 
     c.company_id,
     c.company_name,
-    i.invoice_id,
-    i.invoice_code,
-    i.invoice_due_date,
-    i.invoice_date,
-    i.status,
+    q.quote_id,
+    (SELECT SUM(q.total_amount)) AS quoteAmount,
     o.order_id,
     o.order_code,
-    SUM(ir.total_cost) AS invoice_amount,
-   SUM(r.amount ) AS paid_Amount
-FROM orders o
+    i.invoice_id,
+    i.invoice_code,
+    i.status,
+    (SELECT SUM(it.total_cost)) AS invoiceAmount,
+    r.amount AS receiptAmount,
+    CASE
+        WHEN g.order_id IS NOT NULL THEN 'Delivered'
+        ELSE 'Not Delivered'
+    END AS deliveryStatus
+FROM company c
+LEFT JOIN orders o ON c.company_id = o.company_id
+LEFT JOIN goods_delivery g ON o.order_id = g.order_id
 LEFT JOIN invoice i ON o.order_id = i.order_id
-LEFT JOIN invoice_item ir ON i.invoice_id = ir.invoice_id
+LEFT JOIN invoice_item it ON i.invoice_id = it.invoice_id
 LEFT JOIN receipt r ON o.order_id = r.order_id
-LEFT JOIN company c ON o.company_id = c.company_id
+LEFT JOIN quote q ON o.quote_id = q.quote_id
 WHERE o.order_id IS NOT NULL 
- AND i.status !='' AND i.status != 'Cancelled'
-GROUP BY 
-    i.invoice_id`,
+AND i.status != ''
+GROUP BY i.invoice_id`,
     (err, result) => {
 
       if (err) {
