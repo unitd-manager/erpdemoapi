@@ -106,7 +106,11 @@ const joborder = require('./routes/joborder.js');
 const purchasereturn = require('./routes/purchasereturn.js');
 const dashboardforpurchaseorder = require('./routes/dashboardforpurchaseorder.js');
 const supplierpricelistitem = require('./routes/supplierpricelistitem.js');
+const creditnote = require('./routes/creditnote.js');
+const debitnote = require('./routes/debitnote.js');
 
+app.use('/debitnote', debitnote);
+app.use('/creditnote', creditnote);
 app.use('/supplierpricelistitem', supplierpricelistitem);
 app.use('/invoice', invoice);
 app.use('/vehicle', vehicle);
