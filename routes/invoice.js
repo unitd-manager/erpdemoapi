@@ -82,23 +82,28 @@ app.get('/getTradingInvoiceSummary', (req, res, next) => {
     c.company_id,
     c.company_name,
     q.quote_id,
-    (select sum(q.total_amount)) as quoteAmount,
+    (SELECT SUM(q.total_amount)) AS quoteAmount,
     o.order_id,
     o.order_code,
     i.invoice_id,
     i.invoice_code,
-    (select sum(it.total_cost)),
-    r.amount as receiptAmount 
+    i.status,
+    (SELECT SUM(it.total_cost)) AS invoiceAmount,
+    r.amount AS receiptAmount,
+    CASE
+        WHEN g.order_id IS NOT NULL THEN 'Delivered'
+        ELSE 'Not Delivered'
+    END AS deliveryStatus
 FROM company c
 LEFT JOIN orders o ON c.company_id = o.company_id
+LEFT JOIN goods_delivery g ON o.order_id = g.order_id
 LEFT JOIN invoice i ON o.order_id = i.order_id
 LEFT JOIN invoice_item it ON i.invoice_id = it.invoice_id
 LEFT JOIN receipt r ON o.order_id = r.order_id
 LEFT JOIN quote q ON o.quote_id = q.quote_id
 WHERE o.order_id IS NOT NULL 
- AND i.status !='' 
-GROUP BY 
-    i.invoice_id`,
+AND i.status != ''
+GROUP BY i.invoice_id`,
     (err, result) => {
 
       if (err) {
