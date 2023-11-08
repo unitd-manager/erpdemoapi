@@ -81,29 +81,24 @@ app.get('/getTradingInvoiceSummary', (req, res, next) => {
   db.query(`SELECT 
     c.company_id,
     c.company_name,
-    q.quote_id,
-    (SELECT SUM(q.total_amount)) AS quoteAmount,
-    o.order_id,
-    o.order_code,
     i.invoice_id,
     i.invoice_code,
+    i.invoice_due_date,
+    i.invoice_date,
     i.status,
-    (SELECT SUM(it.total_cost)) AS invoiceAmount,
-    r.amount AS receiptAmount,
-    CASE
-        WHEN g.order_id IS NOT NULL THEN 'Delivered'
-        ELSE 'Not Delivered'
-    END AS deliveryStatus
-FROM company c
-LEFT JOIN orders o ON c.company_id = o.company_id
-LEFT JOIN goods_delivery g ON o.order_id = g.order_id
+    o.order_id,
+    o.order_code,
+    SUM(ir.total_cost) AS invoice_amount,
+   SUM(r.amount ) AS paid_Amount
+FROM orders o
 LEFT JOIN invoice i ON o.order_id = i.order_id
-LEFT JOIN invoice_item it ON i.invoice_id = it.invoice_id
+LEFT JOIN invoice_item ir ON i.invoice_id = ir.invoice_id
 LEFT JOIN receipt r ON o.order_id = r.order_id
-LEFT JOIN quote q ON o.quote_id = q.quote_id
+LEFT JOIN company c ON o.company_id = c.company_id
 WHERE o.order_id IS NOT NULL 
-AND i.status != ''
-GROUP BY i.invoice_id`,
+ AND i.status !='' AND i.status != 'Cancelled'
+GROUP BY 
+    i.invoice_id`,
     (err, result) => {
 
       if (err) {
@@ -121,6 +116,114 @@ GROUP BY i.invoice_id`,
    }
   );
 });
+
+app.post("/getCodeValue", (req, res, next) => {
+  var type = req.body.type;
+  let sql = '';
+  let key_text = '';
+  let withprefix = true;
+  if(type == 'opportunity'){
+      key_text = 'nextOpportunityCode';
+      sql = "SELECT * FROM setting WHERE key_text='opportunityCodePrefix' OR key_text='nextOpportunityCode'";
+  }else if(type == 'receipt'){
+      key_text = 'nextReceiptCode';
+      sql = "SELECT * FROM setting WHERE key_text='receiptCodePrefix' OR key_text='nextReceiptCode'";
+  }else if(type == 'supplier'){
+      key_text = 'nextSupplierCode';
+      sql = "SELECT * FROM setting WHERE key_text='supplierCodePrefix' OR key_text='nextSupplierCode'";
+  }else if(type == 'enquiry'){
+      key_text = 'nextEnquiryCode';
+      sql = "SELECT * FROM setting WHERE key_text='enquiryCodePrefix' OR key_text='nextEnquiryCode'";
+  }else if(type == 'orders'){
+      key_text = 'nextOrderCode';
+      sql = "SELECT * FROM setting WHERE key_text='orderCodePrefix' OR key_text='nextOrderCode'";
+  }  else if(type == 'lead'){
+      key_text = 'nextLeadsCode';
+      sql = "SELECT * FROM setting WHERE key_text='leadsPrefix' OR key_text='nextLeadsCode'";  
+  }else if(type == 'invoice'){
+      key_text = 'nextInvoiceCode';
+    sql = "SELECT * FROM setting WHERE key_text='invoiceCodePrefix' OR key_text='nextInvoiceCode'";  
+  }else if(type == 'subConworkOrder'){
+      key_text = 'nextSubconCode';
+    sql = "SELECT * FROM setting WHERE key_text='subconCodePrefix' OR key_text='nextSubconCode'";  
+  }
+  else if(type == 'project'){
+      key_text = 'nextProjectCode';
+      sql = "SELECT * FROM setting WHERE key_text='projectCodePrefix' OR key_text='nextProjectCode'";  
+  }else if(type == 'quote'){
+      key_text = 'nextQuoteCode';
+      sql = "SELECT * FROM setting WHERE key_text='quoteCodePrefix' OR key_text='nextQuoteCode'";  
+  }
+  else if(type == 'creditNote'){
+      key_text = 'nextCreditNoteCode';
+      sql = "SELECT * FROM setting WHERE key_text='creditNotePrefix' OR key_text='nextCreditNoteCode'";  
+  } else if(type == 'debitNote'){
+    key_text = 'nextDebitNoteCode';
+    sql = "SELECT * FROM setting WHERE key_text='debitNotePrefix' OR key_text='nextDebitNoteCode'";  
+}else if(type == 'employee'){
+    //   withprefix = false;
+      key_text = 'nextEmployeeCode';
+    sql = "SELECT * FROM setting WHERE key_text='employeeCodePrefix' OR key_text='nextEmployeeCode'";  
+  }
+  else if(type == 'claim'){
+      withprefix = false;
+      key_text = 'nextClaimCode';
+      sql = "SELECT * FROM setting WHERE  key_text='nextClaimCode'";  
+  }
+  else if(type == 'QuoteCodeOpp'){
+      withprefix = false;
+      key_text = 'nextQuoteCodeOpp';
+      sql = "SELECT * FROM setting WHERE  key_text='nextQuoteCodeOpp'";  
+  }
+  else if(type == 'purchaseOrder'){
+     
+      key_text = 'nextPurchaseOrderCode';
+         sql = "SELECT * FROM setting WHERE key_text='purchaseOrderCodePrefix' OR key_text='nextPurchaseOrderCode'";  
+
+  }
+  else if(type == 'wocode'){
+      key_text = 'nextWOCode';
+      sql = "SELECT * FROM setting WHERE key_text='wOCodePrefix' OR key_text='nextWOCode'";  
+  }
+  let query = db.query(sql, (err, result) => {
+      let old = result
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+       
+        var finalText = '';
+        var newvalue = 0
+        if(withprefix == true){
+            var codeObject = result.filter(obj => obj.key_text === key_text);
+            
+             var prefixObject = result.filter(obj => obj.key_text != key_text);
+            finalText = prefixObject[0].value + codeObject[0].value;
+            newvalue = parseInt(codeObject[0].value) + 1
+        }else{
+            finalText = result[0].value
+            newvalue = parseInt(result[0].value) + 1
+        }
+        newvalue = newvalue.toString()
+         let query = db.query(`UPDATE setting SET value=${db.escape(newvalue)} WHERE key_text = ${db.escape(key_text)}`, (err, result) => {
+            if (err) {
+              return res.status(400).send({
+                data: err,
+                msg: "failed",
+              });
+            } else {
+              return res.status(200).send({
+                data: finalText,
+                result:old
+              });
+            }
+        });
+    }
+  });
+});
+
 app.post('/getOrdersStats', (req, res, next) => {
   db.query(`SELECT o.order_id,
  o.order_status,
@@ -290,8 +393,8 @@ app.post('/getOrderLineItemsById', (req, res, next) => {
 
 app.delete('/deleteReceipt', (req, res, next) => {
 
-  let data = {receipt_id: req.body.receipt_id};
-  let sql = "DELETE FROM receipt WHERE ?";
+  let data = {debit_note_id: req.body.debit_note_id};
+  let sql = "DELETE FROM debit_note WHERE ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
      return res.status(400).send({
@@ -309,13 +412,13 @@ app.delete('/deleteReceipt', (req, res, next) => {
 
 
 app.post('/editReceipt', (req, res, next) => {
-  db.query(`UPDATE receipt 
+  db.query(`UPDATE debit_note 
             SET amount = ${db.escape(req.body.amount)}
              ,mode_of_payment=${db.escape(req.body.mode_of_payment)}
-            ,receipt_date=${db.escape(req.body.receipt_date)}
-             ,receipt_status=${db.escape(req.body.receipt_status)}
+            ,debit_note_date=${db.escape(req.body.debit_note_date)}
+             ,debit_note_status=${db.escape(req.body.debit_note_status)}
             ,remarks=${db.escape(req.body.remarks)}
-             WHERE receipt_id =  ${db.escape(req.body.receipt_id)}`,
+             WHERE debit_note_id =  ${db.escape(req.body.debit_note_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -332,21 +435,21 @@ app.post('/editReceipt', (req, res, next) => {
 
 app.get('/getReceipts', (req, res, next) => {
   db.query(
-    `select i.receipt_id
+    `select i.debit_note_id
   ,i.remarks
   ,i.creation_date
   ,i.modification_date
   ,i.created_by
   ,i.modified_by
-  ,i.receipt_code  
-  ,i.receipt_status
+  ,i.debit_note_code  
+  ,i.debit_note_status
   ,i.amount
   ,i.mode_of_payment
   ,o.order_code
-   ,i.receipt_date
-   from receipt i
+   ,i.debit_note_date
+   from debit_note i
   LEFT JOIN orders o ON o.order_id=i.order_id
- WHERE i.receipt_id != '' ORDER BY i.receipt_id DESC`,
+ WHERE i.debit_note_id != '' ORDER BY i.debit_note_id DESC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -1457,12 +1560,12 @@ WHERE r.order_id =  ${db.escape(req.body.order_id)} AND i.invoice_id IS NULL AND
 });
 
 app.post('/getNoteById', (req, res, next) => {
-  db.query(`select i.credit_note_id 
-  ,i.credit_note_code  
+  db.query(`select i.debit_note_id 
+  ,i.debit_note_code  
   ,i.amount
   ,i.from_date
   ,i.order_id
-   from credit_note i
+   from debit_note i
    Where i.order_id = ${db.escape(req.body.order_id)}`,
     (err, result) => {
 
@@ -1767,6 +1870,46 @@ app.post('/insertSalesReturn', (req, res, next) => {
   });
 });
 
+app.post('/insertdebitnote', (req, res, next) => {
+
+  let data = {debit_note_code: req.body.debit_note_code,
+              amount: req.body.amount,
+              mode_of_payment: req.body.mode_of_payment,
+              remarks: req.body.remarks,
+              debit_note_date: req.body.debit_note_date,
+              published: req.body.published,
+              flag: req.body.flag,
+              creation_date: req.body.creation_date,
+              modification_date: req.body.modification_date,
+              created_by: req.body.created_by,
+              modified_by: req.body.modified_by,
+              order_id: req.body.order_id,
+              debit_note_status: req.body.debit_note_status,
+              cheque_date: req.body.cheque_date,
+              bank_name: req.body.bank_name,
+              site_id: req.body.site_id,
+              cheque_no: req.body.cheque_no,
+               project_id: req.body.project_id,
+          };
+
+  let sql = "INSERT INTO debit_note SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
+
+
+
 app.post('/insertSalesReturnHistory', (req, res, next) => {
 
   let data = {
@@ -1957,12 +2100,12 @@ app.delete('/deleteCompanyAddress', (req, res, next) => {
 });
 
 app.post('/getNoteById', (req, res, next) => {
-  db.query(`select i.credit_note_id 
-  ,i.credit_note_code  
+  db.query(`select i.debit_note_id 
+  ,i.debit_note_code  
   ,i.amount
   ,i.from_date
   ,i.order_id
-   from credit_note i
+   from debit_note i
    Where i.order_id = ${db.escape(req.body.order_id)}`,
     (err, result) => {
 
