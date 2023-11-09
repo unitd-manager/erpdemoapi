@@ -21,6 +21,7 @@ app.post('/getJobOrderById', (req, res, next) => {
     db.query(` SELECT q.job_date
     ,q.project_job_id
     ,q.job_code
+    ,q.job_title
     ,q.job_status
     ,q.ref_no_job
     ,q.project_location
@@ -37,7 +38,9 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.modification_date
     ,q.created_by
     ,q.modified_by
+    ,(select sum(it.amount)) as InvoiceAmount
     FROM project_job q  
+    LEFT JOIN (project_job_items it) ON (it.project_job_id = q.project_job_id)
     LEFT JOIN (company c) ON (c.company_id = q.company_id)
     LEFT JOIN (contact cont) ON (cont.contact_id = q.contact_id)   
     WHERE q.project_job_id =${db.escape(req.body.project_job_id)}
@@ -63,6 +66,7 @@ app.post('/getJobOrderById', (req, res, next) => {
     db.query(` SELECT q.job_date
     ,q.project_job_id
     ,q.job_code
+    ,q.job_title
     ,q.job_status
     ,q.ref_no_job
     ,q.project_location
@@ -102,6 +106,7 @@ app.post('/getJobOrderById', (req, res, next) => {
     db.query(`UPDATE project_job 
               SET job_date=${db.escape(req.body.job_date)}
               ,job_code=${db.escape(req.body.job_code)}
+              ,job_title=${db.escape(req.body.job_title)}
               ,job_status=${db.escape(req.body.job_status)}
               ,project_location=${db.escape(req.body.project_location)}
               ,project_reference=${db.escape(req.body.project_reference)}
@@ -118,6 +123,7 @@ app.post('/getJobOrderById', (req, res, next) => {
               ,company_id=${db.escape(req.body.company_id)}
               ,contact_id=${db.escape(req.body.contact_id)}
               ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
               ,modified_by=${db.escape(req.body.modified_by)}
               WHERE project_job_id =  ${db.escape(req.body.project_job_id)}`,
               (err, result) =>{
@@ -232,6 +238,7 @@ app.post('/getJobOrderById', (req, res, next) => {
               ,quantity=${db.escape(req.body.quantity)}
               ,unit=${db.escape(req.body.unit)}
               ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
               ,modified_by=${db.escape(req.body.modified_by)}
               ,unit_price=${db.escape(req.body.unit_price)}
               ,amount=${db.escape(req.body.amount)}

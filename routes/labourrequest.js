@@ -144,6 +144,7 @@ app.post('/editLabourRequest', (req, res, next) => {
             project_id=${db.escape(req.body.project_id)}
             ,request_urgency=${db.escape(req.body.request_urgency)}
             ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,request_start_date=${db.escape(req.body.request_start_date)}
             ,request_end_date=${db.escape(req.body.request_end_date)}
             ,department=${db.escape(req.body.department)}

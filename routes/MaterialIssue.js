@@ -17,6 +17,7 @@ app.use(fileUpload({
 }));
 
 app.get('/getMaterialIssue', (req, res, next) => {
+  const projectId = req.query.project_id;
   db.query(`select
   lr.material_issue_id
   ,lr.project_id
@@ -34,6 +35,7 @@ app.get('/getMaterialIssue', (req, res, next) => {
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
   LEFT JOIN (material_request mr)   ON (mr.material_request_id   = lr.material_request_id) 
             where lr.material_issue_id  !=''`,
+            
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -53,6 +55,25 @@ app.get('/getMaterialIssue', (req, res, next) => {
   );
 });
 
+app.post("/getTaskByID", (req, res, next) => {
+  
+  db.query(
+    `SELECT * FROM material_request WHERE project_id = ${db.escape(req.body.project_id)};`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed to fetch material requests',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Material requests fetched successfully',
+        });
+      }
+    }
+  );
+});
 
 app.post('/getMaterialIssueById', (req, res, next) => {
   db.query(`select
@@ -98,6 +119,7 @@ app.post('/editMaterialIssue', (req, res, next) => {
             project_id=${db.escape(req.body.project_id)}
             ,material_request_id=${db.escape(req.body.material_request_id)}
             ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,material_issue_date=${db.escape(req.body.material_issue_date)}
             ,reason_for_issue=${db.escape(req.body.reason_for_issue)}
             ,notes=${db.escape(req.body.notes)}
@@ -131,6 +153,7 @@ app.post('/insertMaterialIssue', (req, res, next) => {
    , material_issue_date:req.body.material_issue_date	
    , creation_date: req.body.creation_date
    , modification_date: req.body.modification_date
+   , created_by: req.body.created_by
   
   };
   let sql = "INSERT INTO material_issue SET ?";

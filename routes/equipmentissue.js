@@ -27,6 +27,7 @@ app.get('/getEquipmentIssue', (req, res, next) => {
   ,lr.authorized_by
   ,lr.creation_date
   ,lr.modification_date
+  ,lr.modified_by
   ,p.title AS proj_title
   ,p.project_code
   ,mr.equipment_request_code
@@ -65,6 +66,7 @@ app.post('/getEquipmentIssueById', (req, res, next) => {
   ,lr.authorized_by
   ,lr.creation_date
   ,lr.modification_date
+  ,lr.modified_by
   ,p.title AS proj_title
   ,p.project_code
   ,mr.equipment_request_code
@@ -98,6 +100,7 @@ app.post('/editEquipmentIssue', (req, res, next) => {
             project_id=${db.escape(req.body.project_id)}
             ,equipment_request_id=${db.escape(req.body.equipment_request_id)}
             ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,equipment_issue_date=${db.escape(req.body.equipment_issue_date)}
             ,reason_for_issue=${db.escape(req.body.reason_for_issue)}
             ,notes=${db.escape(req.body.notes)}
@@ -131,7 +134,7 @@ app.post('/insertEquipmentIssue', (req, res, next) => {
    , equipment_issue_date:req.body.equipment_issue_date	
    , creation_date: req.body.creation_date
    , modification_date: req.body.modification_date
-  
+   , created_by: req.body.created_by
   };
   let sql = "INSERT INTO equipment_issue SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -220,13 +223,9 @@ app.get('/getProject', (req, res, next) => {
 });
 
 
-app.get('/getequipmentRequest', (req, res, next) => {
-  db.query(`select
-  lr.equipment_request_id
-  ,lr.equipment_request_code
-  From equipment_request lr
-  where lr.equipment_request_id  !=''`,
-    (err, result) => {
+app.post('/getequipmentRequest', (req, res, next) => {
+  db.query(`SELECT * FROM equipment_request WHERE project_id = ${db.escape(req.body.project_id)};`,
+  (err, result) => {
       if (err) {
         console.log('error: ', err)
         return res.status(400).send({
