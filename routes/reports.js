@@ -53,6 +53,34 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
 );
 });
 
+
+app.get('/getInvoiceByYearReport', (req, res, next) => {
+  db.query(`SELECT DATE_FORMAT(i.invoice_date, '%Y') AS invoice_year
+     , SUM(it.total_cost) AS invoice_amount_yearly
+FROM opportunity opp
+LEFT JOIN quote q ON (opp.opportunity_id = q.opportunity_id)
+LEFT JOIN orders o ON (q.quote_id = o.quote_id)
+LEFT JOIN invoice i ON (o.order_id = i.order_id)
+LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
+WHERE o.order_id != ''
+    AND i.status != 'cancelled'
+    AND opp.category IN ('Project', 'Tenancy Project', 'Tenancy Work', 'Maintenance')
+GROUP BY DATE_FORMAT(i.invoice_date, '%Y')`,
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
+
 app.post('/getPayslipEmployeeReport', (req, res, next) => {
   db.query(` SELECT pm.payroll_management_id,
        pm.reimbursement,
