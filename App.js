@@ -106,6 +106,8 @@ const joborder = require('./routes/joborder.js');
 const purchasereturn = require('./routes/purchasereturn.js');
 const dashboardforpurchaseorder = require('./routes/dashboardforpurchaseorder.js');
 const supplierpricelistitem = require('./routes/supplierpricelistitem.js');
+const uom = require('./routes/uom.js');
+
 
 app.use('/supplierpricelistitem', supplierpricelistitem);
 app.use('/invoice', invoice);
@@ -186,6 +188,7 @@ app.use('/equipmentissue', equipmentissue);
 app.use('/chartOfAccounts', chartOfAccounts);
 app.use('/purchaseinvoice', purchaseinvoice);
 app.use('/dashboardforpurchaseorder', dashboardforpurchaseorder);
+app.use('/uom', uom);
 
 app.use(fileUpload({
     createParentPath: true

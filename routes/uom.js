@@ -19,37 +19,24 @@ app.use(
   })
 );
 
-app.get("/getProposal", (req, res, next) => {
+app.get("/getUoM", (req, res, next) => {
   db.query(
     `SELECT 
-             pr.proposal_id
-            ,pr.title
-            ,pr.proposal_code
-            ,pr.proposal_date
-            ,q.project_quote_id
-            ,q.quote_code
-            ,q.company_id
-            ,c.company_name 
-            ,pr.contact_id
-            ,cont.first_name
-            ,pr.status
-            ,pr.est_start_date
-            ,pr.est_end_date
-            ,pr.budget
-            ,pr.project_manager
-            ,pr.no_of_employees
-            ,pr.description
-            ,pr.creation_date
-            ,pr.modification_date
-            ,pr.created_by
-            ,pr.modified_by
-            FROM proposal pr 
-            LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
-            LEFT JOIN (company c)  ON (c.company_id  = q.company_id)  
-            LEFT JOIN (contact cont) ON (pr.contact_id = cont.contact_id) 
-            
-
-            Where pr.proposal_id !=''`,
+             uom_id
+            ,uom_code
+            ,uom_name
+            ,uom_symbol
+            ,conversion_factor
+            ,uom_type
+            ,base_unit
+            ,status 
+            ,created_by
+            ,creation_date
+            ,modified_by
+            ,modification_date
+            FROM uom
+                       
+            Where uom_id !=''`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -65,37 +52,26 @@ app.get("/getProposal", (req, res, next) => {
   );
 });
 
-app.post("/getProposalById", (req, res, next) => {
+app.post("/getUoMById", (req, res, next) => {
   db.query(
     `SELECT 
-  pr.proposal_id
-  ,pr.title
-  ,pr.proposal_code
-  ,proposal_date
- ,pr.project_quote_id
- ,q.quote_code
- ,q.company_id
- ,c.company_name 
- ,pr.contact_id
- ,cont.first_name
- ,pr.status
- ,pr.est_start_date
- ,pr.est_end_date
- ,pr.budget
- ,pr.project_manager
- ,pr.no_of_employees
- ,pr.description
- ,pr.creation_date
- ,pr.modification_date
- ,pr.created_by
- ,pr.modified_by
- ,pr.employee_id
- FROM proposal pr 
- LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
- LEFT JOIN (company c)  ON (c.company_id  = pr.company_id)  
- LEFT JOIN (contact cont) ON (pr.contact_id = cont.contact_id)   
+    uom_id
+    ,uom_code
+    ,uom_name
+    ,uom_symbol
+    ,conversion_factor
+    ,uom_type
+    ,base_unit
+    ,status 
+    ,created_by
+    ,creation_date
+    ,modified_by
+    ,modification_date
+     
+ FROM uom 
+   
   
-  WHERE pr.proposal_id=${db.escape(req.body.proposal_id)}
+  WHERE uom_id=${db.escape(req.body.uom_id)}
   `,
     (err, result) => {
       if (err) {
@@ -112,21 +88,98 @@ app.post("/getProposalById", (req, res, next) => {
   );
 });
 
-app.get("/getProjectQuoteCode", (req, res, next) => {
-  db.query(`SELECT quote_code,project_quote_id,company_id from project_quote `, (err, result) => {
-    if (result.length == 0) {
-      return res.status(400).send({
-        msg: "No result found",
-      });
-    } else {
-      return res.status(200).send({
-        data: result,
-        msg: "Success",
-      });
-    }
-  });
-});
+app.post('/edit-UoM', (req, res, next) => {
+    db.query(`UPDATE uom 
+              SET uom_name=${db.escape(req.body.uom_name)}
+              ,uom_code=${db.escape(req.body.uom_code)}
+              ,uom_symbol=${db.escape(req.body.uom_symbol)}
+              ,conversion_factor=${db.escape(req.body.conversion_factor)}
+              ,uom_type=${db.escape(req.body.uom_type)}
+              ,base_unit=${db.escape(req.body.base_unit)}
+              ,status=${db.escape(req.body.status)}
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
+              ,terms=${db.escape(req.body.terms)}
+              WHERE uom_id =${db.escape(req.body.uom_id)}`,
+              (err, result) => {
+                if (err) {
+                  console.log('error: ', err)
+                  return res.status(400).send({
+                    data: err,
+                    msg: 'failed',
+                  })
+                } else {
+                  return res.status(200).send({
+                    data: result,
+                    msg: 'Success',
+            })
+          }
+              }
+            );
+          });
 
+  
+    app.get('/getValueList', (req, res, next) => {
+            db.query(`SELECT 
+            value,valuelist_id
+            FROM valuelist WHERE key_text="UoM Status"`,
+              (err, result) => {
+                if (err) {
+                  console.log('error: ', err)
+                  return res.status(400).send({
+                    data: err,
+                    msg: 'failed',
+                  })
+                } else {
+                  return res.status(200).send({
+                    data: result,
+                    msg: 'Success',
+          
+                      });
+          
+                  }
+           
+              }
+            );
+          });
+          
+
+
+app.post('/insert-UoM', (req, res, next) => {
+
+    let data = {uom_name: req.body.uom_name,
+                uom_id: req.body.uom_id,
+                uom_code: req.body.uom_code,
+                uom_name: req.body.uom_name,
+                uom_symbol: req.body.uom_symbol,
+                conversion_factor: req.body.conversion_factor,
+                uom_type: req.body.uom_type,
+                base_unit: req.body.base_unit,
+                status: "new",
+                creation_date: req.body.creation_date,
+                modification_date: null,
+                creation_date: req.body.creation_date,
+                created_by: req.body.created_by,
+                modified_by: req.body.modified_by,
+                };
+    let sql = "INSERT INTO uom SET ?";
+    let query = db.query(sql, data, (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
+  
 app.post("/editProposal", (req, res, next) => {
   db.query(
     `UPDATE proposal
@@ -199,30 +252,6 @@ app.post("/insertproposal", (req, res, next) => {
   });
 });
 
-app.get("/checkEmployeeInProposal/:proposalId/:employeeId", (req, res, next) => {
-  const proposalId = req.params.proposalId;
-  const employeeId = req.params.employeeId;
-
-  db.query(
-    `SELECT * FROM proposal_employee WHERE proposal_id = ? AND employee_id = ?, `,
-    [proposalId, employeeId],
-    (err, result) => {
-      if (err) {
-        console.log('error: ', err)
-        return res.status(400).send({
-          data: err,
-          msg: 'failed',
-        })
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: 'Success',
-        });
-      }
-    }
-  );
-});
-
 app.post("/getQuoteLineItemsById", (req, res, next) => {
   db.query(
     `SELECT
@@ -253,9 +282,9 @@ app.post("/getQuoteLineItemsById", (req, res, next) => {
 });
 
 
-app.post("/getEmployeeById", (req, res, next) => {
+app.post("/getTimesheetStaffById", (req, res, next) => {
   db.query(
-    `SELECT * FROM proposal_employee et 
+    `SELECT * FROM employee_timesheet et 
     INNER JOIN employee e ON e.employee_id = et.employee_id 
     INNER JOIN proposal pr ON pr.proposal_id = et.proposal_id
     WHERE et.proposal_id = ${db.escape(req.body.proposal_id)}`,
@@ -276,84 +305,16 @@ app.post("/getEmployeeById", (req, res, next) => {
     }
   );
 });
-
-app.post("/getEmployeeId", (req, res, next) => {
-  db.query(
-    `SELECT et.employee_id FROM proposal_employee et 
-    INNER JOIN employee e ON e.employee_id = et.employee_id 
-    INNER JOIN proposal pr ON pr.proposal_id = et.proposal_id
-    WHERE et.proposal_id = ${db.escape(req.body.proposal_id)}`,
-    (err, result) => {
-      if (err) {
-        console.log('error: ', err)
-        return res.status(400).send({
-          data: err,
-          msg: 'failed',
-        })
-      } else {
-        return res.status(200).send({
-           data: result,
-          msg: 'Success',
-        })
-      }
-
-    }
-  );
-});
-
-app.get("/getEmployeeName", (req, res, next) => {
-  db.query(
-    `SELECT employee_id,first_name
-  FROM employee`,
-    (err, result) => {
-      if (err) {
-        console.log('error: ', err)
-        return res.status(400).send({
-          data: err,
-          msg: 'failed',
-        })
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: 'Success',
-        })
-      }
-
-    }
-  );
-});
-
-app.get('/checkEmployees', (req, res, next) => {
-    db.query(
-      `SELECT employee_id FROM proposal`,
-      (err, result) => {
-        if (err) {
-          return res.status(400).send({
-            data: err,
-            msg: 'Failed'
-          });
-        } else {
-          const quoteItemsIds = result.map((row) => row.employee_id);
-          return res.status(200).send({
-            data: quoteItemsIds,
-            msg: 'Success'
-          });
-        }
-      }
-    );
-  });
-
-app.post("/insertEmployee", (req, res, next) => {
+app.post("/insertTimesheetEmployee", (req, res, next) => {
   let data = {
     proposal_id: req.body.proposal_id,
     employee_id: req.body.employee_id,
     creation_date: req.body.creation_date,
-    modification_date: req.body.modification_date,
-    created_by: req.body.created_by,
-    modified_by: req.body.modified_by,
-    
+    month: req.body.month,
+    year: req.body.year,
+    day: req.body.day,
   };
-  let sql = "INSERT INTO proposal_employee SET ?";
+  let sql = "INSERT INTO employee_timesheet SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -391,23 +352,6 @@ app.post('/insertContact', (req, res, next) => {
           return res.status(200).send({
             data: result,
             msg:'New Tender has been created successfully'
-          });
-    }
-  });
-});
-
-app.post('/deleteProposal', (req, res, next) => {
-  let sql = `DELETE FROM proposal WHERE proposal_id =${db.escape(req.body.proposal_id)}`;
-  let query = db.query(sql,(err, result) => {
-    if (err) {
-      return res.status(400).send({
-            data: '',
-            msg:'Unable to delete proposal.'
-          });
-    } else {
-          return res.status(200).send({
-            data: result,
-            msg:'Proposal has been removed successfully'
           });
     }
   });
