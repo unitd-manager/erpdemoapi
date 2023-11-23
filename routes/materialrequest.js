@@ -143,6 +143,7 @@ app.post('/insertMaterialRequest', (req, res, next) => {
    , creation_date: req.body.creation_date
    , modification_date: req.body.modification_date
    , request_date: req.body.request_date
+   , created_by: req.body.created_by
   
   };
   let sql = "INSERT INTO material_request SET ?";
@@ -244,7 +245,7 @@ app.post('/insertQuoteItems', (req, res, next) => {
     , material_request_id: req.body.material_request_id
     , product_id: req.body.product_id
     , supplier_id:req.body.supplier_id
-
+    , created_by: req.body.created_by
     , quantity: req.body.quantity
     , created_by: req.body.created_by
     , creation_date: req.body.creation_date

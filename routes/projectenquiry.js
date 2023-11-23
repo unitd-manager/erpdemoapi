@@ -229,6 +229,7 @@ app.post('/edit-Tenders', (req, res, next) => {
   ,project_end_date=${db.escape(req.body.project_end_date)}
   ,enquiry_date=${db.escape(req.body.enquiry_date)}
   ,modification_date=${db.escape(req.body.modification_date)}
+  ,modified_by=${db.escape(req.body.modified_by)}
   ,status=${db.escape(req.body.status)}
   WHERE project_enquiry_id =  ${db.escape(req.body.project_enquiry_id)}`,
 (err, result) => {
@@ -270,6 +271,7 @@ app.post('/insertProjectEnquiry', (req, res, next) => {
   let data = {services	:req.body.services	
    , company_id	: req.body.company_id
    ,enquiry_code:req.body.enquiry_code
+   ,enquiry_date:new Date().toISOString().split('T')[0]
    ,category: req.body.category
    ,status:"Approved"
    ,creation_date: req.body.creation_date

@@ -63,35 +63,21 @@ app.get('/getProject', (req, res, next) => {
   );
 });
 
-app.get('/getProjects', (req, res, next) => {
-  db.query(`SELECT p.title
+app.get('/getProjectInErp', (req, res, next) => {
+  db.query(`SELECT 
+  p.project_id
+  ,p.title
+  ,p.project_code
+  ,p.contact_id
   ,p.category
   ,p.status
-  ,p.contact_id
-  ,p.start_date
-  ,p.estimated_finish_date
-  ,p.description
-  ,p.project_manager_id
-  ,p.project_id
-  ,p.project_code
-  ,p.company_invoice
-  ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name 
-  ,c.company_name 
-  ,c.company_size 
-  ,c.source ,c.industry 
-  ,o.opportunity_code 
-  ,cont.first_name
-  ,( SELECT GROUP_CONCAT( CONCAT_WS(' ', stf.first_name, stf.last_name) 
-  ORDER BY CONCAT_WS(' ', stf.first_name, stf.last_name) SEPARATOR ', ' ) 
-  FROM staff stf ,project_staff ts 
-  WHERE ts.project_id = p.project_id AND stf.staff_id = ts.staff_id ) 
-  AS staff_name ,ser.title as service_title ,CONCAT_WS(' ', s.first_name, s.last_name) 
-  AS project_manager_name ,(p.project_value - (IF(ISNULL(( SELECT SUM(invoice_amount) 
-  FROM invoice i LEFT JOIN (orders o) ON (i.order_id = o.order_id)
- WHERE o.project_id = p.project_id AND LOWER(i.status) != 'cancelled' ) ),0, ( SELECT SUM(invoice_amount) 
-  FROM invoice i LEFT JOIN (orders o) ON (i.order_id = o.order_id) 
-  WHERE o.project_id = p.project_id AND LOWER(i.status) != 'cancelled' ) ))) AS still_to_bill FROM project p LEFT JOIN (contact cont) ON (p.contact_id = cont.contact_id)LEFT JOIN (company c)ON (p.company_id = c.company_id) 
-  LEFT JOIN (service ser) ON (p.service_id = ser.service_id) LEFT JOIN (staff s) ON (p.project_manager_id = s.staff_id) LEFT JOIN (opportunity o) ON (p.opportunity_id = o.opportunity_id) ORDER BY p.project_code DESC`,
+  ,c.company_name
+  ,co.contact_id
+  ,CONCAT_WS(' ', co.first_name, co.last_name) AS contact_name 
+  FROM project p
+  LEFT JOIN company c ON c.company_id=p.company_id
+  LEFT JOIN contact co ON co.contact_id=p.contact_id
+  WHERE p.project_id!=''`,
     (err, result) => {
        
       if (result.length == 0) {
@@ -109,6 +95,53 @@ app.get('/getProjects', (req, res, next) => {
     }
   );
 });
+
+// app.get('/getProjects', (req, res, next) => {
+//   db.query(`SELECT p.title
+//   ,p.category
+//   ,p.status
+//   ,p.contact_id
+//   ,p.start_date
+//   ,p.estimated_finish_date
+//   ,p.description
+//   ,p.project_manager_id
+//   ,p.project_id
+//   ,p.project_code
+//   ,p.company_invoice
+//   ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name 
+//   ,c.company_name 
+//   ,c.company_size 
+//   ,c.source ,c.industry 
+//   ,o.opportunity_code 
+//   ,cont.first_name
+//   ,( SELECT GROUP_CONCAT( CONCAT_WS(' ', stf.first_name, stf.last_name) 
+//   ORDER BY CONCAT_WS(' ', stf.first_name, stf.last_name) SEPARATOR ', ' ) 
+//   FROM staff stf ,project_staff ts 
+//   WHERE ts.project_id = p.project_id AND stf.staff_id = ts.staff_id ) 
+//   AS staff_name ,ser.title as service_title ,CONCAT_WS(' ', s.first_name, s.last_name) 
+//   AS project_manager_name ,(p.project_value - (IF(ISNULL(( SELECT SUM(invoice_amount) 
+//   FROM invoice i LEFT JOIN (orders o) ON (i.order_id = o.order_id)
+//  WHERE o.project_id = p.project_id AND LOWER(i.status) != 'cancelled' ) ),0, ( SELECT SUM(invoice_amount) 
+//   FROM invoice i LEFT JOIN (orders o) ON (i.order_id = o.order_id) 
+//   WHERE o.project_id = p.project_id AND LOWER(i.status) != 'cancelled' ) ))) AS still_to_bill FROM project p LEFT JOIN (contact cont) ON (p.contact_id = cont.contact_id)LEFT JOIN (company c)ON (p.company_id = c.company_id) 
+//   LEFT JOIN (service ser) ON (p.service_id = ser.service_id) LEFT JOIN (staff s) ON (p.project_manager_id = s.staff_id) LEFT JOIN (opportunity o) ON (p.opportunity_id = o.opportunity_id) ORDER BY p.project_code DESC`,
+//     (err, result) => {
+       
+//       if (result.length == 0) {
+//         return res.status(400).send({
+//           msg: 'No result found'
+//         });
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+
+//         }
+ 
+//     }
+//   );
+// });
 
 
 
@@ -826,69 +859,102 @@ app.post("/getProjectPaymentSummaryById", (req, res, next) => {
   );
 });
 
-app.post('/getQuotePdfById', (req, res, next) => {
-  db.query(`SELECT q.quote_code
-  ,q.quote_date
-  ,q.gst
-  ,q.payment_method
-  ,q.created_by
-  ,q.project_location
-  ,q.project_reference
-  ,q.discount
-  ,q.employee_id
-              ,qi.title AS quote_item_title
-              ,qi.quantity
-              ,qi.unit
-              ,qi.description
-              ,qi.amount
-              ,qi.unit_price
-              ,qi.remarks
-              ,o.opportunity_id
-              ,o.opportunity_code
-              ,o.company_id
-              ,c.company_name
-              ,c.address_flat AS billing_address_flat
-              ,c.address_street AS billing_address_street
-              ,c.address_town AS billing_address_town
-              ,c.address_state AS billing_address_state
-              ,gc.name AS billing_address_country
-              ,c.address_po_code AS billing_address_po_code
-              ,c.company_id
-              ,co.email
-              ,c.phone
-              ,c.fax
-              ,c.mobile
-              ,co.salutation
-              ,co.first_name
-              ,s.email AS employee_email
-              ,e.mobile AS employee_mobile
-        FROM quote q
+// app.post('/getQuotePdfById', (req, res, next) => {
+//   db.query(`SELECT q.quote_code
+//   ,q.quote_date
+//   ,q.gst
+//   ,q.payment_method
+//   ,q.created_by
+//   ,q.project_location
+//   ,q.project_reference
+//   ,q.discount
+//   ,q.employee_id
+//               ,qi.title AS quote_item_title
+//               ,qi.quantity
+//               ,qi.unit
+//               ,qi.description
+//               ,qi.amount
+//               ,qi.unit_price
+//               ,qi.remarks
+//               ,o.opportunity_id
+//               ,o.opportunity_code
+//               ,o.company_id
+//               ,c.company_name
+//               ,c.address_flat AS billing_address_flat
+//               ,c.address_street AS billing_address_street
+//               ,c.address_town AS billing_address_town
+//               ,c.address_state AS billing_address_state
+//               ,gc.name AS billing_address_country
+//               ,c.address_po_code AS billing_address_po_code
+//               ,c.company_id
+//               ,co.email
+//               ,c.phone
+//               ,c.fax
+//               ,c.mobile
+//               ,co.salutation
+//               ,co.first_name
+//               ,s.email AS employee_email
+//               ,e.mobile AS employee_mobile
+//         FROM quote q
   
-        LEFT JOIN (quote_items qi) ON (qi.quote_id = q.quote_id)
-        LEFT JOIN (opportunity o) ON (o.opportunity_id = q.opportunity_id)
-        LEFT JOIN (company c) ON (c.company_id = o.company_id)
-        LEFT JOIN (contact co) ON (co.contact_id = o.contact_id)
-        LEFT JOIN (geo_country gc) ON (gc.country_code = c.address_country)
-        LEFT JOIN (employee e) ON (e.employee_id = q.employee_id)
-        LEFT JOIN (staff s) ON (s.employee_id = q.employee_id)
-        WHERE q.quote_id = ${db.escape(req.body.quote_id)}
-        ORDER BY qi.quote_items_id ASC`,
-          (err, result) => {
+//         LEFT JOIN (quote_items qi) ON (qi.quote_id = q.quote_id)
+//         LEFT JOIN (opportunity o) ON (o.opportunity_id = q.opportunity_id)
+//         LEFT JOIN (company c) ON (c.company_id = o.company_id)
+//         LEFT JOIN (contact co) ON (co.contact_id = o.contact_id)
+//         LEFT JOIN (geo_country gc) ON (gc.country_code = c.address_country)
+//         LEFT JOIN (employee e) ON (e.employee_id = q.employee_id)
+//         LEFT JOIN (staff s) ON (s.employee_id = q.employee_id)
+//         WHERE q.quote_id = ${db.escape(req.body.quote_id)}
+//         ORDER BY qi.quote_items_id ASC`,
+//           (err, result) => {
        
-      if (result.length == 0) {
-        return res.status(400).send({
-          msg: 'No result found'
-        });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-      }
+//       if (result.length == 0) {
+//         return res.status(400).send({
+//           msg: 'No result found'
+//         });
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+//       }
   
+//     }
+//    );
+// });
+app.post('/insertProject', (req, res, next) => {
+
+  let data = {title	:req.body.title	
+   , category	: req.body.category	
+   , status: req.body.status
+   , contact_id: req.body.contact_id
+   , company_id: req.body.company_id
+   , quote_id: req.body.quote_id
+   , opportunity_id: req.body.opportunity_id
+   , start_date	: new Date()
+   , actual_finish_date	: req.body.actual_finish_date
+   , creation_date: new Date().toISOString()
+   , modification_date	: req.body.modification_date	
+   , project_id:req.body.project_id
+    , project_code:req.body.project_code
+  };
+  let sql = "INSERT INTO project SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
     }
-   );
+  });
 });
+
 app.post('/insertProject', (req, res, next) => {
 
   let data = {title	:req.body.title	

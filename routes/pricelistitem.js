@@ -116,6 +116,7 @@ app.post('/insertPriceList', (req, res, next) => {
    , customer_name: req.body.customer_name
    , creation_date: req.body.creation_date
    , modification_date: req.body.modification_date
+   , created_by: req.body.created_by
    , expiry_date: req.body.expiry_date
    , effective_date	: req.body.effective_date
    , status	: req.body.status

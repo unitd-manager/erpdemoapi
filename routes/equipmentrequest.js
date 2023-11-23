@@ -109,6 +109,7 @@ app.post('/editEquipmentRequest', (req, res, next) => {
             ,request_date=${db.escape(req.body.request_date)}
             ,request_by=${db.escape(req.body.request_by)}
             ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,equipment_request_date=${db.escape(req.body.equipment_request_date)}
             ,equipment_status=${db.escape(req.body.equipment_status)}
             ,site_reference=${db.escape(req.body.site_reference)}

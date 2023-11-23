@@ -53,6 +53,34 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
 );
 });
 
+
+app.get('/getInvoiceByYearReport', (req, res, next) => {
+  db.query(`SELECT DATE_FORMAT(i.invoice_date, '%Y') AS invoice_year
+     , SUM(it.total_cost) AS invoice_amount_yearly
+FROM opportunity opp
+LEFT JOIN quote q ON (opp.opportunity_id = q.opportunity_id)
+LEFT JOIN orders o ON (q.quote_id = o.quote_id)
+LEFT JOIN invoice i ON (o.order_id = i.order_id)
+LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
+WHERE o.order_id != ''
+    AND i.status != 'cancelled'
+    AND opp.category IN ('Project', 'Tenancy Project', 'Tenancy Work', 'Maintenance')
+GROUP BY DATE_FORMAT(i.invoice_date, '%Y')`,
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
+
 app.post('/getPayslipEmployeeReport', (req, res, next) => {
   db.query(` SELECT pm.payroll_management_id,
        pm.reimbursement,
@@ -1459,6 +1487,36 @@ WHERE i.invoice_date >= ${db.escape(req.body.startDate)} AND  i.invoice_date <= 
   );
 });
 
+app.post('/getProjectReport', (req, res, next) => { 
+  db.query(
+    `SELECT p.*
+    ,p.title AS Project_name
+    ,c.company_id
+    ,c.company_name 
+    ,p.category
+    ,p.status
+    ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name
+FROM project p
+LEFT JOIN company c ON (c.company_id = p.company_id)
+LEFT JOIN (contact cont) ON (p.contact_id = cont.contact_id)
+WHERE p.start_date >= ${db.escape(req.body.startDate)} AND p.actual_finish_date <= ${db.escape(req.body.actual_finish_date)}
+AND p.category = ${db.escape(req.body.category)} AND p.status = ${db.escape(req.body.status)}`,
+(err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
