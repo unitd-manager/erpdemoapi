@@ -77,6 +77,29 @@ ORDER BY o.order_id`,
     }
   );
 });
+app.post('/editInvoiceItems', (req, res, next) => {
+  db.query(`UPDATE invoice_item 
+            SET item_title = ${db.escape(req.body.item_title)}
+             ,unit=${db.escape(req.body.unit)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+             ,qty=${db.escape(req.body.qty)}
+            ,total_cost=${db.escape(req.body.total_cost)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+             WHERE invoice_item_id  =  ${db.escape(req.body.invoice_item_id )}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+   );
+})
 app.get('/getTradingInvoiceSummary', (req, res, next) => {
   db.query(`SELECT 
     c.company_id,
@@ -1076,12 +1099,17 @@ app.post('/getReceiptCancel', (req, res, next) => {
 }); 
 app.post('/editInvoices', (req, res, next) => {
      const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-  db.query(`UPDATE invoice 
-            SET invoice_date = ${db.escape(req.body.invoice_date)}
-             ,invoice_terms = ${db.escape(req.body.invoice_terms)}
-             ,modified_by = ${db.escape(req.body.modified_by)}
-             ,modification_date = '${currentDateTime}' 
-             WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
+  db.query(`UPDATE invoice
+   SET invoice_date = ${db.escape(req.body.invoice_date)},
+    invoice_terms = ${db.escape(req.body.invoice_terms)},
+    modified_by = ${db.escape(req.body.modified_by)},
+    invoice_amount = (
+        SELECT SUM(total_cost) 
+        FROM invoice_item 
+        WHERE invoice_id = ${db.escape(req.body.invoice_id)}
+    ),
+    modification_date = '${currentDateTime}' 
+WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
