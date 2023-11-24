@@ -30,7 +30,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.intro_drawing_quote 
     ,q.total_amount
     ,q.project_enquiry_id
-    ,q.company_id
+    ,o.company_id
     ,q.contact_id
     ,o.enquiry_code
     ,c.company_name
@@ -41,7 +41,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.modified_by
     FROM project_quote q  
     LEFT JOIN (project_enquiry o) ON (o.project_enquiry_id=q.project_enquiry_id)
-    LEFT JOIN (company c) ON (c.company_id = q.company_id)
+    LEFT JOIN (company c) ON (c.company_id = o.company_id)
     LEFT JOIN (contact cont) ON (cont.contact_id = q.contact_id)   
     WHERE q.project_quote_id =${db.escape(req.body.project_quote_id)}
     `,
@@ -104,7 +104,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
   });
 
   app.get('/getEnquiryCode', (req, res, next) => {
-    db.query(`  SELECT enquiry_code,project_enquiry_id from project_enquiry `,
+    db.query(`  SELECT pe.enquiry_code,pe.project_enquiry_id from project_enquiry pe WHERE pe.status = 'Approved'  `,
       (err, result) => {
        
         if (err) {
@@ -165,7 +165,6 @@ app.post('/getProjectquoteById', (req, res, next) => {
       , quote_code: req.body.quote_code
       , quote_date: req.body.quote_date
       , quote_status: 'new'
-      , company_id: req.body.company_id
       , project_location: req.body.project_location
       , project_reference: req.body.project_reference
       , discount: req.body.discount

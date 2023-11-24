@@ -546,6 +546,7 @@ it.description,
 it.total_cost,
 it.unit,
 it.qty,
+it.qty_returned,
 it.unit_price,
 it.remarks,
 i.invoice_id,
@@ -641,6 +642,7 @@ app.post('/getSalesReturnId', (req, res, next) => {
   ,o.modification_date
   ,o.invoice_id
   ,i.invoice_code
+  ,i.status AS invoice_status
   ,o.order_id
   ,o.status
   ,i.invoice_code
@@ -1487,6 +1489,7 @@ app.post('/getInvoiceItemByInvoiceId', (req, res, next) => {
   ,i.description
   ,i.unit
    ,i.qty
+   ,i.qty_returned
    ,i.unit_price
    ,i.total_cost
    ,(i.qty*unit_price) AS amount
@@ -1587,6 +1590,7 @@ app.post('/getInvoiceItemById', (req, res, next) => {
   db.query(`SELECT item_title,
 invoice_id,
 description,
+qty_returned,
 unit,
 qty,
 unit_price,
@@ -1768,33 +1772,80 @@ app.post('/insertSalesReturn', (req, res, next) => {
 });
 
 app.post('/insertSalesReturnHistory', (req, res, next) => {
-
   let data = {
-    sales_return_history_id : req.body.sales_return_history_id 
-    , return_date: req.body.return_date
-    , creation_date: req.body.creation_date
-    , modification_date: req.body.modification_date
-    , invoice_id: req.body.invoice_id
-    ,order_id: req.body.order_id
-    ,status: req.body.status
-    ,invoice_item_id: req.body.invoice_item_id
-    ,price: req.body.price
-    ,notes: req.body.notes
-    ,qty_return: req.body.qty_return
- };
-  let sql = "INSERT INTO sales_return_history SET ?";
-  let query = db.query(sql, data,(err, result) => {
+    sales_return_history_id: req.body.sales_return_history_id,
+    return_date: req.body.return_date,
+    creation_date: req.body.creation_date,
+    modification_date: req.body.modification_date,
+    invoice_id: req.body.invoice_id,
+    order_id: req.body.order_id,
+    status: req.body.status,
+    invoice_item_id: req.body.invoice_item_id,
+    price: req.body.unit_price,
+    notes: req.body.notes,
+    qty_return: req.body.qty_return,
+  };
+
+  // Update the invoice_item table to subtract the returned quantity
+  let updateInvoiceItemSql = `
+    UPDATE invoice_item 
+    SET qty = qty - ${req.body.qty_return},
+    total_cost = (qty) * ${req.body.price},
+    qty_returned = qty_returned + ${req.body.qty_return}
+    WHERE invoice_item_id = ${req.body.invoice_item_id}
+  `;
+
+  // Insert the sales_return_history record
+  let insertSalesReturnHistorySql = "INSERT INTO sales_return_history SET ?";
+
+  // Run both SQL queries in a transaction
+  db.beginTransaction(function (err) {
     if (err) {
-     return res.status(400).send({
+      return res.status(400).send({
+        data: err,
+        msg: 'Transaction start failed',
+      });
+    }
+
+    // Update invoice_item
+    db.query(updateInvoiceItemSql, function (error, result) {
+      if (error) {
+        return db.rollback(function () {
+          return res.status(400).send({
+            data: error,
+            msg: 'Failed to update invoice_item',
+          });
+        });
+      }
+
+      // Insert into sales_return_history
+      db.query(insertSalesReturnHistorySql, data, function (err, result) {
+        if (err) {
+          return db.rollback(function () {
+            return res.status(400).send({
               data: err,
-              msg:'failed'
+              msg: 'Failed to insert into sales_return_history',
             });
-    } else {
+          });
+        }
+
+        db.commit(function (err) {
+          if (err) {
+            return db.rollback(function () {
+              return res.status(400).send({
+                data: err,
+                msg: 'Transaction commit failed',
+              });
+            });
+          }
+
           return res.status(200).send({
             data: result,
-            msg:'Success'
+            msg: 'Success',
           });
-    }
+        });
+      });
+    });
   });
 });
 

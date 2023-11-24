@@ -140,8 +140,7 @@ app.get("/getTradingquote", (req, res, next) => {
 
 app.get("/getEnquiryCode", (req, res, next) => {
   db.query(
-    `  
-    SELECT 
+    `SELECT 
   o.opportunity_code,
   o.opportunity_id 
   from opportunity o   
