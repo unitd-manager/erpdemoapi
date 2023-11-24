@@ -330,6 +330,29 @@ app.get("/getEmployeeName", (req, res, next) => {
   );
 });
 
+app.get("/getProjectManager", (req, res, next) => {
+  db.query(
+    `SELECT employee_id,first_name,position
+  FROM employee
+  Where position ='Manager'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
 app.get('/checkEmployees', (req, res, next) => {
     db.query(
       `SELECT employee_id FROM proposal`,
