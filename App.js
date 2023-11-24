@@ -59,7 +59,7 @@ const journal = require('./routes/journal.js');
 const ledger = require('./routes/ledger.js');
 const product = require('./routes/product.js');
 const inventory = require('./routes/inventory.js');
-// const tradingquote = require('./routes/tradingquote.js');
+ const tradingquote = require('./routes/tradingquote.js');
 const projectquote = require('./routes/projectquote.js');
 const goodsdelivery = require('./routes/goodsdelivery.js');
 const employeeModule = require('./routes/employeeModule.js');
@@ -107,6 +107,8 @@ const joborder = require('./routes/joborder.js');
 const purchasereturn = require('./routes/purchasereturn.js');
 const dashboardforpurchaseorder = require('./routes/dashboardforpurchaseorder.js');
 const supplierpricelistitem = require('./routes/supplierpricelistitem.js');
+const uom = require('./routes/uom.js');
+
 const creditnote = require('./routes/creditnote.js');
 const debitnote = require('./routes/debitnote.js');
 
@@ -141,7 +143,7 @@ app.use('/employee', employee);
 app.use('/company', company);
 app.use('/commonApi', commonApi);
 app.use('/labourrequest', labourrequest);
-// app.use('/tradingquote', tradingquote);
+ app.use('/tradingquote', tradingquote);
 app.use('/projectquote', projectquote);
 app.use('/goodsdelivery', goodsdelivery);
 app.use('/projecttabcostingsummary', projecttabcostingsummary);
@@ -192,6 +194,7 @@ app.use('/equipmentissue', equipmentissue);
 app.use('/chartOfAccounts', chartOfAccounts);
 app.use('/purchaseinvoice', purchaseinvoice);
 app.use('/dashboardforpurchaseorder', dashboardforpurchaseorder);
+app.use('/uom', uom);
 
 app.use(fileUpload({
     createParentPath: true
