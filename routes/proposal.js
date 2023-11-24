@@ -68,34 +68,36 @@ app.get("/getProposal", (req, res, next) => {
 app.post("/getProposalById", (req, res, next) => {
   db.query(
     `SELECT 
-  pr.proposal_id
-  ,pr.title
-  ,pr.proposal_code
-  ,proposal_date
- ,pr.project_quote_id
- ,q.quote_code
- ,q.company_id
- ,c.company_name 
- ,pr.contact_id
- ,cont.first_name
- ,pr.status
- ,pr.est_start_date
- ,pr.est_end_date
- ,pr.budget
- ,pr.project_manager
- ,pr.no_of_employees
- ,pr.description
- ,pr.creation_date
- ,pr.modification_date
- ,pr.created_by
- ,pr.modified_by
- ,pr.employee_id
- FROM proposal pr 
- LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
- LEFT JOIN (company c)  ON (c.company_id  = pr.company_id)  
- LEFT JOIN (contact cont) ON (pr.contact_id = cont.contact_id)   
-  
-  WHERE pr.proposal_id=${db.escape(req.body.proposal_id)}
+    pr.proposal_id
+    ,pr.title
+    ,pr.proposal_code
+    ,pr.proposal_date
+   ,q.project_quote_id
+  ,pr.project_quote_id
+   ,q.quote_code
+   ,q.company_id
+   ,q.contact_id
+   ,c.company_name 
+   ,cont.contact_id
+   ,cont.first_name
+   ,pr.status
+   ,pr.est_start_date
+   ,pr.est_end_date
+   ,pr.budget
+   ,pr.project_manager
+   ,pr.no_of_employees
+   ,pr.description
+   ,pr.creation_date
+   ,pr.modification_date
+   ,pr.created_by
+   ,pr.modified_by
+   ,pr.employee_id
+   FROM proposal pr 
+   LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
+   LEFT JOIN (company c)  ON (c.company_id  = q.company_id)  
+   LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
+    
+    WHERE pr.proposal_id=${db.escape(req.body.proposal_id)}
   `,
     (err, result) => {
       if (err) {
@@ -113,7 +115,12 @@ app.post("/getProposalById", (req, res, next) => {
 });
 
 app.get("/getProjectQuoteCode", (req, res, next) => {
-  db.query(`SELECT quote_code,project_quote_id,company_id from project_quote `, (err, result) => {
+  db.query(`SELECT pq.quote_code,
+  pq.project_quote_id 
+  FROM project_quote pq
+  LEFT JOIN proposal p ON p.project_quote_id=pq.project_quote_id
+  WHERE pq.project_quote_id !=''
+  AND p.project_quote_id IS NULL `, (err, result) => {
     if (result.length == 0) {
       return res.status(400).send({
         msg: "No result found",
