@@ -17,6 +17,31 @@ app.use(fileUpload({
   createParentPath: true
 }));
 
+app.post('/insertInvoice', (req, res, next) => {
+
+  let data = {
+    invoice_code: req.body.invoice_code
+    , invoice_source_id: req.body.invoice_source_id
+    , source_type: req.body.source_type
+    , status: 'Due'
+    , creation_date: req.body.creation_date   
+    , created_by: req.body.created_by
+ };
+  let sql = "INSERT INTO invoice SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 
 app.get('/getReturnsStats', (req, res, next) => {
   db.query(`SELECT
@@ -266,7 +291,91 @@ app.post('/getInvoiceForReceipt', (req, res, next) => {
   );
 });
 
+app.get('/checkQuoteItems', (req, res, next) => {
+  db.query(
+    `SELECT order_item_id  FROM invoice_item`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.order_item_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
+app.get('/checkGoodsItems', (req, res, next) => {
+  db.query(
+    `SELECT goods_delivery_item_id FROM invoice_item`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.goods_delivery_item_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
+
 app.post('/getOrderLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+  qt.* 
+  FROM order_item qt 
+  WHERE qt.order_id =  ${db.escape(req.body.order_id)}`,
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
+
+app.post('/getGoodsLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+  qt.*,
+  os.quote_id
+  FROM goods_delivery_item qt 
+  LEFT JOIN orders os ON os.order_id=qt.order_id
+  WHERE qt.goods_delivery_id =  ${db.escape(req.body.goods_delivery_id)}`,
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
+
+
+app.post('/getOrderLineItemsByIdold', (req, res, next) => {
   db.query(`SELECT
             qt.* 
             FROM order_item qt 
@@ -329,6 +438,8 @@ app.post('/editReceipt', (req, res, next) => {
      }
   );
 });
+
+
 
 app.get('/getReceipts', (req, res, next) => {
   db.query(
@@ -759,8 +870,14 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
   ,i.description
   ,i.total_cost
   ,i.qty
+  ,i.invoice_qty
   ,i.unit_price
   ,i.invoice_item_id
+  ,i.unit
+  ,i.created_by
+  ,i.creation_date
+  ,i.modified_by
+  ,i.modification_date
    from invoice_item i
    LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
  WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
@@ -784,9 +901,11 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
 });
 
 
-app.post('/getInvoiceById', (req, res, next) => {
+app.post('/getInvoiceByIdold', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code  
+  ,i.invoice_source
+  ,i.goods_delivery_id
   ,i.creation_date
   ,i.created_by
   ,i.modification_date
@@ -810,9 +929,12 @@ app.post('/getInvoiceById', (req, res, next) => {
      ,i.payment_terms
      ,i.order_id
      ,o.order_code
+     ,g.goods_delivery_id
+     ,g.goods_delivery_code
      ,(select sum(it.total_cost)) as amount
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
+  LEFT JOIN goods_delivery g ON g.goods_delivery_id=i.goods_delivery_id
  LEFT JOIN invoice_item it ON it.invoice_id=i.invoice_id
  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} `,
     (err, result) => {
@@ -834,9 +956,59 @@ app.post('/getInvoiceById', (req, res, next) => {
   );
 });
 
+app.post('/getInvoiceById', (req, res, next) => {
+  db.query(`SELECT
+  i.invoice_id,
+  i.invoice_source_id,
+  i.source_type,
+  i.invoice_code,
+  co.company_name,
+  i.status,
+  i.invoice_date,
+  i.invoice_amount,
+  i.invoice_due_date,
+  i.created_by,
+  i.creation_date,
+  i.modified_by,
+  i.modification_date,
+  i.invoice_terms,
+  o.order_id,
+  o.order_code AS source_code,
+  g.goods_delivery_id,
+  g.goods_delivery_code AS source_code,
+  SUM(it.total_cost) AS InvoiceAmount
+FROM
+  invoice i
+LEFT JOIN
+  orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
+LEFT JOIN
+  goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
+LEFT JOIN
+  invoice_item it ON it.invoice_id = i.invoice_id
+LEFT JOIN
+  company co ON co.company_id = o.company_id
+ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} `,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
 
 
-app.get("/getCompanyName", (req, res, next) => {
+app.get('/getCustomerDropdown', (req, res, next) => {
   db.query(`SELECT company_name,company_id FROM company`, (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -851,6 +1023,95 @@ app.get("/getCompanyName", (req, res, next) => {
   });
 });
 
+app.get('/getSalesOrderDropdown', (req, res, next) => {
+  db.query(`SELECT 
+  order_id
+  ,order_code
+  FROM orders`, 
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+      });
+    }
+  });
+});
+
+app.get('/getGoodsDeliveryDropdown', (req, res, next) => {
+  db.query(`SELECT 
+  goods_delivery_id
+  ,goods_delivery_code
+  FROM goods_delivery`, 
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+      });
+    }
+  });
+});
+app.get('/getInvoices', (req, res, next) => {
+  db.query(`SELECT
+  i.invoice_id,
+  i.invoice_source_id,
+  i.source_type,
+  i.invoice_code,
+  co.company_name,
+  i.status,
+  i.invoice_date,
+  i.invoice_amount,
+  i.invoice_due_date,
+  i.created_by,
+  i.creation_date,
+  i.modified_by,
+  i.modification_date,
+  i.invoice_terms,
+  o.order_id,
+  o.order_code AS source_code,
+  g.goods_delivery_id,
+  g.goods_delivery_code AS source_code,
+  SUM(it.total_cost) AS InvoiceAmount
+FROM
+  invoice i
+LEFT JOIN
+  orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
+LEFT JOIN
+  goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
+LEFT JOIN
+  invoice_item it ON it.invoice_id = i.invoice_id
+LEFT JOIN
+  company co ON co.company_id = o.company_id
+WHERE
+  i.invoice_id != ''
+GROUP BY
+  i.invoice_id;`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
 app.post('/getInvoicesById', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code  
@@ -967,28 +1228,6 @@ app.get("/getOrdersByCompanyId/:companyId", (req, res) => {
 
 
 
-app.post('/editInvoiceItems', (req, res, next) => {
-  db.query(`UPDATE invoice_item
-            SET item_title = ${db.escape(req.body.item_title)}
-             ,qty=${db.escape(req.body.qty)}
-            ,unit_price=${db.escape(req.body.unit_price)}
-             ,unit=${db.escape(req.body.unit)}
-              ,remarks=${db.escape(req.body.remarks)}
-            ,total_cost=${db.escape(req.body.total_cost)}
-             WHERE invoice_item_id =  ${db.escape(req.body.invoice_item_id)}`,
-    (err, result) => {
-      if (err) {
-        console.log("error: ", err);
-        return;
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-      }
-     }
-  );
-});
 
 
 app.post('/getProjectInvoicePdf', (req, res, next) => {
@@ -1073,12 +1312,13 @@ app.post('/getReceiptCancel', (req, res, next) => {
   );
 }); 
 app.post('/editInvoices', (req, res, next) => {
-     const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
   db.query(`UPDATE invoice 
             SET invoice_date = ${db.escape(req.body.invoice_date)}
              ,invoice_terms = ${db.escape(req.body.invoice_terms)}
+             ,source_type = ${db.escape(req.body.source_type)}
+             ,invoice_source_id =  ${db.escape(req.body.invoice_source_id)}
              ,modified_by = ${db.escape(req.body.modified_by)}
-             ,modification_date = '${currentDateTime}' 
+             ,modification_date = ${db.escape(req.body.modification_date)}
              WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
     (err, result) => {
       if (err) {
@@ -1664,7 +1904,7 @@ app.post('/getInvoiceLineItemsById', (req, res, next) => {
   );
 });
 
-app.post('/insertInvoice', (req, res, next) => {
+app.post('/insertInvoiceold', (req, res, next) => {
 
   let data = {
     invoice_code: req.body.invoice_code
@@ -1882,12 +2122,22 @@ app.delete('/deleteBranch', (req, res, next) => {
 app.post('/insertInvoiceItem', (req, res, next) => {
 
   let data = {
-       qty: req.body.qty
+       qty: req.body.qty,
+       invoice_qty: req.body.invoice_qty
        ,invoice_id: req.body.invoice_id
+       ,invoice_source_id: req.body.invoice_source_id
+       ,source_type: req.body.source_type
+       ,order_id: req.body.order_id
+       ,order_item_id : req.body.order_item_id 
+       ,goods_delivery_id: req.body.goods_delivery_id
+       ,goods_delivery_item_id: req.body.goods_delivery_item_id
     , item_title: req.body.item_title
     , description: req.body.description
     , remarks: req.body.remarks
     , total_cost: req.body.total_cost
+    ,created_by: req.body.created_by
+    ,creation_date: req.body.creation_date
+    ,quote_id: req.body.quote_id
  };
   let sql = "INSERT INTO invoice_item SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -1904,6 +2154,92 @@ app.post('/insertInvoiceItem', (req, res, next) => {
     }
   });
 });
+
+app.post('/hideEditIconById', (req, res, next) => {
+  db.query(` SELECT it.quote_id
+  FROM invoice_item it  
+  WHERE it.quote_id =${db.escape(req.body.quote_id)}
+  `,
+    (err, result) => {
+     
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+
+app.post('/insertPartialInvoiceItem', (req, res, next) => {
+
+  let data = {
+       qty: req.body.qty
+       ,invoice_id: req.body.invoice_id
+       ,order_id: req.body.order_id
+       ,goods_delivery_id: req.body.goods_delivery_id
+    , item_title: req.body.item_title
+    , description: req.body.description
+    , remarks: req.body.remarks
+    , total_cost: req.body.total_cost
+    ,created_by: req.body.created_by
+    ,creation_date: req.body.creation_date
+ };
+  let sql = "INSERT INTO invoice_item SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
+
+
+// app.post('/insertInvoiceItem', (req, res, next) => {
+
+//   let data = {
+//        qty: req.body.quantity
+//        ,invoice_id: req.body.invoice_id
+//     , item_title: req.body.title
+//     , description: req.body.description
+//     , remarks: req.body.remarks
+//     , total_cost: req.body.total_cost
+//     ,created_by: req.body.created_by
+//     ,creation_date: req.body.creation_date
+//     ,goods_delivery_id: req.body.goods_delivery_id
+//     ,goods_delivery_item_id: req.body.goods_delivery_item_id
+//     ,invoice_source_id: req.body.invoice_source_id
+//     ,source_type: req.body.source_type
+//     ,quote_id: req.body.quote_id
+//  };
+//   let sql = "INSERT INTO invoice_item SET ?";
+//   let query = db.query(sql, data,(err, result) => {
+//     if (err) {
+//       return res.status(400).send({
+//               data: err,
+//               msg:'failed'
+//             });
+//     } else {
+//           return res.status(200).send({
+//             data: result,
+//             msg:'Success'
+//           });
+//     }
+//   });
+// });
 
 
 
@@ -2098,6 +2434,31 @@ app.get('/getInvoiveBestMonthSummary', (req, res, next) => {
 }
   }
 );
+});
+
+app.post('/editInvoiceItems', (req, res, next) => {
+  db.query(`UPDATE invoice_item     
+            SET item_title = ${db.escape(req.body.item_title)}
+             ,unit=${db.escape(req.body.unit)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+             ,qty=${db.escape(req.body.qty)}
+             ,invoice_qty=${db.escape(req.body.invoice_qty)}
+            ,total_cost=${db.escape(req.body.total_cost)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+             WHERE invoice_item_id  =  ${db.escape(req.body.invoice_item_id )}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+     }
+  );
 });
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
