@@ -259,6 +259,35 @@ app.post("/getQuoteLineItemsById", (req, res, next) => {
   );
 });
 
+app.post("/getMaterialLineItemsById", (req, res, next) => {
+  db.query(
+    `SELECT
+            pr.project_quote_id
+            ,pr.proposal_code
+            ,qt.material_used_id
+            ,qt.title
+            ,qt.amount
+            ,qt.quantity
+            ,qt.description
+            ,qt.unit_price
+            FROM proposal pr 
+            LEFT JOIN (material_used qt)  ON (qt.project_quote_id  = pr.project_quote_id)
+            WHERE pr.proposal_id =  ${db.escape(req.body.proposal_id)}`,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
 
 app.post("/getEmployeeById", (req, res, next) => {
   db.query(
@@ -312,6 +341,29 @@ app.get("/getEmployeeName", (req, res, next) => {
   db.query(
     `SELECT employee_id,first_name
   FROM employee`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
+app.get("/getProjectManager", (req, res, next) => {
+  db.query(
+    `SELECT employee_id,first_name,position
+  FROM employee
+  Where position ='Manager'`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
