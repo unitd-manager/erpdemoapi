@@ -1002,6 +1002,10 @@ app.post("/getCodeValue", (req, res, next) => {
       key_text = 'nextWOCode';
       sql = "SELECT * FROM setting WHERE key_text='wOCodePrefix' OR key_text='nextWOCode'";  
   }
+  else if(type == 'proposal'){
+    key_text = 'nextProposalCode';
+    sql = "SELECT * FROM setting WHERE key_text='proposalCodePrefix' OR key_text='nextProposalCode'";  
+}
   
   
   let query = db.query(sql, (err, result) => {

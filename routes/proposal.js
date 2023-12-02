@@ -68,33 +68,36 @@ app.get("/getProposal", (req, res, next) => {
 app.post("/getProposalById", (req, res, next) => {
   db.query(
     `SELECT 
-  pr.proposal_id
-  ,pr.title
-  ,pr.proposal_code
-  ,proposal_date
- ,pr.project_quote_id
- ,q.quote_code
- ,q.company_id
- ,c.company_name 
- ,pr.contact_id
- ,cont.first_name
- ,pr.status
- ,pr.est_start_date
- ,pr.est_end_date
- ,pr.budget
- ,pr.project_manager
- ,pr.no_of_employees
- ,pr.description
- ,pr.creation_date
- ,pr.modification_date
- ,pr.created_by
- ,pr.modified_by
- FROM proposal pr 
- LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
- LEFT JOIN (company c)  ON (c.company_id  = pr.company_id)  
- LEFT JOIN (contact cont) ON (pr.contact_id = cont.contact_id)   
-  
-  WHERE pr.proposal_id=${db.escape(req.body.proposal_id)}
+    pr.proposal_id
+    ,pr.title
+    ,pr.proposal_code
+    ,pr.proposal_date
+   ,q.project_quote_id
+  ,pr.project_quote_id
+   ,q.quote_code
+   ,q.company_id
+   ,q.contact_id
+   ,c.company_name 
+   ,cont.contact_id
+   ,cont.first_name
+   ,pr.status
+   ,pr.est_start_date
+   ,pr.est_end_date
+   ,pr.budget
+   ,pr.project_manager
+   ,pr.no_of_employees
+   ,pr.description
+   ,pr.creation_date
+   ,pr.modification_date
+   ,pr.created_by
+   ,pr.modified_by
+   ,pr.employee_id
+   FROM proposal pr 
+   LEFT JOIN (project_quote q)  ON (q.project_quote_id  = pr.project_quote_id)
+   LEFT JOIN (company c)  ON (c.company_id  = q.company_id)  
+   LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
+    
+    WHERE pr.proposal_id=${db.escape(req.body.proposal_id)}
   `,
     (err, result) => {
       if (err) {
@@ -112,7 +115,12 @@ app.post("/getProposalById", (req, res, next) => {
 });
 
 app.get("/getProjectQuoteCode", (req, res, next) => {
-  db.query(`SELECT quote_code,project_quote_id,company_id from project_quote `, (err, result) => {
+  db.query(`SELECT pq.quote_code,
+  pq.project_quote_id 
+  FROM project_quote pq
+  LEFT JOIN proposal p ON p.project_quote_id=pq.project_quote_id
+  WHERE pq.project_quote_id !=''
+  AND p.project_quote_id IS NULL `, (err, result) => {
     if (result.length == 0) {
       return res.status(400).send({
         msg: "No result found",
@@ -198,6 +206,30 @@ app.post("/insertproposal", (req, res, next) => {
   });
 });
 
+app.get("/checkEmployeeInProposal/:proposalId/:employeeId", (req, res, next) => {
+  const proposalId = req.params.proposalId;
+  const employeeId = req.params.employeeId;
+
+  db.query(
+    `SELECT * FROM proposal_employee WHERE proposal_id = ? AND employee_id = ?, `,
+    [proposalId, employeeId],
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
+
 app.post("/getQuoteLineItemsById", (req, res, next) => {
   db.query(
     `SELECT
@@ -227,10 +259,39 @@ app.post("/getQuoteLineItemsById", (req, res, next) => {
   );
 });
 
-
-app.post("/getTimesheetStaffById", (req, res, next) => {
+app.post("/getMaterialLineItemsById", (req, res, next) => {
   db.query(
-    `SELECT * FROM employee_timesheet et 
+    `SELECT
+            pr.project_quote_id
+            ,pr.proposal_code
+            ,qt.material_used_id
+            ,qt.title
+            ,qt.amount
+            ,qt.quantity
+            ,qt.description
+            ,qt.unit_price
+            FROM proposal pr 
+            LEFT JOIN (material_used qt)  ON (qt.project_quote_id  = pr.project_quote_id)
+            WHERE pr.proposal_id =  ${db.escape(req.body.proposal_id)}`,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+app.post("/getEmployeeById", (req, res, next) => {
+  db.query(
+    `SELECT * FROM proposal_employee et 
     INNER JOIN employee e ON e.employee_id = et.employee_id 
     INNER JOIN proposal pr ON pr.proposal_id = et.proposal_id
     WHERE et.proposal_id = ${db.escape(req.body.proposal_id)}`,
@@ -251,16 +312,107 @@ app.post("/getTimesheetStaffById", (req, res, next) => {
     }
   );
 });
-app.post("/insertTimesheetEmployee", (req, res, next) => {
+
+app.post("/getEmployeeId", (req, res, next) => {
+  db.query(
+    `SELECT et.employee_id FROM proposal_employee et 
+    INNER JOIN employee e ON e.employee_id = et.employee_id 
+    INNER JOIN proposal pr ON pr.proposal_id = et.proposal_id
+    WHERE et.proposal_id = ${db.escape(req.body.proposal_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+           data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
+app.get("/getEmployeeName", (req, res, next) => {
+  db.query(
+    `SELECT employee_id,first_name
+  FROM employee`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
+app.get("/getProjectManager", (req, res, next) => {
+  db.query(
+    `SELECT employee_id,first_name,position
+  FROM employee
+  Where position ='Manager'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
+app.get('/checkEmployees', (req, res, next) => {
+    db.query(
+      `SELECT employee_id FROM proposal`,
+      (err, result) => {
+        if (err) {
+          return res.status(400).send({
+            data: err,
+            msg: 'Failed'
+          });
+        } else {
+          const quoteItemsIds = result.map((row) => row.employee_id);
+          return res.status(200).send({
+            data: quoteItemsIds,
+            msg: 'Success'
+          });
+        }
+      }
+    );
+  });
+
+app.post("/insertEmployee", (req, res, next) => {
   let data = {
     proposal_id: req.body.proposal_id,
     employee_id: req.body.employee_id,
     creation_date: req.body.creation_date,
-    month: req.body.month,
-    year: req.body.year,
-    day: req.body.day,
+    modification_date: req.body.modification_date,
+    created_by: req.body.created_by,
+    modified_by: req.body.modified_by,
+    
   };
-  let sql = "INSERT INTO employee_timesheet SET ?";
+  let sql = "INSERT INTO proposal_employee SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -298,6 +450,23 @@ app.post('/insertContact', (req, res, next) => {
           return res.status(200).send({
             data: result,
             msg:'New Tender has been created successfully'
+          });
+    }
+  });
+});
+
+app.post('/deleteProposal', (req, res, next) => {
+  let sql = `DELETE FROM proposal WHERE proposal_id =${db.escape(req.body.proposal_id)}`;
+  let query = db.query(sql,(err, result) => {
+    if (err) {
+      return res.status(400).send({
+            data: '',
+            msg:'Unable to delete proposal.'
+          });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Proposal has been removed successfully'
           });
     }
   });
