@@ -1102,6 +1102,7 @@ app.post('/editInvoices', (req, res, next) => {
   db.query(`UPDATE invoice
    SET invoice_date = ${db.escape(req.body.invoice_date)},
     invoice_terms = ${db.escape(req.body.invoice_terms)},
+    vat = ${db.escape(req.body.vat)},
     modified_by = ${db.escape(req.body.modified_by)},
     invoice_amount = (
         SELECT SUM(total_cost) 
