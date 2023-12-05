@@ -29,7 +29,6 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.revision
     ,q.intro_drawing_quote 
     ,q.total_amount
-    ,q.quote_amount
     ,q.project_enquiry_id
     ,o.company_id
     ,q.contact_id
