@@ -98,6 +98,31 @@ app.get('/getProjectInErp', (req, res, next) => {
   );
 });
 
+app.post("/getTimesheetStaffById", (req, res, next) => {
+  db.query(
+    `SELECT * FROM employee_timesheet et 
+    INNER JOIN employee e ON e.employee_id = et.employee_id 
+    INNER JOIN project p ON p.project_id = et.project_id
+    WHERE et.project_id = ${db.escape(req.body.project_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+           data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
+
 // app.get('/getProjects', (req, res, next) => {
 //   db.query(`SELECT p.title
 //   ,p.category
@@ -1051,13 +1076,15 @@ app.post('/insertProject', (req, res, next) => {
    , contact_id: req.body.contact_id
    , company_id: req.body.company_id
    , quote_id: req.body.quote_id
-   , opportunity_id: req.body.opportunity_id
-   , start_date	: new Date()
-   , actual_finish_date	: req.body.actual_finish_date
+    , proposal_id: req.body.proposal_id
+   , start_date	: req.body.start_date
+   , description	: req.body.description
+   , estimated_finish_date	: req.body.estimated_finish_date
    , creation_date: new Date().toISOString()
    , modification_date	: req.body.modification_date	
    , project_id:req.body.project_id
     , project_code:req.body.project_code
+    , project_quote_id:req.body.project_quote_id
   };
   let sql = "INSERT INTO project SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -1076,7 +1103,8 @@ app.post('/insertProject', (req, res, next) => {
   });
 });
 
-app.post('/insertProject', (req, res, next) => {
+
+app.post('/insertProjects', (req, res, next) => {
 
   let data = {title	:req.body.title	
    , category	: req.body.category	
@@ -1084,7 +1112,6 @@ app.post('/insertProject', (req, res, next) => {
    , contact_id: req.body.contact_id
    , company_id: req.body.company_id
    , quote_id: req.body.quote_id
-   , opportunity_id: req.body.opportunity_id
    , start_date	: new Date()
    , actual_finish_date	: req.body.actual_finish_date
    , creation_date: new Date().toISOString()
