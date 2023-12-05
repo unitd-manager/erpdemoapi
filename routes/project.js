@@ -73,10 +73,12 @@ app.get('/getProjectInErp', (req, res, next) => {
   ,p.status
   ,c.company_name
   ,co.contact_id
+  ,po.proposal_code
   ,CONCAT_WS(' ', co.first_name, co.last_name) AS contact_name 
   FROM project p
   LEFT JOIN company c ON c.company_id=p.company_id
   LEFT JOIN contact co ON co.contact_id=p.contact_id
+  LEFT JOIN proposal po ON p.proposal_id = po.proposal_id
   WHERE p.project_id!=''`,
     (err, result) => {
        
