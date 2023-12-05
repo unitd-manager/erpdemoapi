@@ -481,27 +481,6 @@ WHERE p.project_id =${db.escape(req.body.project_id)}
   }
  );
 });
-
-  app.get('/getProposalCode', (req, res, next) => {
-  db.query(`SELECT proposal_code FROM proposal WHERE status ='Awarded'`,
-    (err, result) => {
-      if (err) {
-         return res.status(400).send({
-              data: err,
-              msg:'Failed'
-            });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
-      }
-
-  }
- );
-});
-
 app.post("/getProposalDataById", (req, res, next) => {
   db.query(
     `SELECT 
@@ -554,13 +533,84 @@ app.post("/getProposalDataById", (req, res, next) => {
     }
   );
 });  
+  app.get('/getProposalCode', (req, res, next) => {
+  db.query(`SELECT proposal_code FROM proposal WHERE status ='Awarded'`,
+    (err, result) => {
+      if (err) {
+         return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+  }
+ );
+});
+
+app.post('/getProposalEmployee', (req, res, next) => {
+  db.query(`SELECT * FROM proposal_employee WHERE proposal_id =${db.escape(req.body.proposal_id)}`,
+          (err, result) => {
+       
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+app.post("/insertPrjectEmployee", (req, res, next) => {
+  let data = {
+    project_id: req.body.project_id,
+     proposal_id: req.body.proposal_id,
+    employee_id: req.body.employee_id,
+    creation_date: req.body.creation_date,
+    month: req.body.month,
+    year: req.body.year,
+    day: req.body.day,
+  };
+  let sql = "INSERT INTO employee_timesheet SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+      })
+    }
+
+  });
+});
+
+  
    app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
-            qt.*
-                ,qt.description
-                ,qt.amount               
-            FROM quote_items qt 
-            WHERE qt.quote_id =${db.escape(req.body.quote_id)}`,
+            qt.project_quote_items_id
+            ,qt.title
+            ,qt.amount
+            ,qt.quantity
+            ,qt.description
+            ,qt.unit_price
+            FROM project p 
+            LEFT JOIN (project_quote_items qt)  ON (qt.project_quote_id  = p.project_quote_id)
+            WHERE p.project_id =${db.escape(req.body.project_id)}`,
           (err, result) => {
        
       if (result.length == 0) {
@@ -991,38 +1041,38 @@ app.post("/getProjectPaymentSummaryById", (req, res, next) => {
 //     }
 //    );
 // });
-// app.post('/insertProject', (req, res, next) => {
+app.post('/insertProject', (req, res, next) => {
 
-//   let data = {title	:req.body.title	
-//   , category	: req.body.category	
-//   , status: req.body.status
-//   , contact_id: req.body.contact_id
-//   , company_id: req.body.company_id
-//   , quote_id: req.body.quote_id
-//   , opportunity_id: req.body.opportunity_id
-//   , start_date	: new Date()
-//   , actual_finish_date	: req.body.actual_finish_date
-//   , creation_date: new Date().toISOString()
-//   , modification_date	: req.body.modification_date	
-//   , project_id:req.body.project_id
-//     , project_code:req.body.project_code
-//   };
-//   let sql = "INSERT INTO project SET ?";
-//   let query = db.query(sql, data,(err, result) => {
-//     if (err) {
-//       console.log('error: ', err)
-//       return res.status(400).send({
-//         data: err,
-//         msg: 'failed',
-//       })
-//     } else {
-//       return res.status(200).send({
-//         data: result,
-//         msg: 'Success',
-//           });
-//     }
-//   });
-// });
+  let data = {title	:req.body.title	
+   , category	: req.body.category	
+   , status: req.body.status
+   , contact_id: req.body.contact_id
+   , company_id: req.body.company_id
+   , quote_id: req.body.quote_id
+   , opportunity_id: req.body.opportunity_id
+   , start_date	: new Date()
+   , actual_finish_date	: req.body.actual_finish_date
+   , creation_date: new Date().toISOString()
+   , modification_date	: req.body.modification_date	
+   , project_id:req.body.project_id
+    , project_code:req.body.project_code
+  };
+  let sql = "INSERT INTO project SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
+    }
+  });
+});
 
 app.post('/insertProject', (req, res, next) => {
 
@@ -1032,10 +1082,9 @@ app.post('/insertProject', (req, res, next) => {
    , contact_id: req.body.contact_id
    , company_id: req.body.company_id
    , quote_id: req.body.quote_id
-    , proposal_id: req.body.proposal_id
-   , start_date	: req.body.start_date
-   , description	: req.body.description
-   , estimated_finish_date	: req.body.estimated_finish_date
+   , opportunity_id: req.body.opportunity_id
+   , start_date	: new Date()
+   , actual_finish_date	: req.body.actual_finish_date
    , creation_date: new Date().toISOString()
    , modification_date	: req.body.modification_date	
    , project_id:req.body.project_id
