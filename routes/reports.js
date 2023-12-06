@@ -59,15 +59,27 @@ app.get('/getSalesReport', (req, res, next) => {
     i.invoice_code,
     c.company_name,
     i.invoice_amount,
-    SUM(it.total_cost) AS total,
-   SUM(i.invoice_amount-it.total_cost) AS vat
+    it.total,
+    i.invoice_amount - t.total_cost AS vat,
+    r.amount AS received,
+    i.invoice_amount - r.amount AS balance
 FROM
     orders o
     LEFT JOIN company c ON o.company_id = c.company_id
+    LEFT JOIN receipt r ON o.order_id = r.order_id
     LEFT JOIN invoice i ON o.order_id = i.order_id
-    LEFT JOIN invoice_item it ON i.invoice_id = it.invoice_id
-   WHERE
-    i.invoice_id !='' 
+    LEFT JOIN invoice_item t ON t.invoice_id = i.invoice_id
+    LEFT JOIN (
+        SELECT
+            invoice_id,
+            SUM(total_cost) AS total
+        FROM
+            invoice_item
+        GROUP BY
+            invoice_id
+    ) it ON i.invoice_id = it.invoice_id
+WHERE
+    i.invoice_id !=''
 GROUP BY
     i.invoice_id, i.invoice_date, i.invoice_code, c.company_name`,
   (err, result) => {
