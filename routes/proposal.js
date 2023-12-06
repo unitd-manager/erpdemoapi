@@ -72,13 +72,13 @@ app.post("/getProposalById", (req, res, next) => {
     ,pr.title
     ,pr.proposal_code
     ,pr.proposal_date
-   ,q.project_quote_id
+   
   ,pr.project_quote_id
    ,q.quote_code
    ,q.company_id
    ,q.contact_id
    ,c.company_name 
-   ,cont.contact_id
+   
    ,cont.first_name
    ,pr.status
    ,pr.est_start_date
