@@ -53,6 +53,38 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
 );
 });
 
+app.get('/getSalesReport', (req, res, next) => {
+  db.query(`SELECT
+    i.invoice_date,
+    i.invoice_code,
+    c.company_name,
+    i.invoice_amount,
+    SUM(it.total_cost) AS total,
+   SUM(i.invoice_amount-it.total_cost) AS vat
+FROM
+    orders o
+    LEFT JOIN company c ON o.company_id = c.company_id
+    LEFT JOIN invoice i ON o.order_id = i.order_id
+    LEFT JOIN invoice_item it ON i.invoice_id = it.invoice_id
+   WHERE
+    i.invoice_id !='' 
+GROUP BY
+    i.invoice_id, i.invoice_date, i.invoice_code, c.company_name`,
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
+
 app.get("/getInvoiceByYearReport", (req, res, next) => {
   db.query(
     `SELECT DATE_FORMAT(i.invoice_date, '%Y') AS invoice_year
@@ -1344,7 +1376,7 @@ app.post('/getEmployeeSalaryReport', (req, res, next) => {
 );
 });
 
-app.post("/getSalesReport", (req, res, next) => {
+app.get("/getOldSalesReport", (req, res, next) => {
   db.query(
     `SELECT
     i.invoice_date,
