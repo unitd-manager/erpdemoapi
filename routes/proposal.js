@@ -264,14 +264,14 @@ app.post("/getMaterialLineItemsById", (req, res, next) => {
     `SELECT
             pr.project_quote_id
             ,pr.proposal_code
-            ,qt.material_used_id
+            ,qt. material_needed_id
             ,qt.title
             ,qt.amount
             ,qt.quantity
             ,qt.description
             ,qt.unit_price
             FROM proposal pr 
-            LEFT JOIN (material_used qt)  ON (qt.project_quote_id  = pr.project_quote_id)
+            LEFT JOIN ( material_needed qt)  ON (qt.project_quote_id  = pr.project_quote_id)
             WHERE pr.proposal_id =  ${db.escape(req.body.proposal_id)}`,
     (err, result) => {
       if (result.length == 0) {
