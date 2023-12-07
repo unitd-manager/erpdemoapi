@@ -379,6 +379,225 @@ app.get('/getcontactById', (req, res, next) => {
 );
 });
 
+app.post('/getProjectMaterialLineItemsById', (req, res, next) => {
+    db.query(`SELECT
+              qt.* 
+              ,qt.project_quote_id
+              ,qt. material_needed_id
+              ,qt.creation_date
+              ,qt.modification_date
+              ,qt.created_by
+              ,qt.modified_by
+              FROM  project_material_needed qt 
+              WHERE qt.project_id =  ${db.escape(req.body.project_id)}`,
+            (err, result) => {
+         
+        if (err) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+        }
+   
+      }
+    );
+  });
+
+ app.post('/edit-ProjectMaterialNeeded', (req, res, next) => {
+    // ... your existing code
+  
+    // Calculate the total_amount by summing up all line item amounts
+    db.query(
+      `UPDATE  project_material_needed
+            SET title=${db.escape(req.body.title)}
+            ,description=${db.escape(req.body.description)}
+            ,quantity=${db.escape(req.body.quantity)}
+            ,unit=${db.escape(req.body.unit)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+            ,amount=${db.escape(req.body.amount)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+          ,modified_by=${db.escape(req.body.modified_by)}
+            WHERE  project_material_needed_id =  ${db.escape(req.body. project_material_needed_id)}`,
+            (err, result) => {
+              if (err) {
+                console.log("error: ", err);
+                return;
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: "Success",
+                });
+              }
+            }
+          );
+        });
+  
+//   app.post('/insertProjectMaterialItems', (req, res, next) => {
+
+//     let data = {
+//         material_needed_id: req.body.material_needed_id,    
+//       quote_category_id: req.body.quote_category_id,
+//       description: req.body.description,
+//       amount: req.body.amount,
+//       amount_other: req.body.amount_other,
+//       item_type: req.body.item_type,
+//       sort_order: req.body.sort_order,
+//       title: req.body.title,
+//       project_quote_id: req.body.project_quote_id,
+//       actual_amount: req.body.actual_amount,
+//       supplier_amount: req.body.supplier_amount,
+//       quantity: req.body.quantity,
+//       project_id: req.body.project_id,
+//       created_by: req.body.created_by,
+//       unit: req.body.unit,
+//       remarks: req.body.remarks,
+//       part_no: req.body.part_no,
+//       nationality: req.body.nationality,
+//       ot_rate: req.body.ot_rate,
+//       ph_rate: req.body.ph_rate,
+//       scaffold_code: req.body.scaffold_code,
+//       erection: req.body.erection,
+//       dismantle: req.body.dismantle,
+//       unit_price: req.body.unit_price,
+//       drawing_number: req.body.drawing_number,
+//       drawing_title: req.body.drawing_title,
+//       drawing_revision: req.body.drawing_revision,
+//       creation_date: req.body.creation_date,
+//     };
+//     let sql = "INSERT INTO project_material_needed SET ?";
+//     let query = db.query(sql, data,(err, result) => {
+//       if (err) {
+//         console.log("error: ", err);
+//         return;
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+//       }
+//     });
+//   });
+       
+       app.post('/insertProjectMaterialItems', (req, res, next) => {
+
+  let data = {
+    material_needed_id: req.body.material_needed_id,    
+      quote_category_id: req.body.quote_category_id,
+      description: req.body.description,
+      amount: req.body.amount,
+      amount_other: req.body.amount_other,
+      item_type: req.body.item_type,
+      sort_order: req.body.sort_order,
+      title: req.body.title,
+      project_quote_id: req.body.project_quote_id,
+      actual_amount: req.body.actual_amount,
+      supplier_amount: req.body.supplier_amount,
+      quantity: req.body.quantity,
+      project_id: req.body.project_id,
+      created_by: req.body.created_by,
+      unit: req.body.unit,
+      remarks: req.body.remarks,
+      part_no: req.body.part_no,
+      nationality: req.body.nationality,
+      ot_rate: req.body.ot_rate,
+      ph_rate: req.body.ph_rate,
+      scaffold_code: req.body.scaffold_code,
+      erection: req.body.erection,
+      dismantle: req.body.dismantle,
+      unit_price: req.body.unit_price,
+      drawing_number: req.body.drawing_number,
+      drawing_title: req.body.drawing_title,
+      drawing_revision: req.body.drawing_revision,
+      creation_date: req.body.creation_date,
+ };
+  let sql = "INSERT INTO project_material_needed SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+            data: err,
+            msg:'Failed'
+          });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'New material item has been created successfully'
+          });
+    }
+  });
+});
+
+
+ app.post('/insertProjectMaterialItemss', (req, res, next) => {
+    let data = {
+      material_needed_id: req.body.material_needed_id,    
+      quote_category_id: req.body.quote_category_id,
+      description: req.body.description,
+      amount: req.body.amount,
+      amount_other: req.body.amount_other,
+      item_type: req.body.item_type,
+      sort_order: req.body.sort_order,
+      title: req.body.title,
+      project_quote_id: req.body.project_quote_id,
+      actual_amount: req.body.actual_amount,
+      supplier_amount: req.body.supplier_amount,
+      quantity: req.body.quantity,
+      project_id: req.body.project_id,
+      created_by: req.body.created_by,
+      unit: req.body.unit,
+      remarks: req.body.remarks,
+      part_no: req.body.part_no,
+      nationality: req.body.nationality,
+      ot_rate: req.body.ot_rate,
+      ph_rate: req.body.ph_rate,
+      scaffold_code: req.body.scaffold_code,
+      erection: req.body.erection,
+      dismantle: req.body.dismantle,
+      unit_price: req.body.unit_price,
+      drawing_number: req.body.drawing_number,
+      drawing_title: req.body.drawing_title,
+      drawing_revision: req.body.drawing_revision,
+      creation_date: req.body.creation_date,
+    };
+  
+    let sql = "INSERT INTO  project_material_needed SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'New Tender has been created successfully'
+            });
+      }
+    });
+  });
+ 
+app.post('/deleteProjectMaterialneed', (req, res, next) => {
+
+  let data = { project_material_needed_id: req.body. project_material_needed_id};
+  let sql = "DELETE FROM  project_material_needed WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
+    }
+  });
+});
+
 app.post('/getAmountByProjectId', (req, res, next) => {
   db.query(`select (sum(i.invoice_amount)) as totalInvoice 
 ,(sum(ir.amount))as receivedAmount
@@ -561,7 +780,10 @@ app.post("/getProposalDataById", (req, res, next) => {
   );
 });  
   app.get('/getProposalCode', (req, res, next) => {
-  db.query(`SELECT proposal_code FROM proposal WHERE status ='Awarded'`,
+  db.query(`SELECT p.proposal_code, pp.project_id 
+FROM proposal p
+LEFT JOIN project pp ON p.proposal_id = pp.proposal_id
+WHERE p.status = 'Awarded' AND pp.project_id IS NULL`,
     (err, result) => {
       if (err) {
          return res.status(400).send({
