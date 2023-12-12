@@ -1162,6 +1162,60 @@ where p.project_id = ${db.escape(req.body.project_id)}`,
  );
 });
 
+app.post('/getPreviousInvoiceAmount', (req, res, next) => {
+  const companyName = req.body.companyName;
+  const startDate = req.body.startDate;
+
+  const sqlInvoice = `
+    SELECT invoice_id, invoice_amount
+    FROM invoice i
+    LEFT JOIN project p ON i.project_id = p.project_id
+    LEFT JOIN company c ON c.company_id = p.company_id
+    WHERE c.company_name = ? AND i.invoice_date < ? AND i.status != 'Cancelled'
+  `;
+
+  db.query(sqlInvoice, [companyName, startDate], (err, invoiceResults) => {
+    if (err) {
+      console.log("error: ", err);
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    }
+
+    let totalPreviousInvoiceAmount = 0;
+
+    invoiceResults.forEach((rowInvoice) => {
+      totalPreviousInvoiceAmount += rowInvoice.invoice_amount;
+
+      const sqlPayment = `
+        SELECT SUM(r.amount) AS receipt_amount
+        FROM receipt r
+        LEFT JOIN invoice_receipt_history irh ON r.receipt_id = irh.receipt_id
+        WHERE r.receipt_status = 'Paid' AND irh.invoice_id = ? AND r.receipt_date < ?
+      `;
+
+      db.query(sqlPayment, [rowInvoice.invoice_id, startDate], (err, paymentResults) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(400).send({
+            data: err,
+            msg: "failed",
+          });
+        }
+
+        const receiptAmount = paymentResults[0].receipt_amount;
+        totalPreviousInvoiceAmount -= receiptAmount;
+         
+        
+      });
+    });
+
+    // After processing all invoices and payments, return the totalPreviousInvoiceAmount.
+    res.json({ totalPreviousInvoiceAmount });
+  });
+});
+
 app.post('/getSubconById', (req, res, next) => {
   db.query(`select (sum(s.amount)) as payAmount,
 (sum(sh.amount)) as paidAmount

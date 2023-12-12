@@ -553,7 +553,7 @@ app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
             qt.* 
             FROM quote_items qt 
-            WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
+            WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
           (err, result) => {
        
       if (result.length == 0) {
@@ -570,6 +570,27 @@ app.post('/getQuoteLineItemsById', (req, res, next) => {
     }
   );
 });
+
+
+app.get("/getCategoryFromValueList", (req, res, next) => {
+  db.query(
+    `SELECT 
+      value,valuelist_id
+      FROM valuelist WHERE key_text="Category"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;   
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
 
 app.post('/getQuoteById', (req, res, next) => {
   db.query(`SELECT

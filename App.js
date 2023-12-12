@@ -108,6 +108,7 @@ const purchasereturn = require('./routes/purchasereturn.js');
 const dashboardforpurchaseorder = require('./routes/dashboardforpurchaseorder.js');
 const supplierpricelistitem = require('./routes/supplierpricelistitem.js');
 const uom = require('./routes/uom.js');
+const enquiry = require('./routes/enquiry.js');
 
 const creditnote = require('./routes/creditnote.js');
 const debitnote = require('./routes/debitnote.js');
@@ -195,6 +196,7 @@ app.use('/chartOfAccounts', chartOfAccounts);
 app.use('/purchaseinvoice', purchaseinvoice);
 app.use('/dashboardforpurchaseorder', dashboardforpurchaseorder);
 app.use('/uom', uom);
+app.use('/enquiry', enquiry);
 
 app.use(fileUpload({
     createParentPath: true

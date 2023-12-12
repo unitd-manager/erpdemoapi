@@ -1556,6 +1556,71 @@ WHERE i.invoice_date >= ${db.escape(req.body.startDate)} AND  i.invoice_date <= 
   );
 });
 
+app.post("/getAccountStatementReport", (req, res, next) => {
+  db.query(`
+      SELECT i.invoice_amount AS debit_amount
+            ,0 AS credit_amount
+            ,i.invoice_date AS date
+            ,i.invoice_code AS code
+            ,0 AS payment_mode
+            ,0 AS bank_cheque_no
+            ,0 AS bank_cheque_date
+            ,p.title AS project_title
+            ,(i.invoice_amount - 0) AS outstanding_amount
+      FROM invoice i
+      LEFT JOIN (project p) ON (i.project_id = p.project_id)
+      LEFT JOIN (company c) ON (c.company_id = p.company_id)
+      WHERE i.status != 'Cancelled'
+      AND i.invoice_date BETWEEN ${db.escape(req.body.startDate)} AND ${db.escape(req.body.endDate)}
+      AND c.company_name = ${db.escape(req.body.companyName)}
+      
+      UNION 
+      
+      SELECT 0 AS debit_amount
+            ,r.amount AS credit_amount
+            ,r.receipt_date AS date
+            ,r.receipt_code AS code
+            ,r.mode_of_payment AS payment_mode
+            ,r.cheque_no AS bank_cheque_no
+            ,r.cheque_date AS bank_cheque_date
+            ,p.title AS project_title
+            ,(0 - r.amount) AS outstanding_amount
+      FROM receipt r
+      LEFT JOIN (invoice_receipt_history irh) ON (r.receipt_id = irh.receipt_id)
+      LEFT JOIN (invoice i) ON (irh.invoice_id = i.invoice_id)
+      LEFT JOIN (project p) ON (i.project_id   = p.project_id)
+      LEFT JOIN (company c) ON (c.company_id   = p.company_id)
+      WHERE r.receipt_status != 'Cancelled'
+      AND r.receipt_date BETWEEN ${db.escape(req.body.startDate)} AND ${db.escape(req.body.endDate)}
+      AND c.company_name = ${db.escape(req.body.companyName)}
+      ORDER BY date ASC`,
+  (err, result) => {
+      if (err) {
+          console.log("error: ", err);
+          return res.status(400).send({
+              data: err,
+              msg: "failed",
+          });
+      } else {
+          let total_outstanding_amount = 0; // Initialize the outstanding amount to 0
+          const modifiedResult = result.map((row) => {
+              const debit_amount = parseFloat(row.debit_amount);
+              const credit_amount = parseFloat(row.credit_amount);
+              total_outstanding_amount += debit_amount - credit_amount; // Calculate the outstanding amount
+              return {
+                  ...row,
+                  outstanding_amount: total_outstanding_amount // Add the calculated outstanding amount to the row
+              };
+          });
+
+          return res.status(200).send({
+              data: modifiedResult,
+              msg: "Success",
+          });
+      }
+  });
+});
+
 app.post('/getProjectReport', (req, res, next) => { 
   db.query(
     `SELECT p.*

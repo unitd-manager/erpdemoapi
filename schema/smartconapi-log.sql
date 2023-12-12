@@ -8315,9 +8315,10 @@ ALTER TABLE `sales_return_history` CHANGE `modification_date` `modification_date
 ALTER TABLE `sales_return_history` CHANGE `return_date` `return_date` VARCHAR(55) NULL DEFAULT NULL; 
 ALTER TABLE `sales_return` ADD `created_by` VARCHAR(55) NULL DEFAULT NULL AFTER `order_id`, ADD `modified_by` VARCHAR(55) NULL DEFAULT NULL AFTER `created_by`; 
 
-/* =================== SABINA - 06/10/2023 ===================== */
+/* =================== SABINA - 08/12/2023 ===================== */
 ALTER TABLE `proposal` CHANGE `quote_id` `project_quote_id` INT(11) NULL DEFAULT NULL;
 ALTER TABLE `employee_timesheet` ADD `proposal_id` INT(11) NULL DEFAULT NULL AFTER `employee_id`;
+ALTER TABLE `quote_items` CHANGE `opportunity_id` `enquiry_id` INT(11) NULL DEFAULT NULL; 
 
 /* =================== Fathima - 13/10/2023 ===================== */
 
