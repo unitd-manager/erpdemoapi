@@ -42,6 +42,30 @@ app.get('/getSetting', (req, res, next) => {
   }
 );
 });
+
+app.get('/getVATamount', (req, res, next) => {
+  db.query(`Select s.key_text
+  ,s.description
+  ,s.value as vatPercentage
+  ,s.setting_id
+  From setting s
+  Where s.key_text ='VAT percentage'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 app.post('/getSettings', (req, res, next) => {
   db.query(`Select s.key_text
   ,s.description

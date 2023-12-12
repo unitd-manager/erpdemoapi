@@ -29,7 +29,6 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.revision
     ,q.intro_drawing_quote 
     ,q.total_amount
-    ,q.quote_amount
     ,q.project_enquiry_id
     ,o.company_id
     ,q.contact_id
@@ -257,60 +256,46 @@ app.post('/getProjectquoteById', (req, res, next) => {
       }
     );
   });
+
   app.post('/deleteEditItem', (req, res, next) => {
     let projectQuoteItemsId = req.body.project_quote_items_id;
   
-    // Fetch the project_quote_item amount before deleting
-    let selectSql = "SELECT amount, project_quote_id FROM project_quote_items WHERE project_quote_items_id = ?";
-    let selectData = [projectQuoteItemsId];
-  
-    db.query(selectSql, selectData, (selectErr, selectResult) => {
-      if (selectErr) {
-        console.log('error: ', selectErr);
-        return res.status(400).send({
-          data: selectErr,
-          msg: 'failed to fetch project_quote_item amount',
-        });
-      }
-  
-      // Store the project_quote_item amount and project_quote_id
-      let projectQuoteItemAmount = selectResult[0].amount;
-      let projectQuoteId = selectResult[0].project_quote_id;
-  
-      // Now, delete the project_quote_item
-      let deleteSql = "DELETE FROM project_quote_items WHERE project_quote_items_id = ?";
-      let deleteData = [projectQuoteItemsId];
-  
-      db.query(deleteSql, deleteData, (deleteErr, deleteResult) => {
-        if (deleteErr) {
-          console.log('error: ', deleteErr);
-          return res.status(400).send({
-            data: deleteErr,
-            msg: 'failed to delete project_quote_item',
+    let sql = "DELETE FROM quote_items WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
           });
-        }
-  
-        // Update the project_quote table by subtracting project_quote_item amount from quote_amount
-        let updateSql = "UPDATE project_quote SET quote_amount = quote_amount - ? WHERE project_quote_id = ?";
-        let updateData = [projectQuoteItemAmount, projectQuoteId];
-  
-        db.query(updateSql, updateData, (updateErr, updateResult) => {
-          if (updateErr) {
-            console.log('error: ', updateErr);
-            return res.status(400).send({
-              data: updateErr,
-              msg: 'failed to update project_quote quote_amount',
-            });
-          }
-  
-          return res.status(200).send({
-            data: updateResult,
-            msg: 'Success',
-          });
-        });
-      });
-    });
+    }
   });
+});
+
+app.post('/deleteMaterial', (req, res, next) => {
+
+  let data = { material_needed_id: req.body. material_needed_id};
+  let sql = "DELETE FROM  material_needed WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
+    }
+  });
+});
   
   
   
@@ -411,41 +396,119 @@ app.post('/getProjectquoteById', (req, res, next) => {
       creation_date: req.body.creation_date,
     };
   
-    let sqlInsert = "INSERT INTO project_quote_items SET ?";
-    let queryInsert = db.query(sqlInsert, data, (err, result) => {
+    let sql = "INSERT INTO project_quote_items SET ?";
+    let query = db.query(sql, data,(err, result) => {
       if (err) {
-        return res.status(400).send({
-          data: err,
-          msg: 'Failed',
-        });
+        console.log("error: ", err);
+        result(err, null);
+        return;
       } else {
-        // Calculate the sum of amounts from project_quote_items
-        let sqlSum = "SELECT SUM(amount) AS totalAmount FROM project_quote_items WHERE project_quote_id = ?";
-        let querySum = db.query(sqlSum, [req.body.project_quote_id], (err, sumResult) => {
-          if (err) {
-            return res.status(400).send({
-              data: err,
-              msg: 'Failed to calculate total amount',
+            return res.status(200).send({
+              data: result,
+              msg:'New Tender has been created successfully'
             });
-          } else {
-            // Update the total_amount field in the quote table
-            let totalAmount = sumResult[0].totalAmount || 0;
-            let sqlUpdate = "UPDATE project_quote SET quote_amount = ? WHERE project_quote_id = ?";
-            let queryUpdate = db.query(sqlUpdate, [totalAmount, req.body.project_quote_id], (err, updateResult) => {
+      }
+    });
+  });
+  
+  app.post('/getMaterialLineItemsById', (req, res, next) => {
+    db.query(`SELECT
+              qt.* 
+              ,qt.project_quote_id
+              ,qt. material_needed_id
+              ,qt.creation_date
+              ,qt.modification_date
+              ,qt.created_by
+              ,qt.modified_by
+              FROM  material_needed qt 
+              WHERE qt.project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
+            (err, result) => {
+         
+        if (err) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+        }
+   
+      }
+    );
+  });
+
+  app.post('/edit-QuoteLine', (req, res, next) => {
+    // ... your existing code
+  
+    // Calculate the total_amount by summing up all line item amounts
+    db.query(
+      `UPDATE  material_needed
+            SET title=${db.escape(req.body.title)}
+            ,description=${db.escape(req.body.description)}
+            ,quantity=${db.escape(req.body.quantity)}
+            ,unit=${db.escape(req.body.unit)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+            ,amount=${db.escape(req.body.amount)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+          ,modified_by=${db.escape(req.body.modified_by)}
+            WHERE  material_needed_id =  ${db.escape(req.body. material_needed_id)}`,
+            (err, result) => {
               if (err) {
-                return res.status(400).send({
-                  data: err,
-                  msg: 'Failed to update total amount in quote table',
-                });
+                console.log("error: ", err);
+                return;
               } else {
                 return res.status(200).send({
                   data: result,
-                  msg: 'New quote item has been created successfully',
+                  msg: "Success",
                 });
               }
-            });
-          }
+            }
+          );
         });
+app.post('/insertMaterialItems', (req, res, next) => {
+    let data = {
+      quote_category_id: req.body.quote_category_id,
+      description: req.body.description,
+      amount: req.body.amount,
+      amount_other: req.body.amount_other,
+      item_type: req.body.item_type,
+      sort_order: req.body.sort_order,
+      title: req.body.title,
+      project_quote_id: req.body.project_quote_id,
+      actual_amount: req.body.actual_amount,
+      supplier_amount: req.body.supplier_amount,
+      quantity: req.body.quantity,
+      project_id: req.body.project_id,
+      created_by: req.body.created_by,
+      unit: req.body.unit,
+      remarks: req.body.remarks,
+      part_no: req.body.part_no,
+      nationality: req.body.nationality,
+      ot_rate: req.body.ot_rate,
+      ph_rate: req.body.ph_rate,
+      scaffold_code: req.body.scaffold_code,
+      erection: req.body.erection,
+      dismantle: req.body.dismantle,
+      unit_price: req.body.unit_price,
+      drawing_number: req.body.drawing_number,
+      drawing_title: req.body.drawing_title,
+      drawing_revision: req.body.drawing_revision,
+      creation_date: req.body.creation_date,
+    };
+  
+    let sql = "INSERT INTO  material_needed SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'New Tender has been created successfully'
+            });
       }
     });
   });

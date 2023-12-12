@@ -53,19 +53,35 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
 );
 });
 
-
-app.get('/getInvoiceByYearReport', (req, res, next) => {
-  db.query(`SELECT DATE_FORMAT(i.invoice_date, '%Y') AS invoice_year
-     , SUM(it.total_cost) AS invoice_amount_yearly
-FROM opportunity opp
-LEFT JOIN quote q ON (opp.opportunity_id = q.opportunity_id)
-LEFT JOIN orders o ON (q.quote_id = o.quote_id)
-LEFT JOIN invoice i ON (o.order_id = i.order_id)
-LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
-WHERE o.order_id != ''
-    AND i.status != 'cancelled'
-    AND opp.category IN ('Project', 'Tenancy Project', 'Tenancy Work', 'Maintenance')
-GROUP BY DATE_FORMAT(i.invoice_date, '%Y')`,
+app.get('/getSalesReport', (req, res, next) => {
+  db.query(`SELECT
+    i.invoice_date,
+    i.invoice_code,
+    c.company_name,
+    i.invoice_amount,
+    it.total,
+    i.invoice_amount - t.total_cost AS vat,
+    r.amount AS received,
+    i.invoice_amount - r.amount AS balance
+FROM
+    orders o
+    LEFT JOIN company c ON o.company_id = c.company_id
+    LEFT JOIN receipt r ON o.order_id = r.order_id
+    LEFT JOIN invoice i ON o.order_id = i.order_id
+    LEFT JOIN invoice_item t ON t.invoice_id = i.invoice_id
+    LEFT JOIN (
+        SELECT
+            invoice_id,
+            SUM(total_cost) AS total
+        FROM
+            invoice_item
+        GROUP BY
+            invoice_id
+    ) it ON i.invoice_id = it.invoice_id
+WHERE
+    i.invoice_id !=''
+GROUP BY
+    i.invoice_id, i.invoice_date, i.invoice_code, c.company_name`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -79,6 +95,30 @@ GROUP BY DATE_FORMAT(i.invoice_date, '%Y')`,
     }
   }
 );
+});
+
+app.get("/getInvoiceByYearReport", (req, res, next) => {
+  db.query(
+    `SELECT DATE_FORMAT(i.invoice_date, '%Y') AS invoice_year
+              ,(SUM(i.invoice_amount )) AS invoice_amount_yearly
+        FROM invoice i
+        LEFT JOIN orders o ON (o.order_id = i.order_id) 
+        GROUP BY DATE_FORMAT(i.invoice_date, '%Y')`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
 });
 
 app.post('/getPayslipEmployeeReport', (req, res, next) => {
@@ -1348,7 +1388,7 @@ app.post('/getEmployeeSalaryReport', (req, res, next) => {
 );
 });
 
-app.post("/getSalesReport", (req, res, next) => {
+app.get("/getOldSalesReport", (req, res, next) => {
   db.query(
     `SELECT
     i.invoice_date,
@@ -1426,9 +1466,7 @@ app.get('/getInvoiveByMonth', (req, res, next) => {
   });
 });
 
-
-app.get("/getInvoiceByYearReport", (req, res, next) => {
-  const { recordType } = req.query;
+app.get("/getInvoiceByYearReportOld", (req, res, next) => {
   db.query(
     ` SELECT DATE_FORMAT(i.invoice_date, '%Y') AS invoice_year
               ,(SUM(i.invoice_amount )) AS invoice_amount_yearly
@@ -1437,8 +1475,39 @@ app.get("/getInvoiceByYearReport", (req, res, next) => {
         LEFT JOIN orders o   ON (o.order_id   = i.order_id) 
         where o.record_type!=''
  AND i.status != 'cancelled'
- ${recordType ? 'AND o.record_type = ?' : ''}
- GROUP BY DATE_FORMAT(i.invoice_date, '%Y'),o.record_type`
+ GROUP BY DATE_FORMAT(i.invoice_date, '%Y'),o.record_type`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getInvoiceByYearReports", (req, res, next) => {
+  const { recordType } = req.query;
+  db.query(
+    ` SELECT
+  DATE_FORMAT(i.invoice_date, '%Y') AS invoice_year,
+  SUM(i.invoice_amount) AS invoice_amount_yearly,
+  opp.category
+FROM
+  invoice i
+  LEFT JOIN orders o ON o.order_id = i.order_id
+  LEFT JOIN opportunity opp ON opp.company_id = o.company_id
+WHER i.status != 'cancelled'
+  AND (opp.category = ? OR ? = '')
+GROUP BY
+  DATE_FORMAT(i.invoice_date, '%Y'), opp.category`
  , [recordType], (err, result) => {
       if (err) {
         console.log("error: ", err);
