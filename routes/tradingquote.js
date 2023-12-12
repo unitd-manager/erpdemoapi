@@ -299,6 +299,7 @@ app.post("/insertQuoteItems", (req, res, next) => {
   let data = {
     quote_category_id: req.body.quote_category_id,
     description: req.body.description,
+    product_id:req.body.product_id,
     amount: req.body.amount,
     amount_other: req.body.amount_other,
     item_type: req.body.item_type,
