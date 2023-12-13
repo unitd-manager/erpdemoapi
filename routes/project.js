@@ -73,10 +73,12 @@ app.get('/getProjectInErp', (req, res, next) => {
   ,p.status
   ,c.company_name
   ,co.contact_id
+  ,po.proposal_code
   ,CONCAT_WS(' ', co.first_name, co.last_name) AS contact_name 
   FROM project p
   LEFT JOIN company c ON c.company_id=p.company_id
   LEFT JOIN contact co ON co.contact_id=p.contact_id
+  LEFT JOIN proposal po ON p.proposal_id = po.proposal_id
   WHERE p.project_id!=''`,
     (err, result) => {
        
@@ -95,6 +97,31 @@ app.get('/getProjectInErp', (req, res, next) => {
     }
   );
 });
+
+app.post("/getTimesheetStaffById", (req, res, next) => {
+  db.query(
+    `SELECT * FROM employee_timesheet et 
+    INNER JOIN employee e ON e.employee_id = et.employee_id 
+    INNER JOIN project p ON p.project_id = et.project_id
+    WHERE et.project_id = ${db.escape(req.body.project_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+           data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
 
 // app.get('/getProjects', (req, res, next) => {
 //   db.query(`SELECT p.title
@@ -352,6 +379,225 @@ app.get('/getcontactById', (req, res, next) => {
 );
 });
 
+app.post('/getProjectMaterialLineItemsById', (req, res, next) => {
+    db.query(`SELECT
+              qt.* 
+              ,qt.project_quote_id
+              ,qt. material_needed_id
+              ,qt.creation_date
+              ,qt.modification_date
+              ,qt.created_by
+              ,qt.modified_by
+              FROM  project_material_needed qt 
+              WHERE qt.project_id =  ${db.escape(req.body.project_id)}`,
+            (err, result) => {
+         
+        if (err) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+        }
+   
+      }
+    );
+  });
+
+ app.post('/edit-ProjectMaterialNeeded', (req, res, next) => {
+    // ... your existing code
+  
+    // Calculate the total_amount by summing up all line item amounts
+    db.query(
+      `UPDATE  project_material_needed
+            SET title=${db.escape(req.body.title)}
+            ,description=${db.escape(req.body.description)}
+            ,quantity=${db.escape(req.body.quantity)}
+            ,unit=${db.escape(req.body.unit)}
+            ,unit_price=${db.escape(req.body.unit_price)}
+            ,amount=${db.escape(req.body.amount)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+          ,modified_by=${db.escape(req.body.modified_by)}
+            WHERE  project_material_needed_id =  ${db.escape(req.body. project_material_needed_id)}`,
+            (err, result) => {
+              if (err) {
+                console.log("error: ", err);
+                return;
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: "Success",
+                });
+              }
+            }
+          );
+        });
+  
+//   app.post('/insertProjectMaterialItems', (req, res, next) => {
+
+//     let data = {
+//         material_needed_id: req.body.material_needed_id,    
+//       quote_category_id: req.body.quote_category_id,
+//       description: req.body.description,
+//       amount: req.body.amount,
+//       amount_other: req.body.amount_other,
+//       item_type: req.body.item_type,
+//       sort_order: req.body.sort_order,
+//       title: req.body.title,
+//       project_quote_id: req.body.project_quote_id,
+//       actual_amount: req.body.actual_amount,
+//       supplier_amount: req.body.supplier_amount,
+//       quantity: req.body.quantity,
+//       project_id: req.body.project_id,
+//       created_by: req.body.created_by,
+//       unit: req.body.unit,
+//       remarks: req.body.remarks,
+//       part_no: req.body.part_no,
+//       nationality: req.body.nationality,
+//       ot_rate: req.body.ot_rate,
+//       ph_rate: req.body.ph_rate,
+//       scaffold_code: req.body.scaffold_code,
+//       erection: req.body.erection,
+//       dismantle: req.body.dismantle,
+//       unit_price: req.body.unit_price,
+//       drawing_number: req.body.drawing_number,
+//       drawing_title: req.body.drawing_title,
+//       drawing_revision: req.body.drawing_revision,
+//       creation_date: req.body.creation_date,
+//     };
+//     let sql = "INSERT INTO project_material_needed SET ?";
+//     let query = db.query(sql, data,(err, result) => {
+//       if (err) {
+//         console.log("error: ", err);
+//         return;
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+//       }
+//     });
+//   });
+       
+       app.post('/insertProjectMaterialItems', (req, res, next) => {
+
+  let data = {
+    material_needed_id: req.body.material_needed_id,    
+      quote_category_id: req.body.quote_category_id,
+      description: req.body.description,
+      amount: req.body.amount,
+      amount_other: req.body.amount_other,
+      item_type: req.body.item_type,
+      sort_order: req.body.sort_order,
+      title: req.body.title,
+      project_quote_id: req.body.project_quote_id,
+      actual_amount: req.body.actual_amount,
+      supplier_amount: req.body.supplier_amount,
+      quantity: req.body.quantity,
+      project_id: req.body.project_id,
+      created_by: req.body.created_by,
+      unit: req.body.unit,
+      remarks: req.body.remarks,
+      part_no: req.body.part_no,
+      nationality: req.body.nationality,
+      ot_rate: req.body.ot_rate,
+      ph_rate: req.body.ph_rate,
+      scaffold_code: req.body.scaffold_code,
+      erection: req.body.erection,
+      dismantle: req.body.dismantle,
+      unit_price: req.body.unit_price,
+      drawing_number: req.body.drawing_number,
+      drawing_title: req.body.drawing_title,
+      drawing_revision: req.body.drawing_revision,
+      creation_date: req.body.creation_date,
+ };
+  let sql = "INSERT INTO project_material_needed SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+            data: err,
+            msg:'Failed'
+          });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'New material item has been created successfully'
+          });
+    }
+  });
+});
+
+
+ app.post('/insertProjectMaterialItemss', (req, res, next) => {
+    let data = {
+      material_needed_id: req.body.material_needed_id,    
+      quote_category_id: req.body.quote_category_id,
+      description: req.body.description,
+      amount: req.body.amount,
+      amount_other: req.body.amount_other,
+      item_type: req.body.item_type,
+      sort_order: req.body.sort_order,
+      title: req.body.title,
+      project_quote_id: req.body.project_quote_id,
+      actual_amount: req.body.actual_amount,
+      supplier_amount: req.body.supplier_amount,
+      quantity: req.body.quantity,
+      project_id: req.body.project_id,
+      created_by: req.body.created_by,
+      unit: req.body.unit,
+      remarks: req.body.remarks,
+      part_no: req.body.part_no,
+      nationality: req.body.nationality,
+      ot_rate: req.body.ot_rate,
+      ph_rate: req.body.ph_rate,
+      scaffold_code: req.body.scaffold_code,
+      erection: req.body.erection,
+      dismantle: req.body.dismantle,
+      unit_price: req.body.unit_price,
+      drawing_number: req.body.drawing_number,
+      drawing_title: req.body.drawing_title,
+      drawing_revision: req.body.drawing_revision,
+      creation_date: req.body.creation_date,
+    };
+  
+    let sql = "INSERT INTO  project_material_needed SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'New Tender has been created successfully'
+            });
+      }
+    });
+  });
+ 
+app.post('/deleteProjectMaterialneed', (req, res, next) => {
+
+  let data = { project_material_needed_id: req.body. project_material_needed_id};
+  let sql = "DELETE FROM  project_material_needed WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
+    }
+  });
+});
+
 app.post('/getAmountByProjectId', (req, res, next) => {
   db.query(`select (sum(i.invoice_amount)) as totalInvoice 
 ,(sum(ir.amount))as receivedAmount
@@ -481,27 +727,6 @@ WHERE p.project_id =${db.escape(req.body.project_id)}
   }
  );
 });
-
-  app.get('/getProposalCode', (req, res, next) => {
-  db.query(`SELECT proposal_code FROM proposal WHERE status ='Awarded'`,
-    (err, result) => {
-      if (err) {
-         return res.status(400).send({
-              data: err,
-              msg:'Failed'
-            });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
-      }
-
-  }
- );
-});
-
 app.post("/getProposalDataById", (req, res, next) => {
   db.query(
     `SELECT 
@@ -554,13 +779,87 @@ app.post("/getProposalDataById", (req, res, next) => {
     }
   );
 });  
+  app.get('/getProposalCode', (req, res, next) => {
+  db.query(`SELECT p.proposal_code, pp.project_id 
+FROM proposal p
+LEFT JOIN project pp ON p.proposal_id = pp.proposal_id
+WHERE p.status = 'Awarded' AND pp.project_id IS NULL`,
+    (err, result) => {
+      if (err) {
+         return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+  }
+ );
+});
+
+app.post('/getProposalEmployee', (req, res, next) => {
+  db.query(`SELECT * FROM proposal_employee WHERE proposal_id =${db.escape(req.body.proposal_id)}`,
+          (err, result) => {
+       
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+app.post("/insertPrjectEmployee", (req, res, next) => {
+  let data = {
+    project_id: req.body.project_id,
+     proposal_id: req.body.proposal_id,
+    employee_id: req.body.employee_id,
+    creation_date: req.body.creation_date,
+    month: req.body.month,
+    year: req.body.year,
+    day: req.body.day,
+  };
+  let sql = "INSERT INTO employee_timesheet SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+      })
+    }
+
+  });
+});
+
+  
    app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
-            qt.*
-                ,qt.description
-                ,qt.amount               
-            FROM quote_items qt 
-            WHERE qt.quote_id =${db.escape(req.body.quote_id)}`,
+            qt.project_quote_items_id
+            ,qt.title
+            ,qt.amount
+            ,qt.quantity
+            ,qt.description
+            ,qt.unit_price
+            FROM project p 
+            LEFT JOIN (project_quote_items qt)  ON (qt.project_quote_id  = p.project_quote_id)
+            WHERE p.project_id =${db.escape(req.body.project_id)}`,
           (err, result) => {
        
       if (result.length == 0) {
@@ -991,39 +1290,6 @@ app.post("/getProjectPaymentSummaryById", (req, res, next) => {
 //     }
 //    );
 // });
-// app.post('/insertProject', (req, res, next) => {
-
-//   let data = {title	:req.body.title	
-//   , category	: req.body.category	
-//   , status: req.body.status
-//   , contact_id: req.body.contact_id
-//   , company_id: req.body.company_id
-//   , quote_id: req.body.quote_id
-//   , opportunity_id: req.body.opportunity_id
-//   , start_date	: new Date()
-//   , actual_finish_date	: req.body.actual_finish_date
-//   , creation_date: new Date().toISOString()
-//   , modification_date	: req.body.modification_date	
-//   , project_id:req.body.project_id
-//     , project_code:req.body.project_code
-//   };
-//   let sql = "INSERT INTO project SET ?";
-//   let query = db.query(sql, data,(err, result) => {
-//     if (err) {
-//       console.log('error: ', err)
-//       return res.status(400).send({
-//         data: err,
-//         msg: 'failed',
-//       })
-//     } else {
-//       return res.status(200).send({
-//         data: result,
-//         msg: 'Success',
-//           });
-//     }
-//   });
-// });
-
 app.post('/insertProject', (req, res, next) => {
 
   let data = {title	:req.body.title	
@@ -1036,6 +1302,40 @@ app.post('/insertProject', (req, res, next) => {
    , start_date	: req.body.start_date
    , description	: req.body.description
    , estimated_finish_date	: req.body.estimated_finish_date
+   , creation_date: new Date().toISOString()
+   , modification_date	: req.body.modification_date	
+   , project_id:req.body.project_id
+    , project_code:req.body.project_code
+    , project_quote_id:req.body.project_quote_id
+  };
+  let sql = "INSERT INTO project SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
+    }
+  });
+});
+
+
+app.post('/insertProjects', (req, res, next) => {
+
+  let data = {title	:req.body.title	
+   , category	: req.body.category	
+   , status: req.body.status
+   , contact_id: req.body.contact_id
+   , company_id: req.body.company_id
+   , quote_id: req.body.quote_id
+   , start_date	: new Date()
+   , actual_finish_date	: req.body.actual_finish_date
    , creation_date: new Date().toISOString()
    , modification_date	: req.body.modification_date	
    , project_id:req.body.project_id
@@ -1082,6 +1382,60 @@ where p.project_id = ${db.escape(req.body.project_id)}`,
 
   }
  );
+});
+
+app.post('/getPreviousInvoiceAmount', (req, res, next) => {
+  const companyName = req.body.companyName;
+  const startDate = req.body.startDate;
+
+  const sqlInvoice = `
+    SELECT invoice_id, invoice_amount
+    FROM invoice i
+    LEFT JOIN project p ON i.project_id = p.project_id
+    LEFT JOIN company c ON c.company_id = p.company_id
+    WHERE c.company_name = ? AND i.invoice_date < ? AND i.status != 'Cancelled'
+  `;
+
+  db.query(sqlInvoice, [companyName, startDate], (err, invoiceResults) => {
+    if (err) {
+      console.log("error: ", err);
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    }
+
+    let totalPreviousInvoiceAmount = 0;
+
+    invoiceResults.forEach((rowInvoice) => {
+      totalPreviousInvoiceAmount += rowInvoice.invoice_amount;
+
+      const sqlPayment = `
+        SELECT SUM(r.amount) AS receipt_amount
+        FROM receipt r
+        LEFT JOIN invoice_receipt_history irh ON r.receipt_id = irh.receipt_id
+        WHERE r.receipt_status = 'Paid' AND irh.invoice_id = ? AND r.receipt_date < ?
+      `;
+
+      db.query(sqlPayment, [rowInvoice.invoice_id, startDate], (err, paymentResults) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(400).send({
+            data: err,
+            msg: "failed",
+          });
+        }
+
+        const receiptAmount = paymentResults[0].receipt_amount;
+        totalPreviousInvoiceAmount -= receiptAmount;
+         
+        
+      });
+    });
+
+    // After processing all invoices and payments, return the totalPreviousInvoiceAmount.
+    res.json({ totalPreviousInvoiceAmount });
+  });
 });
 
 app.post('/getSubconById', (req, res, next) => {

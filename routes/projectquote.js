@@ -29,7 +29,6 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.revision
     ,q.intro_drawing_quote 
     ,q.total_amount
-    ,q.quote_amount
     ,q.project_enquiry_id
     ,o.company_id
     ,q.contact_id
@@ -280,8 +279,8 @@ app.post('/getProjectquoteById', (req, res, next) => {
 
 app.post('/deleteMaterial', (req, res, next) => {
 
-  let data = {material_used_id: req.body.material_used_id};
-  let sql = "DELETE FROM material_used WHERE ?";
+  let data = { material_needed_id: req.body. material_needed_id};
+  let sql = "DELETE FROM  material_needed WHERE ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -416,12 +415,12 @@ app.post('/deleteMaterial', (req, res, next) => {
     db.query(`SELECT
               qt.* 
               ,qt.project_quote_id
-              ,qt.material_used_id
+              ,qt. material_needed_id
               ,qt.creation_date
               ,qt.modification_date
               ,qt.created_by
               ,qt.modified_by
-              FROM material_used qt 
+              FROM  material_needed qt 
               WHERE qt.project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
             (err, result) => {
          
@@ -445,7 +444,7 @@ app.post('/deleteMaterial', (req, res, next) => {
   
     // Calculate the total_amount by summing up all line item amounts
     db.query(
-      `UPDATE material_used
+      `UPDATE  material_needed
             SET title=${db.escape(req.body.title)}
             ,description=${db.escape(req.body.description)}
             ,quantity=${db.escape(req.body.quantity)}
@@ -454,7 +453,7 @@ app.post('/deleteMaterial', (req, res, next) => {
             ,amount=${db.escape(req.body.amount)}
             ,modification_date=${db.escape(req.body.modification_date)}
           ,modified_by=${db.escape(req.body.modified_by)}
-            WHERE material_used_id =  ${db.escape(req.body.material_used_id)}`,
+            WHERE  material_needed_id =  ${db.escape(req.body. material_needed_id)}`,
             (err, result) => {
               if (err) {
                 console.log("error: ", err);
@@ -499,7 +498,7 @@ app.post('/insertMaterialItems', (req, res, next) => {
       creation_date: req.body.creation_date,
     };
   
-    let sql = "INSERT INTO material_used SET ?";
+    let sql = "INSERT INTO  material_needed SET ?";
     let query = db.query(sql, data,(err, result) => {
       if (err) {
         console.log("error: ", err);
