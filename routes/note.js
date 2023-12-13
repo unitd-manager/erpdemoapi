@@ -15,6 +15,7 @@ app.post('/addNote', (req, res, next) => {
    , room_name	: req.body.room_name	
    , record_id: req.body.record_id
    , creation_date: req.body.creation_date
+   , created_by: req.body.created_by
    , published: '1'}
    let sql = "INSERT INTO comment SET ?";
   let query = db.query(sql, data,(err, result) => {

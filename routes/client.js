@@ -651,6 +651,47 @@ app.post('/update-flag', (req, res, next) => {
           );
 });
 
+app.post('/getInvoiceLinkedById', (req, res, next) => {
+  db.query(`SELECT
+  i.invoice_id
+ ,i.item_title
+ ,i.description
+ ,i.total_cost
+ ,i.qty
+ ,i.invoice_qty
+ ,i.unit_price
+ ,i.invoice_item_id
+ ,i.unit
+ ,i.created_by
+ ,i.creation_date
+ ,i.modified_by
+ ,i.modification_date
+ ,i.order_id
+ ,i.order_item_id
+ ,o.order_id
+ ,c.company_id
+  from invoice_item i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+  LEFT JOIN company c  ON c.company_id=o.company_id
+WHERE c.company_id= ${db.escape(req.body.company_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
 
 
 

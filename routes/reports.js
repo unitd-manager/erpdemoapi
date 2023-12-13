@@ -1487,6 +1487,37 @@ WHERE i.invoice_date >= ${db.escape(req.body.startDate)} AND  i.invoice_date <= 
   );
 });
 
+app.post('/getProjectReportold', (req, res, next) => { 
+  db.query(
+    `SELECT p.*
+    ,p.title AS Project_name
+    ,c.company_id
+    ,c.company_name 
+    ,p.category
+    ,p.status
+    ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name
+FROM project p
+LEFT JOIN company c ON (c.company_id = p.company_id)
+LEFT JOIN (contact cont) ON (p.contact_id = cont.contact_id)
+WHERE p.start_date >= ${db.escape(req.body.startDate)} AND p.actual_finish_date <= ${db.escape(req.body.actual_finish_date)}
+AND p.category = ${db.escape(req.body.category)} AND p.status = ${db.escape(req.body.status)}`,
+(err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
 app.post('/getProjectReport', (req, res, next) => { 
   db.query(
     `SELECT p.*
@@ -1516,6 +1547,41 @@ AND p.category = ${db.escape(req.body.category)} AND p.status = ${db.escape(req.
       }
     }
   );
+});
+
+app.post('/getAgingReports', (req, res, next) => {
+  db.query(`SELECT c.company_name,
+c.company_id, 
+i.invoice_id, 
+i.status, 
+i.invoice_date,
+o.cust_company_name,
+invHist.amount,
+(CASE WHEN DATEDIFF(CURDATE(), i.invoice_date) BETWEEN 0 AND 15 THEN invHist.amount ELSE 0 END) AS 'firstdays', 
+(CASE WHEN DATEDIFF(CURDATE(), i.invoice_date) BETWEEN 16 AND 30 THEN invHist.amount ELSE 0 END) AS 'seconddays', 
+(CASE WHEN DATEDIFF(CURDATE(), i.invoice_date) BETWEEN 31 AND 45 THEN invHist.amount ELSE 0 END) AS 'thirddays' 
+FROM invoice i 
+LEFT JOIN orders o ON (i.order_id = o.order_id) 
+LEFT JOIN company c ON (o.company_id = c.company_id) 
+LEFT JOIN invoice_receipt_history invHist ON (invHist.invoice_id = i.invoice_id)
+WHERE c.company_id !='' 
+AND i.status != 'Cancelled' 
+AND i.status='due' OR i.status='Partial Payment'  OR i.status='paid'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
 });
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {

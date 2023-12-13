@@ -102,29 +102,29 @@ ORDER BY o.order_id`,
     }
   );
 });
-app.post('/editInvoiceItems', (req, res, next) => {
-  db.query(`UPDATE invoice_item 
-            SET item_title = ${db.escape(req.body.item_title)}
-             ,unit=${db.escape(req.body.unit)}
-            ,unit_price=${db.escape(req.body.unit_price)}
-             ,qty=${db.escape(req.body.qty)}
-            ,total_cost=${db.escape(req.body.total_cost)}
-            ,modification_date=${db.escape(req.body.modification_date)}
-            ,modified_by=${db.escape(req.body.modified_by)}
-             WHERE invoice_item_id  =  ${db.escape(req.body.invoice_item_id )}`,
-    (err, result) => {
-      if (err) {
-        console.log("error: ", err);
-        return;
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-      }
-     }
-   );
-})
+// app.post('/editInvoiceItems', (req, res, next) => {
+//   db.query(`UPDATE invoice_item 
+//             SET item_title = ${db.escape(req.body.item_title)}
+//              ,unit=${db.escape(req.body.unit)}
+//             ,unit_price=${db.escape(req.body.unit_price)}
+//              ,qty=${db.escape(req.body.qty)}
+//             ,total_cost=${db.escape(req.body.total_cost)}
+//             ,modification_date=${db.escape(req.body.modification_date)}
+//             ,modified_by=${db.escape(req.body.modified_by)}
+//              WHERE invoice_item_id  =  ${db.escape(req.body.invoice_item_id )}`,
+//     (err, result) => {
+//       if (err) {
+//         console.log("error: ", err);
+//         return;
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+//       }
+//      }
+//    );
+// })
 app.get('/getTradingInvoiceSummary', (req, res, next) => {
   db.query(`SELECT 
     c.company_id,
@@ -585,6 +585,45 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
  
     }
   );
+});
+
+app.post('/', (req, res, next) => {
+  db.query(
+    `= ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(500).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+app.post('/getInvoiceOrderedQty', (req, res, next) => {
+  db.query(`SELECT qty, invoice_qty
+  FROM invoice_item 
+  WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
 });
 
 app.get('/getInvoice', (req, res, next) => {
@@ -1137,6 +1176,97 @@ GROUP BY
     }
   );
 });
+
+app.get('/checkReceiptItemshide', (req, res, next) => {
+  db.query(
+    `SELECT pricelist_id
+    FROM invoice_item `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.quote_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+app.post('/checkPricelistIdInInvoiceItemsold', (req, res, next) => {
+  const pricelistIdToCheck = req.body.price_list_id; // assuming the client sends the pricelist_id
+
+  db.query(
+    `SELECT COUNT(*) AS count
+      FROM invoice_item
+      WHERE quote_id = ${db.escape(pricelistIdToCheck)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err);
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        const exists = result[0].count > 0;
+        return res.status(200).send({
+          data: exists,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
+
+app.post('/checkPricelistIdInInvoiceItems', (req, res, next) => {
+  const QuoteIdToCheck = req.body.quote_id; // assuming the client sends the pricelist_id
+
+  db.query(
+    `SELECT COUNT(*) AS count
+      FROM invoice_item
+      WHERE quote_id = ${db.escape(QuoteIdToCheck)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err);
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        const exists = result[0].count > 0;
+        return res.status(200).send({
+          data: exists,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
+
+app.post('/hideEditIconByIdquote', (req, res, next) => {
+  db.query(` SELECT it.quote_id
+  FROM invoice_item it`,
+    (err, result) => {
+     
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+
 app.post('/getInvoicesById', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code  
@@ -1344,11 +1474,11 @@ app.post('/editInvoices', (req, res, next) => {
              ,invoice_source_id =  ${db.escape(req.body.invoice_source_id)}
              ,modified_by = ${db.escape(req.body.modified_by)}
              ,modification_date = ${db.escape(req.body.modification_date)}
-    invoice_amount = (
+    ,invoice_amount = (
         SELECT SUM(total_cost) 
         FROM invoice_item 
         WHERE invoice_id = ${db.escape(req.body.invoice_id)}
-    ), 
+    )
 WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
     (err, result) => {
       if (err) {
@@ -2537,6 +2667,66 @@ app.post('/editInvoiceItems', (req, res, next) => {
             });
       }
      }
+  );
+});
+
+app.get('/getProductDropdown', (req, res, next) => {
+  db.query(`SELECT product_id,title FROM product`, (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+      });
+    }
+  });
+});
+
+
+app.get('/getClientName', (req, res, next) => {
+  db.query(`SELECT company_id ,company_name  FROM company`, (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+      });
+    }
+  });
+});
+
+app.post('/getProductDatas', (req, res, next) => {
+  db.query(`SELECT oi.order_id,
+  oi.order_item_id,
+  oi.qty
+  ,c.company_id
+  ,c.company_name
+ FROM order_item oi
+ LEFT JOIN orders o ON o.order_id = oi.order_id
+ LEFT JOIN company c ON c.company_id = o.company_id
+ WHERE oi.record_id=${db.escape(req.body.product_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
+    }
   );
 });
 
