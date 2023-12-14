@@ -17,7 +17,7 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
-app.get('/getTenders', (req, res, next) => {
+app.get('/getEnquiry', (req, res, next) => {
   db.query(`SELECT 
             o.*
             ,o.actual_closing
@@ -93,7 +93,7 @@ GROUP BY
    }
   );
 });
-app.post('/getTendersById', (req, res, next) => {
+app.post('/getEnquiryById', (req, res, next) => {
   db.query(`SELECT 
   o.title
   ,o.office_ref_no
@@ -462,7 +462,7 @@ app.get('/projectIncharge', (req, res, next) => {
     }
   );
 });
-app.post('/edit-Tenders', (req, res, next) => {
+app.post('/edit-Enquiry', (req, res, next) => {
   db.query(`UPDATE opportunity 
             SET office_ref_no=${db.escape(req.body.office_ref_no)}
             ,company_id=${db.escape(req.body.company_id)}
@@ -551,7 +551,11 @@ app.post('/getCostingSummaryById', (req, res, next) => {
 
 app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
-            qt.* 
+            qt.title,
+            qt.description,
+            qt.quantity, 
+            qt.unit_price,
+            qt.amount
             FROM quote_items qt 
             WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
           (err, result) => {
@@ -639,7 +643,7 @@ app.post('/deleteTender', (req, res, next) => {
     }
   });
 });
-app.post('/insertTenders', (req, res, next) => {
+app.post('/insertEnquiry', (req, res, next) => {
 
   let data = {title	:req.body.title	
    , company_id	: req.body.company_id
@@ -819,27 +823,27 @@ app.post('/edit-TabCostingSummaryForm', (req, res, next) => {
   );
 });
 
-app.post('/getQuoteLineItemsById', (req, res, next) => {
-  db.query(`SELECT
-            qt.* 
-            FROM quote_items qt 
-            WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
-          (err, result) => {
+// app.post('/getQuoteLineItemsById', (req, res, next) => {
+//   db.query(`SELECT
+//             qt.* 
+//             FROM quote_items qt 
+//             WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
+//           (err, result) => {
        
-      if (result.length == 0) {
-        return res.status(400).send({
-          msg: 'No result found'
-        });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-      }
+//       if (result.length == 0) {
+//         return res.status(400).send({
+//           msg: 'No result found'
+//         });
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+//       }
  
-    }
-  );
-});
+//     }
+//   );
+// });
 
 app.post('/getTabOpportunityCostingSummary', (req, res, next) => {
   db.query(`SELECT 
