@@ -150,11 +150,11 @@ app.post("/getCodeValue", (req, res, next) => {
             var codeObject = result.filter(obj => obj.key_text === key_text);
             
              var prefixObject = result.filter(obj => obj.key_text != key_text);
-            finalText = prefixObject[0].value + codeObject[0].value;
-            newvalue = parseInt(codeObject[0].value) + 1
+            finalText = prefixObject[0]?.value + codeObject[0]?.value;
+            newvalue = parseInt(codeObject[0]?.value) + 1
         }else{
-            finalText = result[0].value
-            newvalue = parseInt(result[0].value) + 1
+            finalText = result[0]?.value
+            newvalue = parseInt(result[0]?.value) + 1
         }
         newvalue = newvalue.toString()
          let query = db.query(`UPDATE setting SET value=${db.escape(newvalue)} WHERE key_text = ${db.escape(key_text)}`, (err, result) => {
