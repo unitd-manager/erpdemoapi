@@ -32,6 +32,7 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,q.revision
     ,q.intro_drawing_quote 
     ,q.total_amount
+    ,q.discount
     ,q.opportunity_id
     ,c.company_id
     ,cont.contact_id
