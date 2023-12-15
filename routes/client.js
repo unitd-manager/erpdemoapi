@@ -17,7 +17,7 @@ app.use(fileUpload({
     createParentPath: true
 }));
 app.get('/getClients', (req, res, next) => {
-  db.query(`Select c.company_name
+  db.query(`SELECT c.company_name
   ,c.company_id
   ,c.phone
   ,c.status
@@ -34,7 +34,8 @@ app.get('/getClients', (req, res, next) => {
   ,c.creation_date
   ,c.creation_date
   From company c 
-  Where c.company_id !=''`,
+  Where c.company_id !=''
+  ORDER BY c.company_id DESC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
