@@ -549,27 +549,27 @@ app.post('/getCostingSummaryById', (req, res, next) => {
   );
 });
 
-app.post('/getQuoteLineItemsById', (req, res, next) => {
-  db.query(`SELECT
-            qt.* 
-            FROM quote_items qt 
-            WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
-          (err, result) => {
+// app.post('/getQuoteLineItemsById', (req, res, next) => {
+//   db.query(`SELECT
+//             qt.* 
+//             FROM quote_items qt 
+//             WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
+//           (err, result) => {
        
-      if (result.length == 0) {
-        return res.status(400).send({
-          msg: 'No result found'
-        });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-      }
+//       if (result.length == 0) {
+//         return res.status(400).send({
+//           msg: 'No result found'
+//         });
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+//       }
  
-    }
-  );
-});
+//     }
+//   );
+// });
 
 
 app.get("/getCategoryFromValueList", (req, res, next) => {
@@ -645,7 +645,7 @@ app.post('/insertTenders', (req, res, next) => {
    , company_id	: req.body.company_id
    ,opportunity_code:req.body.opportunity_code
    ,category: req.body.category
-   ,status:"Converted to Project"
+   ,status:req.body.status
    ,creation_date: req.body.creation_date
    ,created_by: req.body.created_by
    ,staff_id: req.body.staff_id
@@ -823,19 +823,18 @@ app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
             qt.* 
             FROM quote_items qt 
-            WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
-          (err, result) => {
-       
-      if (result.length == 0) {
+             WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
+    (err, result) => {
+      if (err) {
         return res.status(400).send({
           msg: 'No result found'
         });
-      } else {
+      }else {
             return res.status(200).send({
-              data: result,
+              data: result[0],
               msg:'Success'
             });
-      }
+        }
  
     }
   );
