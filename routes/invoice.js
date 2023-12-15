@@ -719,18 +719,18 @@ it.description,
 it.total_cost,
 it.unit,
 it.qty,
-it.qty_returned,
+(it.invoice_qty-it.qty) AS qty_returned,
 it.unit_price,
 it.remarks,
 i.invoice_id,
 o.order_id
 FROM invoice_item it
 LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
-LEFT JOIN (orders o) ON (o.order_id=i.order_id)
+LEFT JOIN (orders o) ON (o.order_id=i.invoice_source_id)
 WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
           (err, result) => {
        
-      if (result.length === 0) {
+      if (err) {
         return res.status(400).send({
           msg: 'No result found'
         });
