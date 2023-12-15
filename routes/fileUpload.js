@@ -7,13 +7,13 @@ const maxFiles = 5;
 router.use(cors());
 
 router.get('/',uploadController.index);
-// router.post('/uploadFile',upload.single('file'),uploadController.uploadFile);
+router.post('/uploadFile',upload.single('file'),uploadController.uploadFile);
 router.post('/getFileList',uploadController.getFileList);
 router.get('/getFile/:name',uploadController.getFile);
 router.delete('/getFile/:name',uploadController.removeFile);
 router.post('/deleteFile',uploadController.removeFile);
 router.post('/uploadFiles',upload.array('files', maxFiles), uploadController.uploadMultiple);
-router.post('/uploadProfile',upload.array('files', maxFiles), uploadController.uploadProfile);
+// router.post('/uploadProfile',upload.array('files', maxFiles), uploadController.uploadProfile);
 router.post('/getListOfFiles',uploadController.getFilesByRecordIdAndRoomName);
 router.post('/deleteFileByRoomNameAndId',uploadController.removeFilesByRoomRecord);
 
