@@ -13,7 +13,7 @@ router.get('/getFile/:name',uploadController.getFile);
 router.delete('/getFile/:name',uploadController.removeFile);
 router.post('/deleteFile',uploadController.removeFile);
 router.post('/uploadFiles',upload.array('files', maxFiles), uploadController.uploadMultiple);
-router.post('/uploadProfile',upload.array('files', maxFiles), uploadController.uploadProfile);
+// router.post('/uploadProfile',upload.array('files', maxFiles), uploadController.uploadProfile);
 router.post('/getListOfFiles',uploadController.getFilesByRecordIdAndRoomName);
 router.post('/deleteFileByRoomNameAndId',uploadController.removeFilesByRoomRecord);
 
