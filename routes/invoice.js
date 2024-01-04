@@ -2594,7 +2594,7 @@ app.get('/getInvoiveByMonth', (req, res, next) => {
                     )
                 ) AS invoice_amount_monthly
         FROM invoice i
-        LEFT JOIN orders o   ON (o.order_id   = i.order_id)
+        LEFT JOIN orders o   ON (o.order_id   = i.invoice_source_id)
          WHERE o.record_type = 'Project'
  AND i.status != 'Cancelled'
  AND i.invoice_date BETWEEN '2021-03-1' AND '2023-03-31'
