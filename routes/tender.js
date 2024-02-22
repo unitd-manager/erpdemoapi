@@ -591,6 +591,28 @@ app.get("/getCategoryFromValueList", (req, res, next) => {
   );
 });
 
+app.post("/updateEnquiryStatus/:opportunityId", (req, res, next) => {
+  const opportunityId = req.params.opportunityId;
+  const newStatus = req.body.status; // Assuming the new status is provided in the request body
+
+  // Construct the SQL query
+  let sql = "UPDATE opportunity SET status = ? WHERE opportunity_id = ?";
+  let query = db.query(sql, [newStatus, opportunityId], (err, result) => {
+    if (err) {
+      console.log("Error updating enquiry status:", err);
+      return res.status(500).send({ error: "Internal server error" });
+    } else {
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ error: "Enquiry not found" });
+      }
+      return res.status(200).send({
+        message: "Enquiry status updated successfully",
+        data: result,
+      });
+    }
+  });
+});
+
 
 app.post('/getQuoteById', (req, res, next) => {
   db.query(`SELECT
