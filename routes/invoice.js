@@ -1089,9 +1089,13 @@ app.get('/getCustomerDropdown', (req, res, next) => {
 
 app.get('/getSalesOrderDropdown', (req, res, next) => {
   db.query(`SELECT 
-  order_id
-  ,order_code
-  FROM orders`, 
+  o.order_id
+  ,o.order_code
+  FROM orders o
+  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id AND i.source_type='Sales_Order'
+  WHERE
+  o.order_id != '' 
+  AND i.invoice_source_id IS NULL`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({
