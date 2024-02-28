@@ -1581,6 +1581,27 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
   });
 });
 
+app.get('/checkOrderItems', (req, res, next) => {
+  db.query(
+    `SELECT quote_id FROM order_item `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.po_product_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
+
 app.delete('/deleteinvoice_item/:invoiceId', (req, res) => {
   const invoiceId = req.params.invoiceId;
 

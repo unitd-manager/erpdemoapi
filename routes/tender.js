@@ -845,7 +845,7 @@ app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
             qt.* 
             FROM quote_items qt 
-             WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
+             WHERE qt.quote_id =  ${db.escape(req.body.quote_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
