@@ -747,36 +747,36 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
   );
 });
 
-app.post('/getReturnInvoiceItemsById', (req, res, next) => {
-  db.query(`SELECT it.sales_return_history_id ,
-  it.return_date,
-i.invoice_id,
-it.invoice_item_id,
-it.price,
-it.notes,
-it.qty_return,
-it.order_id,
-iv.item_title
-FROM sales_return_history it
-LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
-LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
-WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
-          (err, result) => {
+// app.post('/getReturnInvoiceItemsById', (req, res, next) => {
+//   db.query(`SELECT it.sales_return_history_id ,
+//   it.return_date,
+// i.invoice_id,
+// it.invoice_item_id,
+// it.price,
+// it.notes,
+// it.qty_return,
+// it.order_id,
+// iv.item_title
+// FROM sales_return_history it
+// LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
+// LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
+// WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+//           (err, result) => {
        
-      if (result.length === 0) {
-        return res.status(400).send({
-          msg: 'No result found'
-        });
-      } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-      }
+//       if (result.length === 0) {
+//         return res.status(400).send({
+//           msg: 'No result found'
+//         });
+//       } else {
+//             return res.status(200).send({
+//               data: result,
+//               msg:'Success'
+//             });
+//       }
  
-    }
-  );
-});
+//     }
+//   );
+// });
 
 app.post('/getInvoiceItemsByItemId', (req, res, next) => {
   db.query(`SELECT it.item_title,
@@ -1076,6 +1076,65 @@ app.post('/getInvoiceById', (req, res, next) => {
     }
   });
 });
+
+
+app.post('/getInvoiceByInvoiceIdId', (req, res, next) => {
+  db.query(`SELECT
+    i.invoice_id,
+    i.invoice_source_id,
+    i.source_type,
+    i.invoice_code,
+    i.invoice_due_date,
+    co.company_name,
+    i.status,
+    i.invoice_date,
+    i.invoice_amount,
+    i.invoice_due_date,
+    i.created_by,
+    i.creation_date,
+    i.modified_by,
+    i.modification_date,
+    i.invoice_terms,
+    i.company_id,
+    o.order_id,
+    o.order_code,
+    g.goods_delivery_id,
+    g.goods_delivery_code,
+    SUM(it.total_cost) AS InvoiceAmount
+  FROM
+    invoice i
+  LEFT JOIN
+    orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
+  LEFT JOIN
+    goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
+  LEFT JOIN
+    invoice_item it ON it.invoice_id = i.invoice_id
+  LEFT JOIN
+    company co ON co.company_id = o.company_id
+  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: 'failed'
+      });
+    } else {
+      // Extracting order_code and goods_delivery_code from the result
+      const { order_code, goods_delivery_code } = result[0];
+      // Adding order_code and goods_delivery_code to the result object
+      result[0].order_code = order_code;
+      result[0].goods_delivery_code = goods_delivery_code;
+      
+      return res.status(200).send({
+        data: result,
+        msg: 'Success'
+      });
+    }
+  });
+});
+
+
+
 app.get('/getCustomerDropdown', (req, res, next) => {
   db.query(`SELECT company_name,company_id FROM company`, (err, result) => {
     if (err) {
