@@ -158,6 +158,7 @@ app.post("/getgoodsdeliveryitemById", (req, res, next) => {
     ,gi.unit_price
     ,gi.amount
     ,gi.quantity
+    ,gi.delivery_qty
     ,gi.goods_delivery_id
     ,gi.goods_delivery_item_id  
        FROM goods_delivery_item gi 
@@ -311,7 +312,8 @@ app.post("/edit-goodsdeliveryitem", (req, res, next) => {
     `UPDATE goods_delivery_item  
               SET 
                goods_delivery_id=${db.escape(req.body.goods_delivery_id)}
-              ,quantity =${db.escape(req.body.quantity)}            
+              ,quantity =${db.escape(req.body.quantity)}
+              ,delivery_qty=${db.escape(req.body.delivery_qty)}  
               WHERE goods_delivery_item_id =  ${db.escape(req.body.goods_delivery_item_id)}`,
     (err, result) => {
       if (err) {
