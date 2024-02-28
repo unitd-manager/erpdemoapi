@@ -115,6 +115,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
     LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
     WHERE q.project_quote_id != '' 
+    ORDER BY q.project_quote_id DESC
     `,
       (err, result) => {
        
@@ -134,7 +135,11 @@ app.post('/getProjectquoteById', (req, res, next) => {
   });
 
   app.get('/getEnquiryCode', (req, res, next) => {
-    db.query(`  SELECT pe.enquiry_code,pe.project_enquiry_id from project_enquiry pe WHERE pe.status = 'Approved'  `,
+    db.query(`  SELECT pe.enquiry_code,pe.project_enquiry_id 
+    from project_enquiry pe
+    LEFT JOIN project_quote o ON o.project_enquiry_id = pe.project_enquiry_id
+     WHERE pe.project_enquiry_id != ''
+     AND o.project_enquiry_id IS NULL  `,
       (err, result) => {
        
         if (err) {
@@ -297,7 +302,25 @@ app.post('/deleteMaterial', (req, res, next) => {
   });
 });
   
-  
+app.post('/deleteProjectQuote', (req, res, next) => {
+
+  let data = { project_quote_items_id: req.body. project_quote_items_id};
+  let sql = "DELETE FROM  project_quote_items WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+          });
+    }
+  });
+});
   
   // app.post('/edit-TabQuoteLine', (req, res, next) => {
   //   db.query(`UPDATE project_quote_items
