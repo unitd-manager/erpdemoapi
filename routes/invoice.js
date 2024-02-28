@@ -1166,7 +1166,7 @@ LEFT JOIN
 LEFT JOIN
   invoice_item it ON it.invoice_id = i.invoice_id
 LEFT JOIN
-  company co ON co.company_id = i.company_id
+  company co ON co.company_id = o.company_id
 WHERE
   i.invoice_id != ''
 GROUP BY
