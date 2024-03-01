@@ -549,27 +549,27 @@ app.post('/getCostingSummaryById', (req, res, next) => {
   );
 });
 
-// app.post('/getQuoteLineItemsById', (req, res, next) => {
-//   db.query(`SELECT
-//             qt.* 
-//             FROM quote_items qt 
-//             WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
-//           (err, result) => {
+app.post('/getQuoteLineItemsByOppId', (req, res, next) => {
+  db.query(`SELECT
+            qt.* 
+            FROM quote_items qt 
+            WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
+          (err, result) => {
        
-//       if (result.length == 0) {
-//         return res.status(400).send({
-//           msg: 'No result found'
-//         });
-//       } else {
-//             return res.status(200).send({
-//               data: result,
-//               msg:'Success'
-//             });
-//       }
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
  
-//     }
-//   );
-// });
+    }
+  );
+});
 
 
 app.get("/getCategoryFromValueList", (req, res, next) => {
