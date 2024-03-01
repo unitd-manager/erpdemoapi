@@ -286,7 +286,7 @@ app.get('/getMainInvoice', (req, res, next) => {
   );
 });
 
-app.post('/getInvoiceForReceipt', (req, res, next) => {
+app.post('/getInvoiceForReceiptOld', (req, res, next) => {
   db.query(`
     SELECT
       i.invoice_code,
@@ -314,6 +314,37 @@ app.post('/getInvoiceForReceipt', (req, res, next) => {
     }
   );
 });
+
+app.post('/getInvoiceForReceipt', (req, res, next) => {
+  db.query(`
+    SELECT
+      i.invoice_code,
+      i.status,
+      i.invoice_id,
+      i.invoice_source_id,
+      SUM(ii.total_cost) AS invoice_amount
+    FROM
+      invoice i
+      LEFT JOIN invoice_item ii ON ii.invoice_id = i.invoice_id
+      LEFT JOIN orders b ON b.order_id = i.invoice_source_id
+    WHERE b.order_id = ${db.escape(req.body.order_id)} AND i.status != 'Paid' AND ii.total_cost !=''
+   GROUP BY i.invoice_id `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'failed'
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
 
 app.get('/checkQuoteItems', (req, res, next) => {
   db.query(
