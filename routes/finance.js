@@ -1583,7 +1583,7 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
 
 app.get('/checkOrderItems', (req, res, next) => {
   db.query(
-    `SELECT quote_id FROM order_item `,
+    `SELECT quote_id FROM order_item Where quote_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1591,7 +1591,7 @@ app.get('/checkOrderItems', (req, res, next) => {
           msg: 'Failed'
         });
       } else {
-        const quoteItemsIds = result.map((row) => row.po_product_id);
+        const quoteItemsIds = result.map((row) => row.quote_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'
