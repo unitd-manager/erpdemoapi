@@ -201,7 +201,8 @@ app.get('/getSalesReturns', (req, res, next) => {
   LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
   LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
    WHERE o.sales_return_id !=''
-   Group by o.sales_return_id`,
+   Group by o.sales_return_id
+   ORDER BY o.sales_return_id DESC`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
