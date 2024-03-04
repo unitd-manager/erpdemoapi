@@ -1260,7 +1260,8 @@ LEFT JOIN
 WHERE
   i.invoice_id != ''
 GROUP BY
-  i.invoice_id;`,
+  i.invoice_id
+  ORDER BY i.invoice_id DESC;`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
