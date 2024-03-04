@@ -45,7 +45,8 @@ app.get('/getFinances', (req, res, next) => {
   LEFT JOIN invoice i ON (i.order_id = o.order_id) 
   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id !=''
-  GROUP BY o.order_id `,
+  GROUP BY o.order_id 
+  ORDER BY o.order_id DESC`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
