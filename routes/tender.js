@@ -853,7 +853,7 @@ app.post('/getQuoteLineItemsById', (req, res, next) => {
         });
       }else {
             return res.status(200).send({
-              data: result[0],
+              data: result,
               msg:'Success'
             });
         }
