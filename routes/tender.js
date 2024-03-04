@@ -37,7 +37,7 @@ app.get('/getTenders', (req, res, next) => {
             LEFT JOIN (staff s)  ON (o.project_manager_id  = s.staff_id)  
             LEFT JOIN (valuelist VL) ON (o.chance  = VL.value AND VL.key_text = 'opportunityChance')   
             LEFT JOIN (project p)   ON (p.project_id   = o.project_id) 
-            ORDER BY o.opportunity_code DESC`,
+            ORDER BY o.opportunity_id DESC`,
     (err, result) => {
      
       if (result.length == 0) {
