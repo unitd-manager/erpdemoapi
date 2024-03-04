@@ -87,23 +87,25 @@ app.post('/getPurchaseQuoteById', (req, res, next) => {
     q.rq_code,
     q.creation_date,
     q.modification_date
+    
+
 FROM purchase_quote q 
 LEFT JOIN purchase_quote_items qr ON qr.purchase_quote_id = q.purchase_quote_id
 LEFT JOIN purchase_request p ON p.purchase_request_id=q.purchase_request_id
 WHERE q.purchase_quote_id=${db.escape( req.body.purchase_quote_id)} `,
     (err, result) => {
-       
-      if (result.length == 0) {
-        return res.status(400).send({
-          msg: 'No result found'
-        });
+      if (err) {
+        console.log("error: ", err);
+        return;
       } else {
             return res.status(200).send({
               data: result,
               msg:'Success'
             });
-         }
- 
+  
+        }
+       
+      
     }
   );
 });
@@ -113,6 +115,9 @@ app.post('/getPurchaseQuoteRequestById', (req, res, next) => {
   p.product_code
   ,pr.unit
   ,pr.purchase_request_qty
+  pr.creation_date,
+   pr.modification_date,
+  pr.created_by
   ,pr.modified_by
   ,pr.purchase_request_items_id
   ,pr.purchase_request_id
@@ -147,6 +152,8 @@ app.post('/editPurchseQuote', (req, res, next) => {
               ,status=${db.escape(req.body.status)}
               ,supplier_id=${db.escape(req.body.supplier_id)}
               ,payment_method=${db.escape(req.body.payment_method)}
+              ,created_by=${db.escape(req.body.creation_by)}
+              ,modified_date=${db.escape(req.body.modified_by)}
               ,creation_date=${db.escape(req.body.creation_date)}
               ,modification_date=${db.escape(
                 new Date().toISOString().slice(0, 19).replace('T', ' '),
