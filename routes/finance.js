@@ -1194,7 +1194,7 @@ app.post('/insertOrder', (req, res, next) => {
     record_type: req.body.record_type,
     module: req.body.module,
     currency: req.body.currency,
-    order_date: req.body.order_date,
+    order_date: new Date().toISOString().split('T')[0],
     order_code: req.body.order_code,
     shipping_charge: req.body.shipping_charge,
     add_gst_to_total: req.body.add_gst_to_total,

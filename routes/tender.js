@@ -668,6 +668,7 @@ app.post('/insertTenders', (req, res, next) => {
    ,opportunity_code:req.body.opportunity_code
    ,category: req.body.category
    ,status:req.body.status
+   ,enquiry_date:new Date().toISOString().split('T')[0]
    ,creation_date: req.body.creation_date
    ,created_by: req.body.created_by
    ,staff_id: req.body.staff_id
