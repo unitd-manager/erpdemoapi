@@ -122,7 +122,8 @@ app.get("/getTradingquote", (req, res, next) => {
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
     LEFT JOIN (company c) ON (o.company_id=c.company_id)
     LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
-    WHERE q.quote_id != '' 
+    WHERE q.quote_id != ''
+    ORDER BY q.quote_id DESC 
     `,
     (err, result) => {
       if (result.length == 0) {
@@ -328,6 +329,7 @@ app.post("/insertQuoteItems", (req, res, next) => {
     drawing_number: req.body.drawing_number,
     drawing_title: req.body.drawing_title,
     drawing_revision: req.body.drawing_revision,
+    description: req.body.description,
   };
   let sql = "INSERT INTO quote_items SET ?";
   let query = db.query(sql, data, (err, result) => {

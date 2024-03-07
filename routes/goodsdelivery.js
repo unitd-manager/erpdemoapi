@@ -111,6 +111,7 @@ app.get("/getgoodsdelivery", (req, res, next) => {
        LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)    
        LEFT JOIN (company c) ON (c.company_id=opt.company_id)  
        WHERE gd.goods_delivery_id != ''
+       ORDER BY goods_delivery_id DESC
     `,
     (err, result) => {
       if (result.length == 0) {

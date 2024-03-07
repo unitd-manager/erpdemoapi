@@ -752,7 +752,7 @@ it.description,
 it.total_cost,
 it.unit,
 it.qty,
-(it.invoice_qty-it.qty) AS qty_returned,
+it.qty_returned,
 it.unit_price,
 it.remarks,
 i.invoice_id,
@@ -2335,6 +2335,7 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
     UPDATE invoice_item 
     SET qty = qty - ${req.body.qty_return},
     total_cost = (qty) * ${req.body.price},
+    invoice_qty= ${req.body.qty_return},
     qty_returned = qty_returned + ${req.body.qty_return}
     WHERE invoice_item_id = ${req.body.invoice_item_id}
   `;

@@ -555,7 +555,8 @@ app.post('/getQuoteLineItemsById', (req, res, next) => {
             qt.description,
             qt.quantity, 
             qt.unit_price,
-            qt.amount
+            qt.amount,
+            qt.opportunity_id
             FROM quote_items qt 
             WHERE qt.opportunity_id =  ${db.escape(req.body.opportunity_id)}`,
           (err, result) => {

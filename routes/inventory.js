@@ -248,7 +248,11 @@ app.post('/editinventoryMain', (req, res, next) => {
 app.post('/editInventoryStock', (req, res, next) => {
   db.query(`UPDATE inventory  
             SET actual_stock =${db.escape(req.body.qty_in_stock)}
-                
+            ,creation_date=${db.escape(req.body.creation_date)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,created_by=${db.escape(req.body.created_by)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+  
             ,modification_date=${db.escape(new Date())}
              WHERE product_id =  ${db.escape(req.body.product_id)}`,
     (err, result) => {

@@ -22,8 +22,11 @@ app.get('/getCompany', (req, res, next) => {
     (err, result) => {
       if (err) {
         console.log("error: ", err);
-        result(err, null);
-        return;
+        return res.status(500).send({
+          msg: 'Database error'
+        });
+       // result(err, null);
+       // return;
       }
       if (result.length == 0) {
         return res.status(400).send({

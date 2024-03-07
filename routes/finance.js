@@ -45,7 +45,8 @@ app.get('/getFinances', (req, res, next) => {
   LEFT JOIN invoice i ON (i.order_id = o.order_id) 
   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id !=''
-  GROUP BY o.order_id `,
+  GROUP BY o.order_id 
+  ORDER BY o.order_id DESC`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -72,7 +73,8 @@ app.get('/getOrders', (req, res, next) => {
   ,o.creation_date
   ,o.order_status
   FROM orders o 
-  WHERE o.order_id !=''`,
+  WHERE o.order_id !=''
+  AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -201,7 +203,8 @@ app.get('/getSalesReturns', (req, res, next) => {
   LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
   LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
    WHERE o.sales_return_id !=''
-   Group by o.sales_return_id`,
+   Group by o.sales_return_id
+   ORDER BY o.sales_return_id DESC`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1193,7 +1196,7 @@ app.post('/insertOrder', (req, res, next) => {
     record_type: req.body.record_type,
     module: req.body.module,
     currency: req.body.currency,
-    order_date: req.body.order_date,
+    order_date: new Date().toISOString().split('T')[0],
     order_code: req.body.order_code,
     shipping_charge: req.body.shipping_charge,
     add_gst_to_total: req.body.add_gst_to_total,
@@ -1583,7 +1586,7 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
 
 app.get('/checkOrderItems', (req, res, next) => {
   db.query(
-    `SELECT quote_id FROM order_item `,
+    `SELECT quote_id FROM order_item WHERE quote_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1591,7 +1594,7 @@ app.get('/checkOrderItems', (req, res, next) => {
           msg: 'Failed'
         });
       } else {
-        const quoteItemsIds = result.map((row) => row.po_product_id);
+        const quoteItemsIds = result.map((row) => row.quote_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'
