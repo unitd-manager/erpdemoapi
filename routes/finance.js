@@ -1585,7 +1585,7 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
 
 app.get('/checkOrderItems', (req, res, next) => {
   db.query(
-    `SELECT quote_id FROM order_item Where quote_id !=''`,
+    `SELECT quote_id FROM order_item WHERE quote_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({

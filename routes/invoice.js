@@ -752,7 +752,7 @@ it.description,
 it.total_cost,
 it.unit,
 it.qty,
-(it.invoice_qty-it.qty) AS qty_returned,
+it.qty_returned,
 it.unit_price,
 it.remarks,
 i.invoice_id,
@@ -778,36 +778,36 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
   );
 });
 
-// app.post('/getReturnInvoiceItemsById', (req, res, next) => {
-//   db.query(`SELECT it.sales_return_history_id ,
-//   it.return_date,
-// i.invoice_id,
-// it.invoice_item_id,
-// it.price,
-// it.notes,
-// it.qty_return,
-// it.order_id,
-// iv.item_title
-// FROM sales_return_history it
-// LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
-// LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
-// WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
-//           (err, result) => {
+app.post('/getReturnInvoiceItemsById', (req, res, next) => {
+  db.query(`SELECT it.sales_return_history_id ,
+  it.return_date,
+i.invoice_id,
+it.invoice_item_id,
+it.price,
+it.notes,
+it.qty_return,
+it.order_id,
+iv.item_title
+FROM sales_return_history it
+LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
+LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
+WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+          (err, result) => {
        
-//       if (result.length === 0) {
-//         return res.status(400).send({
-//           msg: 'No result found'
-//         });
-//       } else {
-//             return res.status(200).send({
-//               data: result,
-//               msg:'Success'
-//             });
-//       }
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
  
-//     }
-//   );
-// });
+    }
+  );
+});
 
 app.post('/getInvoiceItemsByItemId', (req, res, next) => {
   db.query(`SELECT it.item_title,
@@ -2294,6 +2294,7 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
     UPDATE invoice_item 
     SET qty = qty - ${req.body.qty_return},
     total_cost = (qty) * ${req.body.price},
+    invoice_qty= ${req.body.qty_return},
     qty_returned = qty_returned + ${req.body.qty_return}
     WHERE invoice_item_id = ${req.body.invoice_item_id}
   `;
