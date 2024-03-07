@@ -73,7 +73,8 @@ app.get('/getOrders', (req, res, next) => {
   ,o.creation_date
   ,o.order_status
   FROM orders o 
-  WHERE o.order_id !=''`,
+  WHERE o.order_id !=''
+  AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
