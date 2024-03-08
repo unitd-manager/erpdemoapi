@@ -271,6 +271,33 @@ app.post("/inserttradingquote", (req, res, next) => {
   });
 });
 
+app.post("/getQuoteLineItemsByIdss", (req, res, next) => {
+  db.query(
+    `SELECT
+              qt.* 
+              ,qt.goods_delivery_id
+              ,qt.goods_delivery_item_id
+              ,qt.creation_date
+              ,qt.modification_date
+              ,qt.created_by
+              ,qt.modified_by
+              FROM goods_delivery_item qt 
+              WHERE qt.goods_delivery_id =  ${db.escape(req.body.goods_delivery_id)}`,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
 app.post("/getQuoteLineItemsById", (req, res, next) => {
   db.query(
     `SELECT
