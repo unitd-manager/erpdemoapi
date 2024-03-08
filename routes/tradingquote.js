@@ -37,7 +37,7 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,c.company_id
     ,cont.contact_id
     ,o.opportunity_code
-    ,o.office_ref_no
+    ,q.office_ref_no
     ,c.company_name
     ,c.address_flat
     ,c.address_street
@@ -54,7 +54,7 @@ app.post("/getTradingquoteById", (req, res, next) => {
     FROM quote q  
     LEFT JOIN (opportunity o) ON (o.opportunity_id=q.opportunity_id)
     LEFT JOIN (company c) ON (o.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id) 
+    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
     
     WHERE q.quote_id =${db.escape(req.body.quote_id)}  ORDER BY quote_code DESC`,
     (err, result) => {
@@ -183,6 +183,7 @@ app.post("/edit-Tradingquote", (req, res, next) => {
               ,drawing_nos=${db.escape(req.body.drawing_nos)}
               ,ref_no_quote=${db.escape(req.body.ref_no_quote)}
               ,discount=${db.escape(req.body.discount)}
+              ,office_ref_no=${db.escape(req.body.office_ref_no)}
               ,total_amount=${db.escape(req.body.total_amount)}
               ,opportunity_id=${db.escape(req.body.opportunity_id)}
               ,company_id=${db.escape(req.body.company_id)}
