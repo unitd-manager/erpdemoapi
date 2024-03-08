@@ -1745,9 +1745,14 @@ app.post('/getReceiptData', (req, res, next) => {
   ,i.amount
   ,i.mode_of_payment
    ,i.receipt_date
+   ,i.order_id
+   ,o.order_code
+   ,iv.invoice_id
    from receipt i
   LEFT JOIN orders o ON o.order_id=i.order_id
- WHERE i.receipt_id= ${db.escape(req.body.receipt_id)}`,
+  LEFT JOIN invoice iv ON o.order_id=iv.invoice_source_id
+ WHERE i.receipt_id= ${db.escape(req.body.receipt_id)}
+ GROUP BY i.receipt_id`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1764,6 +1769,42 @@ app.post('/getReceiptData', (req, res, next) => {
   );
 });
 
+app.post('/getReceiptInvoiceData', (req, res, next) => {
+  db.query(`select i.receipt_id
+  ,i.remarks
+  ,i.creation_date
+  ,i.modification_date
+  ,i.created_by
+  ,i.modified_by
+  ,i.receipt_code  
+  ,i.receipt_status
+  ,i.amount
+  ,i.mode_of_payment
+   ,i.receipt_date
+   ,i.order_id
+   ,o.order_code
+   ,iv.invoice_id
+   ,iv.invoice_code
+   from receipt i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+  LEFT JOIN invoice iv ON o.order_id=iv.invoice_source_id
+ WHERE i.receipt_id=${db.escape(req.body.receipt_id)}
+ GROUP BY i.receipt_id`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+    }
+  );
+});
 
 app.post('/getReceiptByIds', (req, res, next) => {
   db.query(`SELECT DISTINCT r.receipt_id
