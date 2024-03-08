@@ -1186,7 +1186,7 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
   o.order_id
   ,o.order_code
   FROM orders o
-  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id AND i.source_type='Sales_Order'
+  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id 
   WHERE
   o.order_id != '' 
   AND i.invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
@@ -1209,7 +1209,7 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   g.goods_delivery_id,
   g.goods_delivery_code
   FROM goods_delivery g
-  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id AND i.source_type='Goods_Delivery'
+  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id
   WHERE
   g.goods_delivery_id != '' 
   AND i.invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
@@ -2453,6 +2453,8 @@ app.post('/insertInvoiceItem', (req, res, next) => {
     ,created_by: req.body.created_by
     ,creation_date: req.body.creation_date
     ,quote_id: req.body.quote_id
+    ,unit_price: req.body.unit_price
+    ,unit: req.body.unit
  };
   let sql = "INSERT INTO invoice_item SET ?";
   let query = db.query(sql, data,(err, result) => {
