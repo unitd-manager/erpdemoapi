@@ -144,6 +144,7 @@ app.get("/getEnquiryCode", (req, res, next) => {
   db.query(
     `SELECT 
   o.opportunity_code,
+  o.company_id,
   o.opportunity_id 
   from opportunity o   
   LEFT JOIN (quote q) ON o.opportunity_id = q.opportunity_id
