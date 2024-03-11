@@ -27,6 +27,7 @@ app.post('/insertInvoice', (req, res, next) => {
     , status: 'Due'
     , creation_date: req.body.creation_date   
     , created_by: req.body.created_by
+    ,invoice_date: new Date()
  };
   let sql = "INSERT INTO invoice SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -2218,7 +2219,7 @@ app.post('/insertInvoiceold', (req, res, next) => {
     ,  invoice_id: req.body.invoice_id
     , order_id: req.body.order_id
     , invoice_amount: req.body.invoice_amount
-    , invoice_date: req.body.invoice_date
+    , invoice_date: new Date().toISOString().split('T')[0]
     , mode_of_payment: req.body.mode_of_payment
     , status: 'Due'
     , creation_date: req.body.creation_date
