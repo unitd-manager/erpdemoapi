@@ -551,7 +551,350 @@ app.get('/getGroupTitlzzze', (req, res, next) => {
     }
   );
 });
+app.get('/getIncomeGroupAmountss', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'ASSET'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      
+      
 
+        }
+    }
+  );
+});  
+
+app.get('/getIncomeGroupBank', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'BANK ACCOUNTS'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
+
+app.get('/getIncomeGroupCA', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'CURRENT ASSETS'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
+
+app.get('/getIncomeGroupCL', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'CURRENT LIABILITIES'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
+
+app.get('/getIncomeGroupSC', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'SUNDRY CREDITORS'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
+
+app.get('/getIncomeGroupSD', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'SUNDRY DEBTORS'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
+
+app.get('/getIncomeGroupCL', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'CURRENT LIABILITIES'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
+
+app.get('/getIncomeGroupEX', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'EXPENSE'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
+
+app.get('/getIncomeGroupIN', (req, res, next) => {
+  db.query(`SELECT 
+        j.journal_id
+        ,j.credit
+        ,j.debit
+        ,acc.title AS category_title
+        ,SUM(j.credit-j.debit) AS total_amount
+        ,ah.title AS acc_head
+        ,ah.acc_head_id
+        ,(SELECT DISTINCT ac.title FROM acc_category ac 
+          WHERE ac.acc_category_id = ah.acc_category_id
+          GROUP BY ac.title ) as acc_category 
+        FROM acc_head ah
+        LEFT JOIN journal j ON ah.acc_head_id = j.acc_head_id
+        LEFT JOIN acc_category acc ON acc.acc_category_id = ah.acc_category_id
+          WHERE ah.acc_head_id != ''
+          AND acc.title = 'INCOME'
+          GROUP BY ah.title
+    
+`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+        }
+    }
+  );
+});
 
 app.get('/getIncomeGroupAmount', (req, res, next) => {
   const { month, year, startDate, endDate } = req.query; // Extract query parameters

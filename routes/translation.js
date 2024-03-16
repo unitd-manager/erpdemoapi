@@ -157,8 +157,27 @@ app.post('/deleteTranslation', (req, res, next) => {
 );
 });
 
+
 app.get('/getTranslationForCompany', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text  FROM translation t WHERE key_text LIKE 'cm%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+app.get('/getTranslationEnglish', (req, res, next) => {
+  db.query(`SELECT t.english_value,t.key_text  FROM translation t WHERE key_text LIKE 'cm%'`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
