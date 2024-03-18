@@ -55,6 +55,56 @@ app.get('/getEquipmentIssue', (req, res, next) => {
 });
 
 
+app.post('/getEquipmentIssuesById', (req, res, next) => {
+  db.query(`select
+  lr.equipment_issue_id
+  ,lr.project_id
+  ,lr.equipment_request_id
+  ,lr.reason_for_issue
+  ,lr.equipment_issue_date
+  ,lr.notes
+  ,lr.authorized_by
+  ,lr.creation_date
+  ,lr.created_by
+  ,lr.modification_date
+  ,lr.modified_by
+  ,p.title AS proj_title
+  ,p.project_code
+  ,mr.equipment_request_code
+  ,mr.request_date
+  ,mr.request_by
+  ,mri.unit
+  ,mri.quantity
+  ,mri.unit_price
+  ,mri.amount
+  ,pd.title AS product_name
+  ,sr.company_name AS supplier_name
+  From equipment_issue lr
+  LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
+  LEFT JOIN (equipment_request mr)   ON (mr.equipment_request_id   = lr.equipment_request_id) 
+  LEFT JOIN (equipment_request_item mri)   ON (mr.equipment_request_id   = mri.equipment_request_item_id) 
+  LEFT JOIN (product pd)   ON (pd.product_id   = mri.product_id) 
+            LEFT JOIN (supplier sr)   ON (sr.supplier_id   = mri.supplier_id) 
+            where lr.equipment_issue_id = ${db.escape(req.body.equipment_issue_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+
+        }
+ 
+    }
+  );
+});
+
 app.post('/getEquipmentIssueById', (req, res, next) => {
   db.query(`select
   lr.equipment_issue_id
@@ -65,11 +115,14 @@ app.post('/getEquipmentIssueById', (req, res, next) => {
   ,lr.notes
   ,lr.authorized_by
   ,lr.creation_date
+  ,lr.created_by
   ,lr.modification_date
   ,lr.modified_by
   ,p.title AS proj_title
   ,p.project_code
   ,mr.equipment_request_code
+  ,mr.request_date
+  ,mr.request_by
   From equipment_issue lr
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
   LEFT JOIN (equipment_request mr)   ON (mr.equipment_request_id   = lr.equipment_request_id) 

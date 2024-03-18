@@ -144,6 +144,7 @@ app.post('/insertEquipmentRequest', (req, res, next) => {
    , project_id: req.body.project_id
    , equipment_request_code:req.body.equipment_request_code	
    , creation_date: req.body.creation_date
+   , created_by: req.body.created_by
    , modification_date: req.body.modification_date
    , request_date: req.body.request_date
   

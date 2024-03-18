@@ -113,6 +113,8 @@ app.post('/getLabourRequestById', (req, res, next) => {
             ,lr.department
             ,lr.creation_date
             ,lr.modification_date
+            ,lr.created_by
+            ,lr.modified_by
             ,p.title AS proj_title
             ,p.project_code
             From labour_request lr
@@ -153,7 +155,7 @@ app.post('/editLabourRequest', (req, res, next) => {
             ,request_by=${db.escape(req.body.request_by)}
             ,job_description=${db.escape(req.body.job_description)}
             ,no_of_employees=${db.escape(req.body.no_of_employees)}
-            ,skills_required=${db.escape(req.body.skills_rquired)}
+            ,skills_required=${db.escape(req.body.skills_required)}
             WHERE labour_request_id = ${db.escape(req.body.labour_request_id)}`,
     (err, result) => {
      
@@ -179,6 +181,7 @@ app.post('/insertLabourRequest', (req, res, next) => {
     labour_request_id:req.body.labour_request_id	
    , project_id: req.body.project_id
    , creation_date: req.body.creation_date
+   , created_by: req.body.created_by
    , modification_date: req.body.modification_date
    , request_date: req.body.request_date
   
@@ -251,6 +254,43 @@ app.get('/getProject', (req, res, next) => {
   FROM invoice i LEFT JOIN (orders o) ON (i.order_id = o.order_id) 
   WHERE o.project_id = p.project_id AND LOWER(i.status) != 'cancelled' ) ))) AS still_to_bill FROM project p LEFT JOIN (contact cont) ON (p.contact_id = cont.contact_id)LEFT JOIN (company c)ON (p.company_id = c.company_id) 
   LEFT JOIN (service ser) ON (p.service_id = ser.service_id) LEFT JOIN (staff s) ON (p.project_manager_id = s.staff_id) LEFT JOIN (opportunity o) ON (p.opportunity_id = o.opportunity_id) WHERE ( LOWER(p.status) = 'wip' OR LOWER(p.status) = 'billable' OR LOWER(p.status) = 'billed' ) AND ( LOWER(p.status) = 'wip' OR LOWER(p.status) ='billable' OR LOWER(p.status) = 'billed') ORDER BY p.project_code DESC`,
+    (err, result) => {
+       
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+        }
+ 
+    }
+  );
+});
+
+
+
+
+app.get('/getProjecttitle', (req, res, next) => {
+  db.query(`SELECT p.title
+  ,p.category
+  ,p.status
+  ,p.contact_id
+  ,p.start_date
+  ,p.estimated_finish_date
+  ,p.description
+  ,p.project_manager_id
+  ,p.project_id
+  ,p.company_id
+  ,p.project_code
+  ,CONCAT_WS('/', p.title, p.project_code,c.company_name)  AS project_title
+ 
+  FROM project p
+  LEFT JOIN (company c) ON p.company_id=c.company_id `,
     (err, result) => {
        
       if (err) {
