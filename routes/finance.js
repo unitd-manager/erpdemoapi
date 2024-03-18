@@ -45,7 +45,8 @@ app.get('/getFinances', (req, res, next) => {
   LEFT JOIN invoice i ON (i.order_id = o.order_id) 
   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id !=''
-  GROUP BY o.order_id `,
+  GROUP BY o.order_id 
+  ORDER BY o.order_id DESC`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -72,7 +73,8 @@ app.get('/getOrders', (req, res, next) => {
   ,o.creation_date
   ,o.order_status
   FROM orders o 
-  WHERE o.order_id !=''`,
+  WHERE o.order_id !=''
+  AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -201,7 +203,8 @@ app.get('/getSalesReturns', (req, res, next) => {
   LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
   LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
    WHERE o.sales_return_id !=''
-   Group by o.sales_return_id`,
+   Group by o.sales_return_id
+   ORDER BY o.sales_return_id DESC`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -493,7 +496,27 @@ app.post('/getOrdersByIds', (req, res, next) => {
   );
 });
 
+app.get('/finance/getCompanyByQuoteId/:quoteId', (req, res) => {
+  const quoteId = req.params.quoteId;
 
+  // Perform a database query to retrieve the company ID based on the quote ID
+  db.query('SELECT company_id FROM quotes WHERE quote_id = ?', quoteId, (err, result) => {
+    if (err) {
+      console.error('Error fetching company ID:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    } else {
+      if (result.length === 0) {
+        // If no company ID found for the given quote ID, return an error
+        res.status(404).json({ error: 'Company ID not found for the given quote ID' });
+      } else {
+        // Extract the company ID from the database result
+        const companyId = result[0].company_id;
+        // Return the company ID in the response
+        res.status(200).json({ company_id: companyId });
+      }
+    }
+  });
+});
 
 app.get('/getInvoices', (req, res, next) => {
   db.query(`SELECT i.invoice_id
@@ -574,6 +597,7 @@ app.get('/checkInvoiceItem', (req, res, next) => {
 app.get('/getQuote', (req, res, next) => {
   db.query(`SELECT q.quote_id,
        q.opportunity_id,
+       q.company_id,
        q.project_id,
        q.quote_code,
        q.quote_date,
@@ -670,6 +694,51 @@ app.post('/getFinanceById', (req, res, next) => {
 
   }
  );
+});
+
+
+app.post("/updateOrderStatus/:orderId", (req, res, next) => {
+  const orderId = req.params.orderId;
+  const newStatus = req.body.order_status; // Assuming the new status is provided in the request body
+
+  // Construct the SQL query
+  let sql = "UPDATE orders SET order_status = ? WHERE order_id = ?";
+  let query = db.query(sql, [newStatus, orderId], (err, result) => {
+    if (err) {
+      console.log("Error updating order status:", err);
+      return res.status(500).send({ error: "Internal server error" });
+    } else {
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ error: "Enquiry not found" });
+      }
+      return res.status(200).send({
+        message: "Order status updated successfully",
+        data: result,
+      });
+    }
+  });
+});
+
+app.post("/updateCancelledStatus/:orderId", (req, res, next) => {
+  const orderId = req.params.orderId;
+  const newStatus = req.body.order_status; // Assuming the new status is provided in the request body
+
+  // Construct the SQL query
+  let sql = "UPDATE orders SET order_status = ? WHERE order_id = ?";
+  let query = db.query(sql, [newStatus, orderId], (err, result) => {
+    if (err) {
+      console.log("Error updating order status:", err);
+      return res.status(500).send({ error: "Internal server error" });
+    } else {
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ error: "Enquiry not found" });
+      }
+      return res.status(200).send({
+        message: "Order status updated successfully",
+        data: result,
+      });
+    }
+  });
 });
 
 app.get('/getGst', (req, res, next) => {
@@ -1193,7 +1262,7 @@ app.post('/insertOrder', (req, res, next) => {
     record_type: req.body.record_type,
     module: req.body.module,
     currency: req.body.currency,
-    order_date: req.body.order_date,
+    order_date: new Date().toISOString().split('T')[0],
     order_code: req.body.order_code,
     shipping_charge: req.body.shipping_charge,
     add_gst_to_total: req.body.add_gst_to_total,
@@ -1580,6 +1649,27 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
     });
   });
 });
+
+app.get('/checkOrderItems', (req, res, next) => {
+  db.query(
+    `SELECT quote_id FROM order_item WHERE quote_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed'
+        });
+      } else {
+        const quoteItemsIds = result.map((row) => row.quote_id);
+        return res.status(200).send({
+          data: quoteItemsIds,
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
 
 app.delete('/deleteinvoice_item/:invoiceId', (req, res) => {
   const invoiceId = req.params.invoiceId;

@@ -91,6 +91,7 @@ app.post('/getPurchaseOrders', (req, res, next) => {
 app.post('/getPurchaseOrderById', (req, res, next) => {
   db.query(`SELECT
   po.purchase_order_id 
+
   ,CONCAT('Purchase from',' ',s.company_name ) AS title
   ,po.status
   ,po.supplier_id
@@ -99,6 +100,8 @@ app.post('/getPurchaseOrderById', (req, res, next) => {
   ,po.purchase_order_date
   ,po.creation_date
   ,po.modification_date
+  ,po.created_by
+  ,po.modified_by
   ,po.follow_up_date
   ,po.delivery_terms
   ,po.payment_terms
@@ -182,6 +185,11 @@ app.post('/editTabPurchaseOrder', (req, res, next) => {
             ,status=${db.escape(req.body.status)}
             ,payment_status=${db.escape(req.body.payment_status)}
             ,modification_date=${db.escape(new Date())}
+            ,creation_date=${db.escape(req.body.creation_date)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,created_by=${db.escape(req.body.created_by)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+
             ,supplier_id=${db.escape(req.body.supplier_id)}
             ,delivery_to=${db.escape(req.body.delivery_to)}
             ,delivery_date=${db.escape(req.body.delivery_date)}
@@ -322,6 +330,10 @@ app.get('/TabPurchaseOrderLineItem', (req, res, next) => {
   ,po.gst
   ,po.status
   ,po.damage_qty
+  ,po.creation_date
+  ,po.modification_date
+  ,po.created_by
+  ,po.modified_by
   ,po.qty_delivered
   ,po.qty
   ,(po.cost_price*po.quantity) AS po_value
@@ -352,6 +364,11 @@ app.post('/TabPurchaseOrderLineItemById', (req, res, next) => {
   ,p.title
   ,po.item_title
   ,po.description
+  ,po.creation_date
+  ,po.modification_date
+  ,po.created_by
+  ,po.modified_by
+  
   ,po.amount
   ,po.selling_price
   ,po.cost_price
@@ -395,6 +412,10 @@ app.post('/editTabPurchaseOrderLineItem', (req, res, next) => {
             ,gst=${db.escape(req.body.gst)}
             ,unit=${db.escape(req.body.unit)}
             ,qty=${db.escape(req.body.qty)}
+            ,creation_date=${db.escape(req.body.creation_date)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,created_by=${db.escape(req.body.created_by)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,damage_qty=${db.escape(req.body.damage_qty)}
             ,qty_delivered=${db.escape(req.body.qty_delivered)}
             ,status=${db.escape(req.body.status)}

@@ -25,7 +25,9 @@ app.get('/getProjectEnquiry', (req, res, next) => {
             ,c.source,c.industry 
             FROM project_enquiry o 
             LEFT JOIN (company c)  ON (o.company_id  = c.company_id)  
-            where o.project_enquiry_id  !=''`,
+            where o.project_enquiry_id  !=''
+            ORDER BY o.project_enquiry_id DESC
+            `,
     (err, result) => {
      
       if (err) {

@@ -65,6 +65,7 @@ app.post('/editChartAc', (req, res, next) => {
   db.query(`UPDATE acc_head 
             SET title =${db.escape(req.body.title)}
             ,code = ${db.escape(req.body.code)}
+            ,title_arb =${db.escape(req.body.title_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,acc_category_id = ${db.escape(req.body.acc_category_id)}
             WHERE acc_head_id = ${db.escape(req.body.acc_head_id)}`,

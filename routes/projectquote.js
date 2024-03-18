@@ -115,6 +115,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
     LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
     WHERE q.project_quote_id != '' 
+    ORDER BY q.project_quote_id DESC
     `,
       (err, result) => {
        
