@@ -1,0 +1,7 @@
+********************************(19/03/2024 Translation(Project-enquiry inserts field))**************************************(rafi)
+INSERT   INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES (NULL, 'mdProjectEnq.Enquiry Date', 'Enquiry Date', 'تاريخ الاستفسار', 'Project Enquiry Enquiry Date field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdProjectEnq.Enquiry No', 'Enquiry No', 'رقم الاستفسار', 'Project Enquiry Enquiry No field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdProjectEnq.Reference', 'Reference', 'مرجع', 'Project Enquiry Reference field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdProjectEnq.BID Expiry', 'BID Expiry', 'انتهاء المزايدة', 'Project Enquiry BID Expiry', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdProjectEnq.customer', 'Customer', 'عميل', ' Project Enquiry Customer field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(19/03/2024 project_enquiry(Project-enquiry Creates field))**************************************(rafi)
+ALTER TABLE `project_enquiry` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status
