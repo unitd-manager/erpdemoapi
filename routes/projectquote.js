@@ -118,6 +118,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.quote_code
     ,q.quote_status
     ,q.ref_no_quote
+    ,q.ref_no_quote_arb
     ,q.project_location
     ,q.project_reference
     ,q.payment_method
