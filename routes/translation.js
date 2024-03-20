@@ -198,8 +198,8 @@ app.get('/getTranslationForCompany', (req, res, next) => {
   }
 );
 });
-app.get('/getTranslationEnglish', (req, res, next) => {
-  db.query(`SELECT t.english_value,t.key_text  FROM translation t WHERE key_text LIKE 'cm%'`,
+app.get('/getTranslationEnq', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value  FROM translation t WHERE key_text LIKE 'mdProjectEnq%'`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)

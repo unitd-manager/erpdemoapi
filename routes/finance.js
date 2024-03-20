@@ -65,6 +65,35 @@ app.get('/getFinances', (req, res, next) => {
   );
 });
 
+app.get('/getOrder', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  ,i.invoice_source_id
+  ,i.invoice_id
+  FROM orders o
+  LEFT JOIN invoice i ON o.order_id = i.invoice_source_id
+  WHERE o.order_id !='' AND i.invoice_id != ''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 
 app.get('/getOrders', (req, res, next) => {
   db.query(`SELECT o.order_id
@@ -75,6 +104,25 @@ app.get('/getOrders', (req, res, next) => {
   FROM orders o 
   WHERE o.order_id !=''
   AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+app.get('/getInvoice', (req, res, next) => {
+  db.query(`SELECT i.* FROM invoice i WHERE i.invoice_id !=' ' AND i.status !='Cancelled' AND i.invoice_source_id !='';`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -846,6 +894,35 @@ app.post('/getFinanceAddressById', (req, res, next) => {
 
 app.post('/getOrders', (req, res, next) => {
   db.query(`select * from orders where project_id=${db.escape(req.body.project_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+app.post('/getOrderCreditDebitNote', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  ,i.invoice_source_id
+  ,i.invoice_id
+  FROM orders o
+  LEFT JOIN invoice i ON o.order_id = i.invoice_source_id
+  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
