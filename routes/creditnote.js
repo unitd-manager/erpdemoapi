@@ -464,6 +464,55 @@ app.get('/getCreditNote', (req, res, next) => {
   );
 });
 
+app.post('/getOrderCreditDebitNote', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  ,i.invoice_source_id
+  ,i.invoice_id
+  FROM orders o
+  LEFT JOIN invoice i ON o.order_id = i.invoice_source_id
+  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+app.get('/getInvoice', (req, res, next) => {
+  db.query(`SELECT i.* FROM invoice i WHERE i.invoice_id !=' ' AND i.status !='Cancelled' AND i.invoice_source_id !='';`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.post('/editInvoice', (req, res, next) => {
   db.query(`UPDATE invoice 
             SET status = ${db.escape(req.body.status)}

@@ -19,6 +19,7 @@ app.use(fileUpload({
 app.get('/getTranslation', (req, res, next) => {
   db.query(`Select s.key_text 
   ,s.value
+  ,s.arb_value
   ,s.chi_value
   ,s.creation_date
   ,s.modification_date
@@ -48,6 +49,7 @@ app.get('/getTranslation', (req, res, next) => {
 app.post('/getTranslationById', (req, res, next) => {
   db.query(`Select s.key_text 
   ,s.value
+  ,s.arb_value
   ,s.chi_value
   ,s.creation_date
   ,s.modification_date
@@ -81,6 +83,7 @@ app.post('/editTranslation', (req, res, next) => {
             SET key_text=${db.escape(req.body.key_text)}
             ,chi_value=${db.escape(req.body.chi_value)}
             ,value=${db.escape(req.body.value)}
+            ,arb_value=${db.escape(req.body.arb_value)}
             ,is_html_text=${db.escape(req.body.is_html_text)}
             ,show_to_user=${db.escape(req.body.show_to_user)}
             ,group_name=${db.escape(req.body.group_name)}
@@ -157,8 +160,46 @@ app.post('/deleteTranslation', (req, res, next) => {
 );
 });
 
+app.get('/getTranslationForCompanyAcc', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdChartAcc%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+
 app.get('/getTranslationForCompany', (req, res, next) => {
-  db.query(`SELECT t.value,t.key_text  FROM translation t WHERE key_text LIKE 'cm%'`,
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdClient%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+app.get('/getTranslationEnq', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value  FROM translation t WHERE key_text LIKE 'mdProjectEnq%'`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)

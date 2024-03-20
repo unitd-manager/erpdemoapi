@@ -23,12 +23,14 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.quote_code
     ,q.quote_status
     ,q.ref_no_quote
+    ,q.ref_no_quote_arb
     ,q.project_location
     ,q.project_reference
     ,q.payment_method
     ,q.revision
     ,q.intro_drawing_quote 
     ,q.total_amount
+    ,q.total_amount_arb
     ,q.project_enquiry_id
     ,o.company_id
     ,q.contact_id
@@ -61,7 +63,25 @@ app.post('/getProjectquoteById', (req, res, next) => {
       }
     );
   });
-
+  
+  app.get('/getTranslationForProjectQuote', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProjectQuote%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
 
 //   app.post('/editInvoices', (req, res, next) => {
 //     const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -98,6 +118,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.quote_code
     ,q.quote_status
     ,q.ref_no_quote
+    ,q.ref_no_quote_arb
     ,q.project_location
     ,q.project_reference
     ,q.payment_method
@@ -170,8 +191,10 @@ app.post('/getProjectquoteById', (req, res, next) => {
               ,our_reference=${db.escape(req.body.our_reference)}
               ,drawing_nos=${db.escape(req.body.drawing_nos)}
               ,ref_no_quote=${db.escape(req.body.ref_no_quote)}
+              ,ref_no_quote_arb=${db.escape(req.body.ref_no_quote_arb)}
               ,discount=${db.escape(req.body.discount)}
               ,total_amount=${db.escape(req.body.total_amount)}
+              ,total_amount_arb=${db.escape(req.body.total_amount_arb)}
               ,project_enquiry_id=${db.escape(req.body.project_enquiry_id)}
               ,company_id=${db.escape(req.body.company_id)}
               ,contact_id=${db.escape(req.body.contact_id)}

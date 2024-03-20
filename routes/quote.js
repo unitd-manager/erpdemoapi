@@ -86,8 +86,9 @@ app.post('/getPurchaseQuoteById', (req, res, next) => {
     p.purchase_request_code,
     q.rq_code,
     q.creation_date,
-    q.modification_date
-    
+    q.modification_date,
+    q.created_by,
+    q.modified_by
 
 FROM purchase_quote q 
 LEFT JOIN purchase_quote_items qr ON qr.purchase_quote_id = q.purchase_quote_id
@@ -108,6 +109,46 @@ WHERE q.purchase_quote_id=${db.escape( req.body.purchase_quote_id)} `,
       
     }
   );
+});
+app.post('/getPurchaseQuotepdf', (req, res, next) => {
+  db.query(`SELECT
+  q.purchase_quote_id,
+  q.date_issued,
+  q.due_date,
+  q.status,
+  q.supplier_id,
+  q.purchase_request_id,
+  qr.product_id ,
+  qr.total_cost,
+  qr.purchase_quote_items_id,
+  qr.amount,
+  p.purchase_request_id,
+  p.purchase_request_code,
+  q.rq_code,
+  q.creation_date,
+  q.modification_date,
+  q.created_by,
+  q.modified_by
+
+FROM purchase_quote q 
+LEFT JOIN purchase_quote_items qr ON qr.purchase_quote_id = q.purchase_quote_id
+LEFT JOIN purchase_request p ON p.purchase_request_id=q.purchase_request_id
+WHERE q.purchase_quote_id=${db.escape( req.body.purchase_quote_id)} `,
+  (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return;
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+
+      }
+     
+    
+  }
+);
 });
 
 app.post('/getPurchaseQuoteRequestById', (req, res, next) => {
@@ -152,8 +193,8 @@ app.post('/editPurchseQuote', (req, res, next) => {
               ,status=${db.escape(req.body.status)}
               ,supplier_id=${db.escape(req.body.supplier_id)}
               ,payment_method=${db.escape(req.body.payment_method)}
-              ,created_by=${db.escape(req.body.creation_by)}
-              ,modified_date=${db.escape(req.body.modified_by)}
+              ,modified_by=${db.escape(req.body.modified_by)}
+
               ,creation_date=${db.escape(req.body.creation_date)}
               ,modification_date=${db.escape(
                 new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -231,6 +272,7 @@ app.post('/insertQuote', (req, res, next) => {
       , payment_method: req.body.payment_method
       , supplier_id: req.body.supplier_id
       ,rq_code: req.body.rq_code
+      ,created_by: req.body.created_by
       ,purchase_request_id:req.body.purchase_request_id
       ,creation_date: new Date().toISOString().slice(0, 19).replace('T', ' ')
       ,modification_date: req.body.modification_date
@@ -358,6 +400,43 @@ app.post('/RequestLineItemById', (req, res, next) => {
     ,pq.purchase_quote_items_id
     ,pq.description
     ,q.rq_code
+    ,q.created_by
+    FROM purchase_quote q
+    LEFT JOIN (purchase_request r) ON (r.purchase_request_id = q.purchase_request_id) 
+    LEFT JOIN (purchase_quote_items pq) ON (pq.purchase_quote_id = q.purchase_quote_id) 
+        LEFT JOIN (product p) ON (p.product_id = pq.product_id) 
+    WHERE q.purchase_quote_id=${db.escape(req.body.purchase_quote_id)};`,
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
+app.post('/getRequestLineItempdf', (req, res, next) => {
+  db.query(`
+  SELECT
+    p.product_code
+    ,p.title
+    ,r.purchase_request_id
+    ,r.purchase_request_code
+    ,q.purchase_quote_id
+    ,pq.amount
+    ,pq.total_cost
+    ,pq.quantity
+    ,pq.product_id
+    ,pq.unit
+    ,pq.purchase_quote_items_id
+    ,pq.description
+    ,q.rq_code
+    ,q.created_by
     FROM purchase_quote q
     LEFT JOIN (purchase_request r) ON (r.purchase_request_id = q.purchase_request_id) 
     LEFT JOIN (purchase_quote_items pq) ON (pq.purchase_quote_id = q.purchase_quote_id) 

@@ -4,6 +4,7 @@ var db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
+    //database: 'erpdemonew',
     database: 'erpdemo'
 });
 

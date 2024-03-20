@@ -21,9 +21,12 @@ app.get('/getTenders', (req, res, next) => {
   db.query(`SELECT 
             o.*
             ,o.actual_closing
+            ,o.opportunity_code_arb
+            ,o.status_arb
             ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name 
             ,CONCAT_WS(' ', ref.first_name, ref.last_name) AS ref_contact_name 
             ,c.company_name 
+            ,c.company_name_arb
             ,c.company_size 
             ,c.source,c.industry 
             ,e.team,p.project_code,ser.title AS service_title 
@@ -37,7 +40,7 @@ app.get('/getTenders', (req, res, next) => {
             LEFT JOIN (staff s)  ON (o.project_manager_id  = s.staff_id)  
             LEFT JOIN (valuelist VL) ON (o.chance  = VL.value AND VL.key_text = 'opportunityChance')   
             LEFT JOIN (project p)   ON (p.project_id   = o.project_id) 
-            ORDER BY o.opportunity_code DESC`,
+            ORDER BY o.opportunity_id DESC`,
     (err, result) => {
      
       if (result.length == 0) {
@@ -468,6 +471,7 @@ app.post('/edit-Tenders', (req, res, next) => {
             ,company_id=${db.escape(req.body.company_id)}
             ,modified_by=${db.escape(req.body.modified_by)}
              ,enquiry_date=${db.escape(req.body.enquiry_date)}
+             ,status_arb=${db.escape(req.body.status_arb)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,actual_closing=${db.escape(req.body.actual_closing)}
             ,mode_of_submission=${db.escape(req.body.mode_of_submission)}
@@ -492,6 +496,7 @@ app.post('/edit-Tenders', (req, res, next) => {
             ,contact_id=${db.escape(req.body.contact_id)}
             ,mode_of_submission=${db.escape(req.body.mode_of_submission)}
             ,services=${db.escape(req.body.services)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,site_show_date=${db.escape(req.body.site_show_date)}
             ,project_end_date=${db.escape(req.body.project_end_date)}
             ,site_show_attendee=${db.escape(req.body.site_show_attendee)}
@@ -509,6 +514,7 @@ app.post('/edit-Tenders', (req, res, next) => {
             SET office_ref_no=${db.escape(req.body.office_ref_no)}
             ,company_id=${db.escape(req.body.company_id)}
             ,contact_id=${db.escape(req.body.contact_id)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,mode_of_submission=${db.escape(req.body.mode_of_submission)}
             ,services=${db.escape(req.body.services)}
             ,site_show_date=${db.escape(req.body.site_show_date)}
@@ -668,6 +674,7 @@ app.post('/insertTenders', (req, res, next) => {
    ,opportunity_code:req.body.opportunity_code
    ,category: req.body.category
    ,status:req.body.status
+   ,enquiry_date:new Date().toISOString().split('T')[0]
    ,creation_date: req.body.creation_date
    ,created_by: req.body.created_by
    ,staff_id: req.body.staff_id

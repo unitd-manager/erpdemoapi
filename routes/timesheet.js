@@ -40,6 +40,60 @@ app.get("/getTimesheet", (req, res, next) => {
   );
 });
 
+
+app.post("/getAllEmpTimesheetPDF", (req, res, next) => {
+  // Get current date
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1; // Month is zero-indexed, so add 1
+  const currentYear = currentDate.getFullYear();
+
+  db.query(
+    `SELECT * FROM employee_timesheet et 
+    WHERE et.employee_id = ${db.escape(req.body.employee_id)} 
+    AND et.month = ${currentMonth} 
+    AND et.year = ${currentYear}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+           data: result,
+          msg: 'Success',
+        })
+      }
+    }
+  );
+});
+
+
+app.post("/getAllEmpTimesheetPDFold", (req, res, next) => {
+  db.query(
+    `SELECT * FROM employee_timesheet et 
+    WHERE et.employee_id =  ${db.escape(req.body.employee_id)}
+    AND et.month =  ${db.escape(req.body.monthend)}
+    AND et.year =  ${db.escape(req.body.year)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+           data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
 app.get("/getAllEmpTimesheet", (req, res, next) => {
   db.query(
     `SELECT * FROM employee_timesheet et 

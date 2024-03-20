@@ -7743,7 +7743,7 @@ ALTER TABLE `work_order_line_items`
 /* =========================SULFIYA- 19/10/2022 ===================== */
 
 
-ALTER TABLE `opportunity` ADD `project_end_date` DATE NULL DEFAULT NULL AFTER `employee_id`
+ALTER TABLE `opportunity` ADD `project_end_date` DATE NULL DEFAULT NULL AFTER `employee_id`
 
 
 /* =========================SULFIYA - 21/10/2022 ===================== */
@@ -7759,7 +7759,7 @@ ALTER TABLE `quote` CHANGE `condition` `conditions` TEXT CHARACTER SET utf8 COLL
 
 /* =================== RAFI - 17/11/2022 ===================== */
 
-ALTER TABLE `purchase_order` ADD `site_id` INT(11) NULL DEFAULT NULL AFTER `project`
+ALTER TABLE `purchase_order` ADD `site_id` INT(11) NULL DEFAULT NULL AFTER `project`
 
 /* =================== MEERA - 17/11/2022 ===================== */
 

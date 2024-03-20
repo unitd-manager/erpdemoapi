@@ -18,18 +18,26 @@ app.use(fileUpload({
 }));
 app.get('/getClients', (req, res, next) => {
   db.query(`SELECT c.company_name
+  ,c.company_name_arb
   ,c.company_id
   ,c.phone
+  ,c.phone_arb
   ,c.status
   ,c.website
+  ,c.website_arb
   ,c.email
+  ,c.email_arb
   ,c.status
   ,c.fax
+  ,c.fax_arb
   ,c.flag
   ,c.address_flat
+  ,c.address_flat_arb
   ,c.address_street
+  ,c.address_street_arb
   ,c.address_country
   ,c.address_po_code
+  ,c.address_po_code_arb
   ,c.retention
   ,c.creation_date
   ,c.creation_date
@@ -57,16 +65,24 @@ app.get('/getClients', (req, res, next) => {
 
 app.post('/getClientsById', (req, res, next) => {
   db.query(`Select c.company_name
+  ,c.company_name_arb
   ,c.company_id
   ,c.phone
+  ,c.phone_arb
   ,c.website
+  ,c.website_arb
   ,c.email
+  ,c.email_arb
   ,c.status
   ,c.fax
+  ,c.fax_arb
   ,c.address_flat
+  ,c.address_flat_arb
   ,c.address_street
+  ,c.address_street_arb
   ,c.address_country
   ,c.address_po_code
+  ,c.address_po_code_arb
   ,c.retention
   ,c.creation_date
   ,c.modification_date
@@ -118,16 +134,24 @@ app.post('/getContactByCompanyId', (req, res, next) => {
 app.post('/editClients', (req, res, next) => {
   db.query(`UPDATE company
             SET company_name=${db.escape(req.body.company_name)}
+            ,company_name_arb=${db.escape(req.body.company_name_arb)}
             ,phone=${db.escape(req.body.phone)}
+            ,phone_arb=${db.escape(req.body.phone_arb)}
             ,website=${db.escape(req.body.website)}
+            ,website_arb=${db.escape(req.body.website_arb)}
             ,email=${db.escape(req.body.email)}
+            ,email_arb=${db.escape(req.body.email_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
             ,fax=${db.escape(req.body.fax)}
+            ,fax_arb=${db.escape(req.body.fax_arb)}
             ,address_flat=${db.escape(req.body.address_flat)}
+            ,address_flat_arb=${db.escape(req.body.address_flat_arb)}
             ,address_street=${db.escape(req.body.address_street)}
+            ,address_street_arb=${db.escape(req.body.address_street_arb)}
             ,address_country=${db.escape(req.body.address_country)}
             ,address_po_code=${db.escape(req.body.address_po_code)}
+            ,address_po_code_arb=${db.escape(req.body.address_po_code_arb)}
             ,retention=${db.escape(req.body.retention)}
             WHERE company_id=${db.escape(req.body.company_id)}`,
     (err, result) => {
@@ -152,6 +176,7 @@ app.post('/editClients', (req, res, next) => {
 app.post('/insertCompany', (req, res, next) => {
 
   let data = {company_name	:req.body.company_name	
+    , company_name_arb	: req.body.company_name_arb
    , email	: req.body.email	
    , address_street: req.body.address_street
    , address_town: req.body.address_town
@@ -230,6 +255,7 @@ app.post('/deleteCompany', (req, res, next) => {
 app.get('/getContactLinked', (req, res, next) => {
   db.query(`SELECT c.contact_id 
   ,c.first_name
+  ,c.first_name_arb
   ,c.email
   ,c.phone
   ,c.mobile
@@ -260,6 +286,7 @@ app.post('/getContactLinkedByCompanyId', (req, res, next) => {
   db.query(`SELECT c.company_id
    ,c.contact_id 
   ,c.first_name
+  ,c.first_name_arb
   ,c.email
   ,c.phone
   ,c.phone_direct
@@ -292,6 +319,7 @@ app.post('/getContactLinkedByContactId', (req, res, next) => {
   db.query(`SELECT c.company_id
   ,c.contact_id 
   ,c.first_name
+  ,c.first_name_arb
   ,c.email
   ,c.phone
   ,c.phone_direct
@@ -324,6 +352,7 @@ app.post('/editContact', (req, res, next) => {
   db.query(`UPDATE contact
             SET 
             first_name=${db.escape(req.body.first_name)}
+            first_name_arb=${db.escape(req.body.first_name_arb)}
             ,email=${db.escape(req.body.email)}
             ,phone_direct=${db.escape(req.body.phone_direct)}
             ,phone=${db.escape(req.body.phone)}
@@ -355,6 +384,7 @@ app.post('/getContactLinkedById', (req, res, next) => {
   db.query(`SELECT 
    c.contact_id 
   ,c.first_name
+  ,c.first_name_arb
   ,c.email
   ,c.phone
   ,c.mobile
@@ -422,6 +452,7 @@ app.post('/insertContact', (req, res, next) => {
    , pass_word: req.body.pass_word
    , subscribe: req.body.subscribe
    , first_name: req.body.first_name
+   , first_name_arb: req.body.first_name_arb
    , last_name: req.body.last_name
    , mobile: req.body.mobile
    , religion	: req.body.religion

@@ -30,6 +30,13 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
     ,gd.goods_ref_no
     ,c.company_id
     ,c.company_name
+    ,c.address_flat
+    ,c.address_street
+    ,c.address_town
+    ,c.address_country
+    ,c.address_po_code
+    ,c.phone
+    ,cont.first_name
     ,gd.goods_delivery_status
     ,gd.po_no
     ,opt.office_ref_no
@@ -46,7 +53,8 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
        LEFT JOIN (orders o) ON (o.order_id=gd.order_id)  
        LEFT JOIN quote q ON (o.quote_id = q.quote_id )
        LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)    
-       LEFT JOIN (company c) ON (c.company_id=opt.company_id)      
+       LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
+       LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
        LEFT JOIN (goods_delivery_item gi) ON (gi.goods_delivery_id = gd.goods_delivery_id)  
        WHERE gd.goods_delivery_id =${db.escape(req.body.goods_delivery_id)}
     `,
@@ -111,6 +119,7 @@ app.get("/getgoodsdelivery", (req, res, next) => {
        LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)    
        LEFT JOIN (company c) ON (c.company_id=opt.company_id)  
        WHERE gd.goods_delivery_id != ''
+       ORDER BY goods_delivery_id DESC
     `,
     (err, result) => {
       if (result.length == 0) {
@@ -152,15 +161,8 @@ app.get("/getOrderCode", (req, res, next) => {
 
 app.post("/getgoodsdeliveryitemById", (req, res, next) => {
   db.query(
-    ` SELECT gi.title
-    ,gi.description
-    ,gi.unit
-    ,gi.unit_price
-    ,gi.amount
-    ,gi.quantity
-    ,gi.delivery_qty
-    ,gi.goods_delivery_id
-    ,gi.goods_delivery_item_id  
+    ` SELECT gi.*
+    
        FROM goods_delivery_item gi 
        WHERE gi.goods_delivery_id =${db.escape(req.body.goods_delivery_id)}
     `,

@@ -27,6 +27,7 @@ app.post('/insertInvoice', (req, res, next) => {
     , status: 'Due'
     , creation_date: req.body.creation_date   
     , created_by: req.body.created_by
+    ,invoice_date: new Date()
  };
   let sql = "INSERT INTO invoice SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -752,7 +753,7 @@ it.description,
 it.total_cost,
 it.unit,
 it.qty,
-(it.invoice_qty-it.qty) AS qty_returned,
+it.qty_returned,
 it.unit_price,
 it.remarks,
 i.invoice_id,
@@ -778,36 +779,36 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
   );
 });
 
-// app.post('/getReturnInvoiceItemsById', (req, res, next) => {
-//   db.query(`SELECT it.sales_return_history_id ,
-//   it.return_date,
-// i.invoice_id,
-// it.invoice_item_id,
-// it.price,
-// it.notes,
-// it.qty_return,
-// it.order_id,
-// iv.item_title
-// FROM sales_return_history it
-// LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
-// LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
-// WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
-//           (err, result) => {
+app.post('/getReturnInvoiceItemsById', (req, res, next) => {
+  db.query(`SELECT it.sales_return_history_id ,
+  it.return_date,
+i.invoice_id,
+it.invoice_item_id,
+it.price,
+it.notes,
+it.qty_return,
+it.order_id,
+iv.item_title
+FROM sales_return_history it
+LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
+LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
+WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+          (err, result) => {
        
-//       if (result.length === 0) {
-//         return res.status(400).send({
-//           msg: 'No result found'
-//         });
-//       } else {
-//             return res.status(200).send({
-//               data: result,
-//               msg:'Success'
-//             });
-//       }
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
  
-//     }
-//   );
-// });
+    }
+  );
+});
 
 app.post('/getInvoiceItemsByItemId', (req, res, next) => {
   db.query(`SELECT it.item_title,
@@ -1186,7 +1187,7 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
   o.order_id
   ,o.order_code
   FROM orders o
-  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id AND i.source_type='Sales_Order'
+  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id 
   WHERE
   o.order_id != '' 
   AND i.invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
@@ -1209,7 +1210,7 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   g.goods_delivery_id,
   g.goods_delivery_code
   FROM goods_delivery g
-  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id AND i.source_type='Goods_Delivery'
+  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id
   WHERE
   g.goods_delivery_id != '' 
   AND i.invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
@@ -1260,7 +1261,8 @@ LEFT JOIN
 WHERE
   i.invoice_id != ''
 GROUP BY
-  i.invoice_id;`,
+  i.invoice_id
+  ORDER BY i.invoice_id DESC;`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1744,9 +1746,14 @@ app.post('/getReceiptData', (req, res, next) => {
   ,i.amount
   ,i.mode_of_payment
    ,i.receipt_date
+   ,i.order_id
+   ,o.order_code
+   ,iv.invoice_id
    from receipt i
   LEFT JOIN orders o ON o.order_id=i.order_id
- WHERE i.receipt_id= ${db.escape(req.body.receipt_id)}`,
+  LEFT JOIN invoice iv ON o.order_id=iv.invoice_source_id
+ WHERE i.receipt_id= ${db.escape(req.body.receipt_id)}
+ GROUP BY i.receipt_id`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1763,6 +1770,42 @@ app.post('/getReceiptData', (req, res, next) => {
   );
 });
 
+app.post('/getReceiptInvoiceData', (req, res, next) => {
+  db.query(`select i.receipt_id
+  ,i.remarks
+  ,i.creation_date
+  ,i.modification_date
+  ,i.created_by
+  ,i.modified_by
+  ,i.receipt_code  
+  ,i.receipt_status
+  ,i.amount
+  ,i.mode_of_payment
+   ,i.receipt_date
+   ,i.order_id
+   ,o.order_code
+   ,iv.invoice_id
+   ,iv.invoice_code
+   from receipt i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+  LEFT JOIN invoice iv ON o.order_id=iv.invoice_source_id
+ WHERE i.receipt_id=${db.escape(req.body.receipt_id)}
+ GROUP BY i.receipt_id`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+    }
+  );
+});
 
 app.post('/getReceiptByIds', (req, res, next) => {
   db.query(`SELECT DISTINCT r.receipt_id
@@ -2176,7 +2219,7 @@ app.post('/insertInvoiceold', (req, res, next) => {
     ,  invoice_id: req.body.invoice_id
     , order_id: req.body.order_id
     , invoice_amount: req.body.invoice_amount
-    , invoice_date: req.body.invoice_date
+    , invoice_date: new Date().toISOString().split('T')[0]
     , mode_of_payment: req.body.mode_of_payment
     , status: 'Due'
     , creation_date: req.body.creation_date
@@ -2293,6 +2336,7 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
     UPDATE invoice_item 
     SET qty = qty - ${req.body.qty_return},
     total_cost = (qty) * ${req.body.price},
+    invoice_qty= ${req.body.qty_return},
     qty_returned = qty_returned + ${req.body.qty_return}
     WHERE invoice_item_id = ${req.body.invoice_item_id}
   `;
@@ -2451,6 +2495,8 @@ app.post('/insertInvoiceItem', (req, res, next) => {
     ,created_by: req.body.created_by
     ,creation_date: req.body.creation_date
     ,quote_id: req.body.quote_id
+    ,unit_price: req.body.unit_price
+    ,unit: req.body.unit
  };
   let sql = "INSERT INTO invoice_item SET ?";
   let query = db.query(sql, data,(err, result) => {

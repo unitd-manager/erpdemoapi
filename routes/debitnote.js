@@ -391,6 +391,26 @@ app.post('/getOrderLineItemsById', (req, res, next) => {
   );
 });
 
+app.get('/getInvoice', (req, res, next) => {
+  db.query(`SELECT i.* FROM invoice i WHERE i.invoice_id !=' ' AND i.status !='Cancelled' AND i.invoice_source_id !='';`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.delete('/deleteReceipt', (req, res, next) => {
 
   let data = {debit_note_id: req.body.debit_note_id};
@@ -408,6 +428,35 @@ app.delete('/deleteReceipt', (req, res, next) => {
           });
     }
   });
+});
+
+app.post('/getOrderCreditDebitNote', (req, res, next) => {
+  db.query(`SELECT o.order_id
+  ,o.order_date
+  ,o.order_code
+  ,o.creation_date
+  ,o.order_status
+  ,i.invoice_source_id
+  ,i.invoice_id
+  FROM orders o
+  LEFT JOIN invoice i ON o.order_id = i.invoice_source_id
+  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
 });
 
 
@@ -1873,24 +1922,25 @@ app.post('/insertSalesReturn', (req, res, next) => {
 app.post('/insertdebitnote', (req, res, next) => {
 
   let data = {debit_note_code: req.body.debit_note_code,
-              amount: req.body.amount,
-              mode_of_payment: req.body.mode_of_payment,
-              remarks: req.body.remarks,
-              debit_note_date: req.body.debit_note_date,
-              published: req.body.published,
-              flag: req.body.flag,
-              creation_date: req.body.creation_date,
-              modification_date: req.body.modification_date,
-              created_by: req.body.created_by,
-              modified_by: req.body.modified_by,
-              order_id: req.body.order_id,
-              debit_note_status: req.body.debit_note_status,
-              cheque_date: req.body.cheque_date,
-              bank_name: req.body.bank_name,
-              site_id: req.body.site_id,
-              cheque_no: req.body.cheque_no,
-               project_id: req.body.project_id,
-          };
+    amount: req.body.amount,
+    mode_of_payment: req.body.mode_of_payment,
+    remarks: req.body.remarks,
+    debit_note_date: req.body.debit_note_date,
+    published: req.body.published,
+    flag: req.body.flag,
+    creation_date: req.body.creation_date,
+    modification_date: req.body.modification_date,
+    created_by: req.body.created_by,
+    modified_by: req.body.modified_by,
+    order_id: req.body.order_id,
+    debit_note_status: req.body.debit_note_status,
+    cheque_date: req.body.cheque_date,
+    bank_name: req.body.bank_name,
+    site_id: req.body.site_id,
+    cheque_no: req.body.cheque_no,
+     project_id: req.body.project_id,
+};
+
 
   let sql = "INSERT INTO debit_note SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -1907,6 +1957,44 @@ app.post('/insertdebitnote', (req, res, next) => {
     }
   });
 });
+
+// app.post('/insertdebitnote', (req, res, next) => {
+
+//   let data = {debit_note_code: req.body.debit_note_code,
+//               amount: req.body.amount,
+//               mode_of_payment: req.body.mode_of_payment,
+//               remarks: req.body.remarks,
+//               debit_note_date: req.body.debit_note_date,
+//               published: req.body.published,
+//               flag: req.body.flag,
+//               creation_date: req.body.creation_date,
+//               modification_date: req.body.modification_date,
+//               created_by: req.body.created_by,
+//               modified_by: req.body.modified_by,
+//               order_id: req.body.order_id,
+//               debit_note_status: req.body.debit_note_status,
+//               cheque_date: req.body.cheque_date,
+//               bank_name: req.body.bank_name,
+//               site_id: req.body.site_id,
+//               cheque_no: req.body.cheque_no,
+//                project_id: req.body.project_id,
+//           };
+
+//   let sql = "INSERT INTO debit_note SET ?";
+//   let query = db.query(sql, data,(err, result) => {
+//     if (err) {
+//      return res.status(400).send({
+//               data: err,
+//               msg:'failed'
+//             });
+//     } else {
+//           return res.status(200).send({
+//             data: result,
+//             msg:'Success'
+//           });
+//     }
+//   });
+// });
 
 
 

@@ -226,13 +226,16 @@ app.get('/projectIncharge', (req, res, next) => {
 app.post('/edit-Tenders', (req, res, next) => {
   db.query(`UPDATE project_enquiry 
   SET office_ref_no=${db.escape(req.body.office_ref_no)}
+  ,office_ref_no_arb=${db.escape(req.body.office_ref_no_arb)}
   ,company_id=${db.escape(req.body.company_id)}  
   ,services=${db.escape(req.body.services)}
+  ,services_arb=${db.escape(req.body.services_arb)}
   ,project_end_date=${db.escape(req.body.project_end_date)}
   ,enquiry_date=${db.escape(req.body.enquiry_date)}
   ,modification_date=${db.escape(req.body.modification_date)}
   ,modified_by=${db.escape(req.body.modified_by)}
   ,status=${db.escape(req.body.status)}
+  ,status_arb=${db.escape(req.body.status_arb)}
   WHERE project_enquiry_id =  ${db.escape(req.body.project_enquiry_id)}`,
 (err, result) => {
      
