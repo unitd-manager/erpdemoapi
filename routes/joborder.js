@@ -62,6 +62,54 @@ app.post('/getJobOrderById', (req, res, next) => {
     );
   });
 
+
+
+  app.post('/getProjectJobOrderById', (req, res, next) => {
+    db.query(` SELECT q.job_date
+    ,q.Project_id
+    ,q.project_job_id
+    ,q.job_code
+    ,q.job_title
+    ,q.job_status
+    ,q.ref_no_job
+    ,q.project_location
+    ,q.project_reference
+    ,q.payment_method
+    ,q.revision
+    ,q.intro_drawing_job 
+    ,q.total_amount
+    ,q.company_id
+    ,q.contact_id
+    ,c.company_name
+    ,cont.first_name
+    ,q.creation_date
+    ,q.modification_date
+    ,q.created_by
+    ,q.modified_by
+    ,(select sum(it.amount)) as InvoiceAmount
+    FROM project_job q  
+    LEFT JOIN (project_job_items it) ON (it.project_job_id = q.project_job_id)
+    LEFT JOIN (company c) ON (c.company_id = q.company_id)
+    LEFT JOIN (contact cont) ON (cont.contact_id = q.contact_id)   
+    WHERE q.project_id =${db.escape(req.body.project_id)}
+    `,
+      (err, result) => {
+       
+        if (err) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        } else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+          }
+   
+      }
+    );
+  });
+
   app.get('/getJobOrder', (req, res, next) => {
     db.query(` SELECT q.job_date
     ,q.project_job_id
