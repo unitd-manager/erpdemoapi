@@ -74,8 +74,11 @@ app.post('/getPurchaseQuoteById', (req, res, next) => {
     db.query(`SELECT
     q.purchase_quote_id,
     q.date_issued,
+    q.date_issued_arb,
     q.due_date,
+    q.due_date_arb,
     q.status,
+    q.status_arb,
     q.supplier_id,
     q.purchase_request_id,
     qr.product_id ,
@@ -85,11 +88,9 @@ app.post('/getPurchaseQuoteById', (req, res, next) => {
     p.purchase_request_id,
     p.purchase_request_code,
     q.rq_code,
+    q.rq_code_arb,
     q.creation_date,
-    q.modification_date,
-    q.created_by,
-    q.modified_by
-
+    q.modification_date
 FROM purchase_quote q 
 LEFT JOIN purchase_quote_items qr ON qr.purchase_quote_id = q.purchase_quote_id
 LEFT JOIN purchase_request p ON p.purchase_request_id=q.purchase_request_id
@@ -126,9 +127,7 @@ app.post('/getPurchaseQuotepdf', (req, res, next) => {
   p.purchase_request_code,
   q.rq_code,
   q.creation_date,
-  q.modification_date,
-  q.created_by,
-  q.modified_by
+  q.modification_date
 
 FROM purchase_quote q 
 LEFT JOIN purchase_quote_items qr ON qr.purchase_quote_id = q.purchase_quote_id
@@ -567,6 +566,25 @@ app.post('/SupplierQuote', (req, res, next) => {
   
       }
     );
+  });
+
+  app.get('/getTranslationForReqForQuote', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProjectQuote%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
   });
   
 
