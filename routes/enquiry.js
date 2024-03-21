@@ -109,7 +109,7 @@ app.post('/getEnquiryById', (req, res, next) => {
   ,o.email
   ,o.opportunity_id
   ,o.opportunity_code
-  ,o.price
+   ,o.price
    ,o.actual_closing
   ,o.itq_ref_no
   ,o.enquiry_date
@@ -1281,6 +1281,26 @@ app.post('/insertquotes', (req, res, next) => {
             });
       }
     });
+  });
+
+
+  app.get('/getTranslationforTradingEnq', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingEnq%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
   });
 app.post('/insertQuoteItems', (req, res, next) => {
 
