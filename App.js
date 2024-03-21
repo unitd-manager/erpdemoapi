@@ -11,8 +11,8 @@ var credentials = {key: privateKey, cert: certificate};
 
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
-httpServer.listen(5001);
-httpsServer.listen(5002);
+httpServer.listen(2005);
+httpsServer.listen(2006);
     
 var bodyParser = require('body-parser');
 var cors = require('cors');
