@@ -604,7 +604,7 @@ app.get('/getInvoices', (req, res, next) => {
 
 app.get('/checkOrderItem', (req, res, next) => {
   db.query(
-    `SELECT quote_items_id FROM order_item`,
+    `SELECT quote_items_id FROM order_item WHERE quote_items_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
