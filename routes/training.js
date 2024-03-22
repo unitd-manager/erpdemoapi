@@ -85,7 +85,7 @@ app.get("/getTraining", (req, res, next) => {
 
 app.get("/getEmployeeName", (req, res, next) => {
   db.query(
-    `SELECT employee_id,first_name
+    `SELECT employee_id,first_name,employee_name
   FROM employee`,
     (err, result) => {
       if (err) {
@@ -106,7 +106,7 @@ app.get("/getEmployeeName", (req, res, next) => {
 });
 app.post("/getTrainingStaffById", (req, res, next) => {
   db.query(
-    `SELECT training_staff.*,employee.first_name FROM training_staff INNER JOIN employee ON
+    `SELECT training_staff.*,employee.first_name,employee.employee_name FROM training_staff INNER JOIN employee ON
    training_staff.employee_id=employee.employee_id  WHERE training_id=${db.escape(
      req.body.training_id
    )}`,
@@ -256,7 +256,8 @@ app.post("/getTabEmployeeLinkedById", (req, res, next) => {
   ts.employee_id 
   ,ts.from_date
   ,ts.to_date
-  ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+  ,CONCAT_WS(' ', e.first_name, e.last_name) AS emp_name
+  ,e.employee_name
   ,ji.designation
   FROM training_staff ts
   LEFT JOIN (employee e) ON (ts.staff_id = e.employee_id)
@@ -287,7 +288,8 @@ app.get("/getTabEmployeeLinked", (req, res, next) => {
   ts.employee_id 
   ,ts.from_date
   ,ts.to_date
-  ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+  ,CONCAT_WS(' ', e.first_name, e.last_name) AS emp_name
+  ,e.employee_name
   ,ji.designation
   FROM training_staff ts
   LEFT JOIN (employee e) ON (ts.staff_id = e.employee_id)

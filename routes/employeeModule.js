@@ -17,10 +17,84 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
+app.post('/import/excel', ( req, res ) => {
+    const { data } = req.body;
+    const parsed_data = JSON.parse(data);
+
+    const limit = parsed_data.length;
+    const count = [];
+    const connection = db;
+    
+    connection.beginTransaction(
+        ( err ) => {
+            if ( err )
+            {
+                connection.rollback(() => {console.log(err);});
+            }else
+            {
+                insertRows(connection);
+            }
+        }
+    )
+    function insertRows(connection) {
+        connection.query(
+            "INSERT INTO employee (`employee_name`, `salutation`, `gender`, `nric_no`,`fin_no`, `work_permit`,  `fin_no_expiry_date`,`work_permit_expiry_date`, `date_of_birth`, `nationality`, `race`,`spr_year`, `position`, `mobile`, `passport`,`date_of_expiry`, `add_hourly_rate`,`status`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+            [parsed_data[count.length].Name, parsed_data[count.length].Salutation, parsed_data[count.length].Gender, parsed_data[count.length].NricNo,parsed_data[count.length].FinNo, parsed_data[count.length].WpNo, parsed_data[count.length].FinExpiry,parsed_data[count.length].WpExpiry, parsed_data[count.length].Dob, parsed_data[count.length].Nationality, parsed_data[count.length].Race,parsed_data[count.length].YearofPR, parsed_data[count.length].Occupation, parsed_data[count.length].HandphoneNo, parsed_data[count.length].PassportNo,parsed_data[count.length].PassportExpiry, parsed_data[count.length].HourlyCharge,'Current'],
+            ( err, rslt ) => {
+                if( err ){
+                    connection.rollback(() => {console.log(err);});
+                    res.send(err);
+                    res.end();
+                }else 
+                {
+                    connection.query(
+                        "INSERT INTO job_information (`employee_id`,`work_hour_details`,`duty_responsibility`,`basic_pay`) VALUES (?,?,?,?);",
+                        [rslt.insertId,parsed_data[count.length].Detailsofworkinghours, parsed_data[count.length].DutiesAndResponsibilities, parsed_data[count.length].BasicPay],
+                        ( err ) => {
+                            if( err ){
+                                connection.rollback(() => {console.log(err);});
+                                res.send(err);
+                                res.end();
+                            }else 
+                            {
+                                next(connection, parsed_data[count.length].title);
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    };
+
+    function next(connection, title) {
+        if ( ( count.length + 1 ) === limit )
+        {
+            connection.commit((err) => {
+                if ( err ) {
+                    connection.rollback(() => {console.log(err);});
+                    res.send('err');
+                    res.end();
+                }else
+                {
+                    console.log("RECORDS INSERTED!!!");
+                    res.send('SUCCESS');
+                    res.end();
+                }
+            });
+        }else {
+            console.log(`${title} inserted`);
+            count.push(1);
+            insertRows(connection);
+        }
+    }
+} );
+
 app.get('/getEmployee', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id AS employee_id_duplicate
   ,a.emp_code
+  ,a.employee_id
   ,a.first_name
+  ,a.employee_name
   ,a.salutation
   ,a.gender
   ,a.status
@@ -30,6 +104,7 @@ app.get('/getEmployee', (req, res, next) => {
   ,a.marital_status
   ,a.nationality
   ,a.race
+  ,a.pay
   ,a.notes
   ,a.religion
   ,a.project_designation
@@ -44,7 +119,7 @@ LEFT JOIN geo_country gc ON (a.address_country = gc.country_code)
 LEFT JOIN job_information j ON (a.employee_id = j.employee_id)
 LEFT JOIN staff s ON (a.employee_id = s.employee_id)
 WHERE a.employee_id != ''
-ORDER BY a.first_name ASC`,
+ORDER BY a.employee_name ASC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -65,7 +140,7 @@ ORDER BY a.first_name ASC`,
 app.get('/getArchiveEmployee', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id AS employee_id_duplicate
   ,a.emp_code
-  ,a.first_name
+  ,a.employee_name
   ,a.salutation
   ,a.gender
   ,a.status
@@ -75,6 +150,7 @@ app.get('/getArchiveEmployee', (req, res, next) => {
   ,a.marital_status
   ,a.nationality
   ,a.race
+  ,a.pay
   ,a.notes
   ,a.religion
   ,a.project_designation
@@ -89,7 +165,7 @@ LEFT JOIN geo_country gc ON (a.address_country = gc.country_code)
 LEFT JOIN job_information j ON (a.employee_id = j.employee_id)
 LEFT JOIN staff s ON (a.employee_id = s.employee_id)
 WHERE a.employee_id != '' AND a.status ='Archive'
-ORDER BY a.first_name ASC`,
+ORDER BY a.employee_name ASC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -111,6 +187,7 @@ app.get('/getCurrentEmployee', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id AS employee_id_duplicate
   ,a.emp_code
   ,a.first_name
+  ,a.employee_name
   ,a.salutation
   ,a.gender
   ,a.status
@@ -132,12 +209,13 @@ app.get('/getCurrentEmployee', (req, res, next) => {
   ,a.pass_word AS login_pass_word
   ,a.user_group_id AS staff_user_group_id
   ,a.published AS staff_published
+  ,j.act_join_date
 FROM employee a
 LEFT JOIN geo_country gc ON (a.address_country = gc.country_code)
 LEFT JOIN job_information j ON (a.employee_id = j.employee_id)
 LEFT JOIN staff s ON (a.employee_id = s.employee_id)
 WHERE a.employee_id != '' AND a.status ='Current'
-ORDER BY a.first_name ASC`,
+ORDER BY a.employee_name ASC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -158,7 +236,7 @@ ORDER BY a.first_name ASC`,
 app.post('/getEmployeeByID', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id
   ,a.emp_code
-  ,a.first_name
+  ,a.employee_name
   ,a.salutation
   ,a.gender
   ,a.status
@@ -180,12 +258,14 @@ app.post('/getEmployeeByID', (req, res, next) => {
   ,a.pass_word AS login_pass_word
   ,a.user_group_id AS staff_user_group_id
   ,a.published AS staff_published
+  ,j.act_join_date
+  ,a.pay
 FROM employee a
 LEFT JOIN geo_country gc ON (a.address_country = gc.country_code)
 LEFT JOIN job_information j ON (a.employee_id = j.employee_id)
 LEFT JOIN staff s ON (a.employee_id = s.employee_id)
 WHERE a.employee_id = ${db.escape(req.body.employee_id)}
-ORDER BY a.first_name ASC`,
+ORDER BY a.employee_name ASC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -205,8 +285,9 @@ ORDER BY a.first_name ASC`,
 
 app.post('/edit-Employee', (req, res, next) => {
   db.query(`UPDATE employee  
-            SET first_name=${db.escape(req.body.first_name)}
+            SET employee_name=${db.escape(req.body.employee_name)}
             ,salutation=${db.escape(req.body.salutation)}
+            ,emp_code=${db.escape(req.body.emp_code)}
             ,gender=${db.escape(req.body.gender)}
             ,status=${db.escape(req.body.status)}
             ,date_of_birth=${db.escape(new Date(req.body.date_of_birth).toISOString().slice(0, 19).replace("T", " "))}
@@ -218,12 +299,14 @@ app.post('/edit-Employee', (req, res, next) => {
             ,religion=${db.escape(req.body.religion)}
             ,project_designation =${db.escape(req.body.project_designation)}
             ,team =${db.escape(req.body.team)}
+            ,team_leader =${db.escape(req.body.team_leader)}
             ,project_manager=${db.escape(req.body.project_manager)}
             ,email=${db.escape(req.body.login_email)}
             ,pass_word=${db.escape(req.body.login_pass_word)}
             ,user_group_id=${db.escape(req.body.staff_user_group_id)}
             ,published =${db.escape(req.body.staff_published)}
             ,notes =${db.escape(req.body.notes)}
+            ,pay =${db.escape(req.body.pay)}
             ,company_id=${db.escape(req.body.company_id)}
             WHERE employee_id = ${db.escape(req.body.employee_id)}`,
     (err, result) => {
@@ -355,7 +438,7 @@ app.post('/insertEmployee', (req, res, next) => {
     , is_citizen: req.body.is_citizen
     , race: req.body.race
     , employee_group : req.body. employee_group 
-    , first_name: req.body.first_name
+    , employee_name: req.body.employee_name
     , last_name: req.body.last_name
     , foreign_mobile : req.body. foreign_mobile 
     , foreign_email: req.body.foreign_email
@@ -391,27 +474,6 @@ app.post('/insertEmployee', (req, res, next) => {
   });
 });
 
-
-
-app.post('/deleteEmployeeTime', (req, res, next) => {
-
-  let data = {employee_timesheet_id  : req.body.employee_timesheet_id  };
-  let sql = "DELETE FROM employee_timesheet WHERE ?";
-  let query = db.query(sql, data,(err, result) =>{
-    if (err) {
-      console.log('error: ', err)
-      return res.status(400).send({
-        data: err,
-        msg: 'failed',
-      })
-    } else {
-      return res.status(200).send({
-        data: result,
-        msg: 'Success',
-          });
-    }
-  });
-});
 
 app.delete('/deleteEmployee', (req, res, next) => {
 
@@ -470,6 +532,30 @@ app.post('/getTabPassTypeByID', (req, res, next) => {
   ,work_permit
   ,work_permit_expiry_date
   from employee where employee_id = ${db.escape(req.body.employee_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+    }
+  );
+});
+
+app.post('/Checkedduplicatevalue', (req, res, next) => {
+  db.query(` SELECT *
+    FROM employee
+    WHERE (
+      (nric_no = ${db.escape(req.body.nric_no)} OR fin_no = ${db.escape(req.body.fin_no)} OR work_permit = ${db.escape(req.body.work_permit)})
+      
+    );`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -680,6 +766,7 @@ app.post('/edit-ContactInformation', (req, res, next) => {
             SET address_area=${db.escape(req.body.address_area)}
             ,address_street=${db.escape(req.body.address_street)}
             ,address_po_code=${db.escape(req.body.address_po_code)}
+            ,address_country1="Singapore"
             ,mobile=${db.escape(req.body.mobile)}
             ,phone=${db.escape(req.body.phone)}
             ,email=${db.escape(req.body.email)}

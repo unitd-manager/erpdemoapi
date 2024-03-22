@@ -13,11 +13,9 @@ var cors = require("cors");
 var app = express();
 app.use(cors());
 
-app.use(
-  fileUpload({
-    createParentPath: true,
-  })
-);
+app.use(fileUpload({
+    createParentPath: true
+}));
 
 app.get("/getLoanOld", (req, res, next) => {
   db.query(
@@ -128,6 +126,27 @@ app.get("/TabEmployee", (req, res, next) => {
   );
 });
 
+app.post("/editLoanCalulation", (req, res, next) => {
+  db.query(
+    `UPDATE loan_repayment_history
+              SET 
+              loan_repayment_amount_per_month=${db.escape(req.body.loan_repayment_amount_per_month)}
+              
+              WHERE payroll_management_id = ${db.escape(req.body.payroll_management_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Loan has been removed successfully",
+        });
+      }
+    }
+  );
+});
+
 app.post("/edit-Loan", (req, res, next) => {
   db.query(
     `UPDATE loan
@@ -139,6 +158,66 @@ app.post("/edit-Loan", (req, res, next) => {
             ,type=${db.escape(req.body.type)}
             ,employee_id=${db.escape(req.body.employee_id)}
             WHERE loan_id = ${db.escape(req.body.loan_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Loan has been removed successfully",
+        });
+      }
+    }
+  );
+});
+
+app.post("/getcurrentLoanById", (req, res, next) => {
+  db.query(
+    `SELECT l.date
+    ,l.type
+    ,l.status
+    ,l.amount
+    ,l.loan_id
+    ,l.employee_id
+    ,l.loan_closing_date
+    ,l.loan_start_date
+    ,l.month_amount
+    ,lr.loan_repayment_history_id
+    ,lr.employee_id
+    ,l.notes
+    ,lr.payroll_management_id
+    ,lr.loan_repayment_amount_per_month
+    ,lr.remarks
+    ,(SELECT SUM(loan_repayment_amount_per_month) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS total_repaid_amount
+    ,(SELECT (amount- SUM(loan_repayment_amount_per_month)) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS amount_payable
+    ,l.amount 
+    FROM loan l
+    LEFT JOIN (loan_repayment_history lr)  ON (l.loan_id=lr.loan_id)
+    WHERE l.employee_id =${db.escape(req.body.employee_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.post("/editLoan", (req, res, next) => {
+  db.query(
+    `UPDATE loan
+            SET 
+            amount=${db.escape(req.body.amount)}
+            ,loan_id=${db.escape(req.body.loan_id)}
+            
+            WHERE employee_id = ${db.escape(req.body.employee_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -464,6 +543,27 @@ app.post("/editLoanClosingDate", (req, res, next) => {
           loan_closing_date=${db.escape(
             new Date().toISOString().slice(0, 19).replace("T", " ")
           )}
+    WHERE loan_id = ${db.escape(req.body.loan_id)} `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Loan has been removed successfully",
+        });
+      }
+    }
+  );
+});
+
+
+app.post("/editLoanClosedDate", (req, res, next) => {
+  db.query(
+    `UPDATE loan SET
+          status='Closed'
     WHERE loan_id = ${db.escape(req.body.loan_id)}`,
     (err, result) => {
       if (err) {

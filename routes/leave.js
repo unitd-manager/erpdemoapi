@@ -28,9 +28,10 @@ app.get('/getLeave', (req, res, next) => {
     ,l.no_of_days_next_month
     ,l.employee_id
     ,l.date
-    ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+    ,e.employee_name
     ,j.designation
     ,e.citizen
+    ,e.position
     FROM empleave l
     LEFT JOIN (employee e) ON (l.employee_id = e.employee_id)
     LEFT JOIN (job_information j) ON (j.employee_id = l.employee_id)
@@ -60,7 +61,8 @@ app.get('/getLeave', (req, res, next) => {
   app.get('/getEmployee', (req, res, next) => {
     db.query(`SELECT 
     e.employee_id
-    ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+    ,e.employee_name
+    ,e.position
      ,GROUP_CONCAT(l.from_date) AS from_date
      ,GROUP_CONCAT(l.to_date) AS to_date
     from employee e
@@ -101,8 +103,10 @@ app.get('/getLeave', (req, res, next) => {
     ,l.employee_id
     ,l.date
     ,l.went_overseas
-    ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+    ,e.employee_id
+    ,e.employee_name
     ,j.designation
+    ,e.position
     ,e.citizen
     FROM empleave l
     LEFT JOIN (employee e) ON (l.employee_id = e.employee_id)

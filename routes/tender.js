@@ -99,25 +99,33 @@ GROUP BY
 app.post('/getTendersById', (req, res, next) => {
   db.query(`SELECT 
   o.title
+  ,o.title_arb
   ,o.office_ref_no
+  ,o.office_ref_no_arb
   ,o.company_id
   ,o.contact_id
   ,o.mode_of_submission
   ,o.services
+  ,o.service_arb
   ,o.site_show_date
   ,o.site_show_attendee
   ,o.actual_submission_date
   ,o.project_end_date
+  ,o.project_end_date_arb
   ,o.status
+  ,o.status_arb
   ,o.email
   ,o.opportunity_id
   ,o.opportunity_code
+  ,o.opportunity_code_arb
   ,o.price
    ,o.actual_closing
   ,o.itq_ref_no
   ,o.enquiry_date
+  ,o.enquiry_date_arb
   ,CONCAT_WS(' ', ref.first_name, ref.last_name) AS ref_contact_name 
   ,c.company_name 
+  ,c.company_name_arb
   ,c.company_size 
   ,c.source,c.industry 
     ,cont.first_name
