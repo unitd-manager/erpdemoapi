@@ -24,6 +24,7 @@ app.post('/insertMenuItems', (req, res, next) => {
      , creation_date: req.body.creation_date
      , modification_date: req.body.modification_date
      , category_type: req.body.category_type
+     , category_type_arb: req.body.category_type_arb
    };
     let sql = "INSERT INTO acc_category SET ?";
     let query = db.query(sql, data,(err, result) => {
@@ -64,8 +65,10 @@ app.post("/editMenuItems", (req, res, next) => {
   db.query(
     `UPDATE acc_category
               SET title=${db.escape(req.body.title)}
+              ,title_arb=${db.escape(req.body.title_arb)}
               ,code=${db.escape(req.body.code)}
               ,modification_date=${db.escape(req.body.modification_date)}
+              ,category_type_arb=${db.escape(req.body.category_type_arb)}
               ,category_type=${db.escape(req.body.category_type)}
               ,parent_id=${db.escape(req.body.parent_id)}
               WHERE acc_category_id = ${db.escape(req.body.acc_category_id)}`,
