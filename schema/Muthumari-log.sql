@@ -1,7 +1,9 @@
-..........................  Inventory Module(20/3/24)   ..........................
+..........................  Inventory Module Arabic New Fields (20/3/24)   ..........................
 ALTER TABLE `inventory` ADD `inventory_code_arb` VARCHAR(100) NULL DEFAULT NULL AFTER `inventory_code`; 
 ALTER TABLE `inventory` ADD `notes_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `notes`; 
-ALTER TABLE `inventory` ADD `minimum_order_level_arb` INT(11) NULL DEFAULT NULL AFTER `minimum_order_level`; 
+ALTER TABLE `inventory` ADD `minimum_order_level_arb` INT(11) NULL DEFAULT NULL AFTER `minimum_order_level`;
+
+..........................  Inventory Module Inserted fields in Translation (20/3/24)   ..........................
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`,
 `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdInventory.InventoryCode', 
 'Inventory Code', 'رمز المخزون', 'Inventory Inventory Code', NULL, NULL, NULL, NULL, NULL, '0'); 
@@ -36,7 +38,7 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 NULL, NULL, NULL, '0'); 
 
 
-...........................................  Product Module  .....................................................
+.......................... Product Module Arabic New Fields(20/3/24) .....................................................
 ALTER TABLE `product` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `title`; 
 ALTER TABLE `product` ADD `product_type_arb` VARCHAR(100) NULL DEFAULT NULL AFTER `product_type`; 
 ALTER TABLE `product` ADD `item_code_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `item_code`; 

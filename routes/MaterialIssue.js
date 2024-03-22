@@ -23,9 +23,13 @@ app.get('/getMaterialIssue', (req, res, next) => {
   ,lr.project_id
   ,lr.material_request_id
   ,lr.reason_for_issue
+  ,lr.reason_for_issue_arb
   ,lr.material_issue_date
+  ,lr.reason_for_issue_arb
   ,lr.notes
+  ,lr.notes_arb
   ,lr.authorized_by
+  ,lr.authorized_by_arb
   ,lr.creation_date
   ,lr.modification_date
   ,p.title AS proj_title
@@ -81,9 +85,13 @@ app.post('/getMaterialIssueById', (req, res, next) => {
   ,lr.project_id
   ,lr.material_request_id
   ,lr.reason_for_issue
+  ,lr.reason_for_issue_arb
   ,lr.material_issue_date
+  ,lr.material_issue_date_arb
   ,lr.notes
+  ,lr.notes_arb
   ,lr.authorized_by
+  ,lr.authorized_by_arb
   ,lr.creation_date
   ,lr.modification_date
   ,p.title AS proj_title
@@ -112,6 +120,24 @@ app.post('/getMaterialIssueById', (req, res, next) => {
   );
 });
 
+app.get('/getTranslationForMaterialIssue', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdMaterialIssue%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 
 app.post('/editMaterialIssue', (req, res, next) => {
   db.query(`UPDATE material_issue 
@@ -121,10 +147,13 @@ app.post('/editMaterialIssue', (req, res, next) => {
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
             ,material_issue_date=${db.escape(req.body.material_issue_date)}
+            ,material_issue_date_arb=${db.escape(req.body.material_issue_date_arb)}
             ,reason_for_issue=${db.escape(req.body.reason_for_issue)}
+            ,reason_for_issue_arb=${db.escape(req.body.reason_for_issue_arb)}
             ,notes=${db.escape(req.body.notes)}
+            ,notes_arb=${db.escape(req.body.notes_arb)}
             ,authorized_by=${db.escape(req.body.authorized_by)}
-           
+            ,authorized_by_arb=${db.escape(req.body.authorized_by_arb)}
             WHERE material_issue_id = ${db.escape(req.body.material_issue_id)}`,
     (err, result) => {
      
