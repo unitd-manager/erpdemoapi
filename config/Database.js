@@ -4,8 +4,8 @@ var db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    //database: 'erpdemonew',
-    database: 'erpdemo'
+    database: 'erpdemo',
+    //database: 'erpdemo'
 });
 
 module.exports = db;

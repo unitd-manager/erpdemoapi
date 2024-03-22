@@ -17,6 +17,7 @@ app.post('/insertMenuItems', (req, res, next) => {
 
     let data = {
         title: req.body.title	
+        ,title_arb: req.body.title_arb	
      , code: req.body.code
      , sort_order: req.body.sort_order
      , parent_id: req.body.parent_id
