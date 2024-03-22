@@ -24,6 +24,7 @@ app.get("/getProposal", (req, res, next) => {
     `SELECT 
              pr.proposal_id
             ,pr.title
+            ,pr.title_arb
             ,pr.proposal_code
             ,pr.proposal_date
             ,q.project_quote_id
@@ -33,12 +34,16 @@ app.get("/getProposal", (req, res, next) => {
             ,pr.contact_id
             ,cont.first_name
             ,pr.status
+            ,pr.status_arb
             ,pr.est_start_date
             ,pr.est_end_date
             ,pr.budget
+            ,pr.budget_arb
             ,pr.project_manager
             ,pr.no_of_employees
+            ,pr.no_of_employees_arb
             ,pr.description
+            ,pr.description_arb
             ,pr.creation_date
             ,pr.modification_date
             ,pr.created_by
@@ -65,11 +70,31 @@ app.get("/getProposal", (req, res, next) => {
   );
 });
 
+app.get('/getTranslationForProposal', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdproposal%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.post("/getProposalById", (req, res, next) => {
   db.query(
     `SELECT 
     pr.proposal_id
     ,pr.title
+    ,pr.title_arb
     ,pr.proposal_code
     ,pr.proposal_date
    
@@ -81,12 +106,16 @@ app.post("/getProposalById", (req, res, next) => {
    
    ,cont.first_name
    ,pr.status
+   ,pr.status_arb
    ,pr.est_start_date
    ,pr.est_end_date
    ,pr.budget
+   ,pr.budget_arb
    ,pr.project_manager
    ,pr.no_of_employees
+   ,pr.no_of_employees_arb
    ,pr.description
+   ,pr.description_arb
    ,pr.creation_date
    ,pr.modification_date
    ,pr.created_by
@@ -138,18 +167,23 @@ app.post("/editProposal", (req, res, next) => {
   db.query(
     `UPDATE proposal
             SET title=${db.escape(req.body.title)}
+            ,title_arb=${db.escape(req.body.title_arb)}
             ,proposal_code=${db.escape(req.body.proposal_code)}
             ,project_quote_id=${db.escape(req.body.project_quote_id)}
             ,company_id=${db.escape(req.body.company_id)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,proposal_date=${db.escape(req.body.proposal_date)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,est_start_date=${db.escape(req.body.est_start_date)}
             ,est_end_date=${db.escape(req.body.est_end_date)}
             ,budget=${db.escape(req.body.budget)}
+            ,budget_arb=${db.escape(req.body.budget_arb)}
             ,project_manager=${db.escape(req.body.project_manager)}
             ,no_of_employees=${db.escape(req.body.no_of_employees)}
+            ,no_of_employees_arb=${db.escape(req.body.no_of_employees_arb)}
             ,description=${db.escape(req.body.description)}
+            ,description_arb=${db.escape(req.body.description_arb)}
             ,created_by=${db.escape(req.body.created_by)}
             ,modified_by=${db.escape(req.body.modified_by)}
             ,creation_date=${db.escape(req.body.creation_date)}

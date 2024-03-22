@@ -63,18 +63,40 @@ app.get('/getProject', (req, res, next) => {
   );
 });
 
+app.get('/getTranslationForProject', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProject%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/getProjectInErp', (req, res, next) => {
   db.query(`SELECT 
   p.project_id
   ,p.title
+  ,p.title_arb
   ,p.project_code
   ,p.contact_id
   ,p.category
   ,p.status
   ,c.company_name
+  ,c.company_name_arb
   ,co.contact_id
   ,po.proposal_code
   ,CONCAT_WS(' ', co.first_name, co.last_name) AS contact_name 
+  ,CONCAT_WS(' ', co.first_name_arb, co.last_name) AS contact_name_arb
   FROM project p
   LEFT JOIN company c ON c.company_id=p.company_id
   LEFT JOIN contact co ON co.contact_id=p.contact_id
@@ -215,17 +237,24 @@ FROM (
 
 app.post('/getProjectById', (req, res, next) => {
   db.query(`SELECT p.title
+  ,p.title_arb
   ,p.category
+  ,p.category_arb
   ,p.status
+  ,p.status_arb
   ,p.contact_id
   ,p.start_date
+  ,p.start_date_arb
   ,p.estimated_finish_date
+  ,p.estimated_finish_date_arb
   ,p.description
+  ,p.description_arb
   ,p.project_manager_id
   ,p.project_id
   ,p.company_id 
   ,p.company_invoice
   ,c.company_name 
+  ,c.company_name_arb
   ,c.company_size 
   ,c.source 
   ,c.industry
@@ -1095,13 +1124,19 @@ app.post('/editTabQuote', (req, res, next) => {
 app.post('/edit-Project', (req, res, next) => {
   db.query(`UPDATE project 
             SET title=${db.escape(req.body.title)}
+            ,title_arb=${db.escape(req.body.title_arb)}
+            ,category_arb=${db.escape(req.body.category_arb)}
             ,category=${db.escape(req.body.category)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,company_id=${db.escape(req.body.company_id)}
             ,start_date=${db.escape(req.body.start_date)}
+            ,start_date_arb=${db.escape(req.body.start_date_arb)}
             ,estimated_finish_date=${db.escape(req.body.estimated_finish_date)}
+            ,estimated_finish_date_arb=${db.escape(req.body.estimated_finish_date_arb)}
             ,description=${db.escape(req.body.description)}
+            ,description_arb=${db.escape(req.body.description_arb)}
             ,project_manager_id=${db.escape(req.body.project_manager_id)}
             ,company_invoice=${db.escape(req.body.company_invoice)}
             WHERE project_id =  ${db.escape(req.body.project_id)}`,
