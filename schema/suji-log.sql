@@ -66,4 +66,4 @@ VALUES
 (NULL, 'mdTradingSalesReceipt.Status', 'Status', 'حالة', 'SalesReceipt Status field\r\n', NULL, NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdTradingSalesReceipt.Amount', 'Amount', 'كمية ', 'SalesReceipt Amount field', NULL, NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdTradingSalesReceipt.Date', 'Date', 'تاريخ', 'SalesReceipt Date field', NULL, NULL, NULL, NULL, NULL, '0'),
-(NULL, 'mdTradingSalesReceipt.Print', 'Print', 'مطبعة ', 'SalesReceipt Print field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingSalesReceipt.Print', 'Print', 'مطبعة ', 'SalesReceipt Print field', NULL, NULL, NULL, NULL, NULL, '0');
