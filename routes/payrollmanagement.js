@@ -21,28 +21,39 @@ app.get('/getpayrollmanagementMain', (req, res, next) => {
   db.query(`SELECT pm.payroll_month
             ,pm.payroll_year
             ,pm.basic_pay
-             ,pm.total_deductions
+            ,pm.total_deductions
             ,pm.overtime_pay_rate
             ,pm.ot_amount
             ,pm.ot_hours
-            ,pm.cpf_employer
-            ,pm.cpf_employee
+            ,pm.cpf_employer 
+            ,pm.cpf_employee 
+            ,pm.total_cpf_contribution
             ,pm.allowance1
             ,pm.allowance2
             ,pm.allowance3
             ,pm.allowance4
             ,pm.allowance5
             ,pm.allowance6
+            ,(pm.allowance1+pm.allowance2+pm.allowance3+pm.allowance4+pm.allowance5) AS total_alowance
             ,pm.deduction1
             ,pm.deduction2
             ,pm.deduction3
             ,pm.deduction4
             ,pm.net_total
-            ,pm.employee_name
             ,pm.employee_id
             ,pm.status
+            ,pm.sdl
+            ,pm.reimbursement
+            ,pm.director_fee
+            ,pm.total_basic_pay_for_month
             ,pm.payroll_management_id 
             ,CONCAT_WS(' ', e.first_name) AS first_name
+            ,e.employee_name
+            ,e.emp_code
+            ,e.nric_no
+            ,e.fin_no
+            ,pm.mode_of_payment
+            ,pm.loan_amount
             ,e.position AS designation
             ,e.salary
             ,e.date_of_birth AS dob
@@ -52,7 +63,7 @@ app.get('/getpayrollmanagementMain', (req, res, next) => {
   FROM payroll_management pm
   LEFT JOIN (employee e) ON (e.employee_id = pm.employee_id)
   WHERE pm.payroll_management_id != ''
-  ORDER BY e.first_name ASC`,
+  ORDER BY e.employee_name ASC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -73,9 +84,10 @@ app.get('/getpayrollmanagementMain', (req, res, next) => {
 app.get('/getEmployeeWithoutJobinfo', (req, res, next) => {
   db.query(`SELECT e.employee_id
             ,e.first_name
+            ,e.employee_name
   FROM employee e
   LEFT JOIN job_information j ON e.employee_id = j.employee_id
-WHERE j.employee_id IS NULL`,
+WHERE j.employee_id IS NULL `,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -97,9 +109,10 @@ app.post('/getpayrollmanagementById', (req, res, next) => {
   db.query(`SELECT pm.payroll_month
   ,pm.payslip_start_date
   ,pm.payslip_end_date
-  ,pm.employee_name
   ,pm.employee_id
   ,pm.ot_hours
+  ,j.overtime_pay_rate As overtime
+  ,j.working_days
             ,pm.payroll_year
             ,pm.total_basic_pay_for_month
             ,pm.total_deductions
@@ -131,6 +144,7 @@ app.post('/getpayrollmanagementById', (req, res, next) => {
   ,pm.allowance4
   ,pm.allowance5
   ,pm.allowance6
+  ,(pm.allowance1+pm.allowance2+pm.allowance3+pm.allowance4+pm.allowance5) AS total_allowance
   ,pm.deduction1
   ,pm.deduction2
   ,pm.deduction3
@@ -144,16 +158,18 @@ app.post('/getpayrollmanagementById', (req, res, next) => {
             ,pm.payroll_management_id 
             ,e.position AS designation
             ,e.first_name
+            ,e.employee_name
             ,e.salary
             ,e.date_of_birth AS dob
             ,e.spr_year
             ,e.citizen
             ,e.nric_no
+            ,e.fin_no
             ,e.status AS employee_status
   FROM payroll_management pm
   LEFT JOIN (employee e) ON (e.employee_id = pm.employee_id)
-  WHERE pm.payroll_management_id = ${db.escape(req.body.payroll_management_id )}
-  ORDER BY e.first_name ASC`,
+  LEFT JOIN (job_information j) ON (e.employee_id = j.employee_id)
+  WHERE pm.payroll_management_id = ${db.escape(req.body.payroll_management_id)}`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -171,11 +187,158 @@ app.post('/getpayrollmanagementById', (req, res, next) => {
   );
 });
 
+app.post('/getpayrollmanagementFilterYearMonth', (req, res, next) => {
+  db.query(`SELECT pm.payroll_month
+  ,pm.payslip_start_date
+  ,pm.payslip_end_date
+  ,pm.employee_id
+  ,pm.ot_hours
+  ,j.overtime_pay_rate As overtime
+  ,j.working_days
+            ,pm.payroll_year
+            ,pm.total_basic_pay_for_month
+            ,pm.total_deductions
+            ,pm.basic_pay
+            ,pm.ot_amount
+            ,pm.cpf_employer
+            ,pm.cpf_employee
+            ,pm.payroll_management_id
+  ,pm.mode_of_payment
+  ,pm.pay_sinda
+  ,pm.loan_amount
+  ,pm.mode_of_payment
+  ,pm.working_days_in_month
+  ,pm.actual_working_days
+  ,pm.notes
+  ,pm.basic_pay
+  ,pm.pay_cdac
+  ,pm.pay_mbmf
+  ,pm.pay_eucf
+  ,pm.department
+  ,pm.flag
+  ,pm.status
+  ,pm.cpf_account_no
+  ,pm.govt_donation
+  ,pm.overtime_pay_rate
+  ,pm.allowance1
+  ,pm.allowance2
+  ,pm.allowance3
+  ,pm.allowance4
+  ,pm.allowance5
+  ,pm.allowance6
+  ,(pm.allowance1+pm.allowance2+pm.allowance3+pm.allowance4+pm.allowance5) AS total_allowance
+  ,pm.deduction1
+  ,pm.deduction2
+  ,pm.deduction3
+  ,pm.deduction4
+  ,pm.income_tax_amount
+   ,pm.sdl
+   ,pm.reimbursement
+   ,pm.director_fee
+   ,pm.generated_date
+            ,pm.net_total
+            ,pm.payroll_management_id 
+            ,e.position AS designation
+            ,e.first_name
+            ,e.employee_name
+            ,e.salary
+            ,e.date_of_birth AS dob
+            ,e.spr_year
+            ,e.citizen
+            ,e.nric_no
+            ,e.status AS employee_status
+  FROM payroll_management pm
+  LEFT JOIN (employee e) ON (e.employee_id = pm.employee_id)
+  LEFT JOIN (job_information j) ON (e.employee_id = j.employee_id)
+  WHERE pm.payroll_year = ${db.escape(req.body.year)}
+  AND pm.payroll_month = ${db.escape(req.body.month)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+    }
+  );
+});
+
+app.post('/getpayrollmanagementFilterYear', (req, res, next) => {
+  db.query(`SELECT
+  e.employee_id,
+  e.employee_name,
+  e.position AS designation,
+  e.nationality,
+  e.salary,
+  e.date_of_birth AS dob,
+  e.spr_year,
+  e.citizen,
+  e.gender,
+  e.nric_no,
+  e.fin_no,
+  e.status AS employee_status,
+  pm.payroll_year,
+  pm.total_basic_pay_for_month,
+  pm.ot_amount,
+  pm.overtime_pay_rate,
+  (SUM(pm.total_basic_pay_for_month)+(pm.ot_amount)) AS yearly_basic_pay,
+  SUM(pm.cpf_employee) AS cpfEmployee
+FROM employee e
+LEFT JOIN payroll_management pm ON e.employee_id = pm.employee_id
+WHERE pm.payroll_year = ${db.escape(req.body.year)}
+GROUP BY e.employee_id, e.employee_name, e.position, e.nationality, e.salary, e.date_of_birth, e.spr_year, e.citizen, e.gender, e.nric_no, e.status, pm.payroll_year;
+
+  `,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+    }
+  );
+});
+app.post("/editLoanCalulation", (req, res, next) => {
+  db.query(
+    `UPDATE loan_repayment_history
+              SET 
+              loan_repayment_amount_per_month=${db.escape(req.body.loan_repayment_amount_per_month)}
+              ,notes=${db.escape(req.body.notes)}
+              ,employee_id=${db.escape(req.body.employee_id)}
+              ,loan_id=${db.escape(req.body.loan_id)}
+              ,loan_repayment_history_id=${db.escape(req.body.loan_repayment_history_id)}
+              ,employee_id=${db.escape(req.body.employee_id)}
+              WHERE payroll_management_id = ${db.escape(req.body.payroll_management_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Loan has been removed successfully",
+        });
+      }
+    }
+  );
+});
 
 app.post('/editpayrollmanagementMain', (req, res, next) => {
   db.query(`UPDATE  payroll_management 
             SET employee_id  =${db.escape(req.body.employee_id)}
-                ,employee_name =${db.escape(req.body.employee_name)}
                 ,payroll_month=${db.escape(req.body.payroll_month)}
                 ,payroll_year=${db.escape(req.body.payroll_year)}
                 ,ot_hours=${db.escape(req.body.ot_hours)}
@@ -245,10 +408,125 @@ app.post('/editpayrollmanagementMain', (req, res, next) => {
   );
 });
 
+app.post("/getCpfCalculation", (req, res, next) => {
+  db.query(
+    `
+   SELECT
+    e.employee_id,
+    e.first_name,
+    e.employee_name,
+    YEAR(CURRENT_DATE()) - YEAR(e.date_of_birth) AS age_dob,
+    j.basic_pay AS grosspay,
+    j.basic_pay,
+    p.cpf_employer AS cpf,
+    p.cpf_employee AS cpfE,
+    p.cpf_employee AS cpfEmployee,
+    p.cpf_employer AS cpfEmployer,
+    p.payroll_management_id,
+    p.payroll_year,
+    p.total_cpf_contribution AS totalCapAmountCpf,
+    p.total_cpf_contribution AS totalContributionAmount ,
+    c.by_employer AS byEmployer,
+    c.by_employee AS byEmployee,
+    c.cap_amount_employer AS capAmountEmployer,
+    c.cap_amount_employee AS capAmountEmployee,
+    c.year,
+    e.spr_year
+FROM
+    employee e
+JOIN
+    cpf_calculator c ON YEAR(CURRENT_DATE()) - YEAR(e.date_of_birth) BETWEEN c.from_age AND c.to_age
+LEFT JOIN
+    job_information j ON (e.employee_id=j.employee_id)
+LEFT JOIN
+    payroll_management p ON (e.employee_id=p.employee_id)
+WHERE
+    e.employee_id =${db.escape(req.body.employee_id)}
+    AND YEAR(CURRENT_DATE()) 
+   
+`,
+   (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+     }
+  );
+});
+
+
+app.post("/getCpfCalculate", (req, res, next) => {
+  db.query(
+    `
+   SELECT
+    e.employee_id,
+    e.first_name,
+    e.employee_name,
+    YEAR(CURRENT_DATE()) - YEAR(e.date_of_birth) AS age_dob,
+    j.basic_pay AS grosspay,
+    j.basic_pay,
+    p.cpf_employer AS cpfE,
+    p.cpf_employee AS cpf,
+    p.cpf_employee,
+    p.cpf_employer,
+    p.cpf_employee AS cpfEmployee,
+    p.cpf_employer AS cpfEmployer,
+    p.payroll_management_id,
+    p.payroll_year,
+    p.total_cpf_contribution AS totalCapAmountCpf,
+    p.total_cpf_contribution AS totalContributionAmount ,
+    c.by_employer AS byEmployer,
+    c.by_employee AS byEmployee,
+    c.cap_amount_employer AS capAmountEmployer,
+    c.cap_amount_employee AS capAmountEmployee,
+    c.cap_amount_employer,
+    c.cap_amount_employee,
+    c.year
+FROM
+    employee e
+JOIN
+    cpf_calculator c ON YEAR(CURRENT_DATE()) - YEAR(e.date_of_birth) BETWEEN c.from_age AND c.to_age
+LEFT JOIN
+    job_information j ON (e.employee_id=j.employee_id)
+LEFT JOIN
+    payroll_management p ON (e.employee_id=p.employee_id)
+WHERE
+    e.employee_id =${db.escape(req.body.employee_id)}
+   
+  
+
+    
+`,
+   (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+     }
+  );
+});
+
 app.post('/updateOt', (req, res, next) => {
   db.query(`UPDATE  payroll_management 
             SET
-               ot_hours=${db.escape(req.body.ot_hours)}
+            payroll_management_id=${db.escape(req.body.payroll_management_id)}
+              , ot_hours=${db.escape(req.body.ot_hours)}
              ,ot_amount=${db.escape(req.body.ot_amount)}
              ,overtime_pay_rate=${db.escape(req.body.overtime_pay_rate)}
                ,allowance1=${db.escape(req.body.allowance1)}
@@ -277,11 +555,50 @@ app.post('/updateOt', (req, res, next) => {
      }
   );
 });
+app.post("/getCpfCalc", (req, res, next) => {
+  db.query(
+    `
+   SELECT 
+ c.by_employee AS byEmployee
+,c.by_employer AS byEmployer
+,e.date_of_birth
+,j.basic_pay
+,YEAR(CURRENT_DATE()) - YEAR(date_of_birth) AS age
+,c.cap_amount_employer AS capAmountEmployer
+,c.cap_amount_employee AS capAmountEmployee
+from employee e
+
+LEFT JOIN job_information j ON (e.employee_id=j.employee_id)
+LEFT JOIN cpf_calculator c ON YEAR(CURRENT_DATE()) - YEAR(e.date_of_birth) BETWEEN c.from_age AND c.to_age
+WHERE 
+e.employee_id=${db.escape(req.body.employee_id)} 
+AND (YEAR(CURRENT_DATE()))
+AND (${db.escape(req.body.basic_pay)} BETWEEN c.from_salary AND c.to_salary)
+AND (YEAR(CURRENT_DATE()) - YEAR(e.date_of_birth) BETWEEN c.from_age AND c.to_age)
+   
+  `,
+   (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+     }
+  );
+});
 
 app.get('/getJobinfoArchiveEmployee', (req, res, next) => {
   db.query(`SELECT 
   e.employee_id
  ,e.first_name
+ ,e.employee_name
  ,e.nric_no
  ,e.fin_no
  ,e.status
@@ -385,7 +702,79 @@ app.post('/insertpayroll_management', (req, res, next) => {
   });
 });
 
-app.delete('/deletepayroll_management', (req, res, next) => {
+
+app.post("/getEmployeeage", (req, res, next) => {
+  let employeeId = req.body.employee_id;
+  let age_dob = req.body.age;
+
+  db.query(
+    `
+    SELECT
+    e.employee_id,
+    e.first_name,
+    e.employee_name,
+    j.basic_pay AS grosspay,
+    p.cpf_employer AS cpfEmployer,
+    p.cpf_employee AS cpfEmployee,
+    p.payroll_management_id,
+    YEAR(CURRENT_DATE()) - YEAR(date_of_birth) AS age_dob,
+    p.payroll_year,
+    c.by_employer,
+    c.by_employee,
+    c.cap_amount_employer,
+    c.cap_amount_employee,
+    c.year
+    FROM employee e
+    JOIN cpf_calculator c ON YEAR(CURRENT_DATE()) - YEAR(date_of_birth) BETWEEN c.from_age AND c.to_age
+    LEFT JOIN job_information j ON (e.employee_id = j.employee_id)
+    LEFT JOIN Payroll_management p ON (e.employee_id = p.employee_id)
+    WHERE e.employee_id = ${db.escape(employeeId)}
+    AND p.payroll_year =${db.escape(req.body.payroll_year)}
+    AND ${db.escape(req.body.basic_pay)} BETWEEN c.from_salary AND c.to_salary
+    AND c.spr_year = 3
+    AND ${db.escape(age_dob)} BETWEEN c.from_age AND c.to_age
+    
+    `,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+
+app.post("/getEmployeeages", (req, res, next) => {
+  db.query(
+    `
+    SELECT 
+    YEAR(CURRENT_DATE()) - YEAR(date_of_birth) AS age
+    FROM employee
+    WHERE employee_id = ${db.escape(req.body.employee_id)}
+    `,
+   (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+app.post('/deletepayroll_management', (req, res, next) => {
 
   let data = {payroll_management_id : req.body.payroll_management_id };
   let sql = "DELETE FROM payroll_management WHERE ?";
@@ -411,14 +800,73 @@ app.post("/TabPreviousEarlierLoanById", (req, res, next) => {
     ,l.type
     ,l.status
     ,l.amount
+    ,l.loan_id 
+    ,l.employee_id
+    ,l.loan_closing_date
+    ,l.loan_start_date
+    ,l.month_amount
+    ,l.notes
+    ,(SELECT SUM(loan_repayment_amount_per_month) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS total_repaid_amount
+    ,(SELECT (amount- SUM(loan_repayment_amount_per_month)) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS amount_payable
+    ,l.amount 
+    FROM loan l
+    WHERE l.employee_id =${db.escape(req.body.employee_id)} AND l.status ='Active'`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.post("/TabLoanById", (req, res, next) => {
+  db.query(
+    `SELECT 
+    l.loan_id AS loanID
+    
+    FROM loan l
+    WHERE l.employee_id =${db.escape(req.body.employee_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+
+app.post("/getPreviousEarlierLoanById", (req, res, next) => {
+  db.query(
+    `SELECT l.date
+    ,l.type
+    ,l.status
+    ,l.amount
     ,l.loan_id
     ,l.employee_id
     ,l.loan_closing_date
     ,l.loan_start_date
     ,l.month_amount
+    ,l.notes
+    ,(SELECT SUM(loan_repayment_amount_per_month) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS total_repaid_amount
+    ,(SELECT (amount- SUM(loan_repayment_amount_per_month)) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS amount_payable
     ,l.amount 
     FROM loan l
-    WHERE employee_id =${db.escape(req.body.employee_id)}`,
+    WHERE l.employee_id =${db.escape(req.body.employee_id)} AND l.loan_id =${db.escape(req.body.loan_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -493,7 +941,8 @@ app.get('/getJobInformationPayroll', (req, res, next) => {
 WHERE j.status ='Current' AND j.employee_id NOT IN (
     SELECT pm.employee_id
     FROM payroll_management pm
- 
+ WHERE pm.payroll_month = MONTH(CURDATE()) - 1
+    AND pm.payroll_year = YEAR(CURDATE())
 )`,
     (err, result) => {
       if (err) {
@@ -551,7 +1000,8 @@ const formattedLastMonth = lastMonth.toISOString().slice(0, 7);
   ,j.deduction3
   ,j.deduction4
   ,j.income_tax_amount
-   ,e.first_name
+  ,e.first_name
+  ,e.employee_name
  ,e.nric_no
  ,e.fin_no
  ,e.status
@@ -583,6 +1033,7 @@ const formattedLastMonth = lastMonth.toISOString().slice(0, 7);
 app.post('/getTimeSheetPdfById', (req, res, next) => {
   db.query(`SELECT et.*
   ,emp.first_name
+  ,emp.employee_name
    ,emp.nric_no
    ,emp.fin_no
    ,emp.citizen
@@ -612,9 +1063,81 @@ AND et.employee_hours != ''`,
   );
 });
 
+
+app.get('/getjobTerminationPayroll', (req, res, next) => {
+    
+    const currentDate = new Date();
+const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth());
+
+// Format the last month's date to MySQL date format
+const formattedLastMonth = lastMonth.toISOString().slice(0, 7);
+    
+  db.query(`SELECT j.employee_id
+  ,j.job_information_id
+  ,j.mode_of_payment
+  ,j.pay_sinda
+  ,j.mode_of_payment
+  ,j.working_days
+  ,j.overtime
+  ,j.basic_pay
+  ,j.pay_cdac
+  ,j.pay_mbmf
+  ,j.pay_eucf
+  ,j.department
+  ,j.flag
+  ,j.termination_date
+  ,j.status
+  ,j.cpf_applicable
+  ,j.cpf_account_no
+  ,j.govt_donation
+  ,j.overtime_pay_rate
+  ,j.allowance1
+  ,j.allowance2
+  ,j.allowance3
+  ,j.allowance4
+  ,j.allowance5
+  ,j.allowance6
+  ,j.deduction1
+  ,j.deduction2
+  ,j.deduction3
+  ,j.deduction4
+  ,j.income_tax_amount
+  ,e.first_name
+  ,e.employee_name
+ ,e.nric_no
+ ,e.fin_no
+ ,e.status
+ ,l.amount_payable
+ , l.amount
+ ,(SELECT (amount- SUM(loan_repayment_amount_per_month)) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS amount_payable
+  FROM job_information j
+  LEFT JOIN employee e ON (j.employee_id = e.employee_id)
+   LEFT JOIN loan l ON (l.employee_id = e.employee_id)
+     WHERE termination_date LIKE '${formattedLastMonth}%' AND j.status = 'Archive' AND j.employee_id IN (
+    SELECT pm.employee_id
+    FROM payroll_management pm
+ )`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+    }
+  );
+});
+
+
 app.post('/getCpfSummaryReport', (req, res, next) => {
   db.query(`SELECT pm.*
-  ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+  ,e.employee_name
   ,e.nric_no
   ,e.salary
   ,e.date_of_birth AS dob
@@ -626,7 +1149,7 @@ LEFT JOIN (employee e) ON (e.employee_id = pm.employee_id)
 WHERE pm.payroll_month = ${db.escape(req.body.month)}
 AND pm.payroll_year = ${db.escape(req.body.year)}
 AND pm.total_cpf_contribution > 0
-ORDER BY e.first_name ASC`,
+ORDER BY e.employee_name ASC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)

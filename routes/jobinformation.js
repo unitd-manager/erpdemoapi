@@ -24,15 +24,17 @@ app.get('/getjobinformationforList', (req, res, next) => {
  ,j.basic_pay
  ,e.emp_code
  ,e.first_name
+ ,e.employee_name
  ,e.nric_no
  ,e.spass_no
  ,e.fin_no
  ,e.date_of_birth
  ,e.citizen
  ,j.status
+ ,e.passport
  FROM job_information j
  LEFT JOIN (employee e) ON (e.employee_id = j.employee_id)
- WHERE j.job_information_id != '';`,
+ WHERE j.job_information_id != ''`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -78,6 +80,7 @@ app.get('/getjobinformation', (req, res, next) => {
             ,j.overtime_payment_dates
             ,j.working_days
             ,j.basic_pay
+            ,j.hourly_pay
             ,j.overtime
             ,j.overtime_pay_rate
             ,j.allowance1
@@ -115,7 +118,7 @@ app.get('/getjobinformation', (req, res, next) => {
             ,j.probation_end_date
             ,j.over_time_rate
             ,e.emp_code
-            ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+           ,e.employee_name
             ,e.first_name
             ,e.last_name
             ,e.phone
@@ -176,6 +179,7 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.overtime_payment_dates
             ,j.working_days
             ,j.basic_pay
+            ,j.hourly_pay
             ,j.overtime
             ,j.overtime_pay_rate
             ,j.allowance1
@@ -186,6 +190,7 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.deduction1
             ,j.deduction2
             ,j.deduction3
+            ,j.deduction4
             ,j.levy_amount
             ,j.cpf_applicable
             ,j.govt_donation
@@ -211,7 +216,7 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.probation_end_date
             ,j.over_time_rate
             ,e.emp_code
-            ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+            ,e.employee_name
             ,e.first_name
             ,e.last_name
             ,e.phone
@@ -270,6 +275,7 @@ app.post('/edit-jobinformation', (req, res, next) => {
               ,overtime_payment_dates=${db.escape(req.body.overtime_payment_dates)}
               ,working_days=${db.escape(req.body.working_days)}
               ,basic_pay=${db.escape(req.body.basic_pay)}
+              ,hourly_pay=${db.escape(req.body.hourly_pay)}
               ,overtime=${db.escape(req.body.overtime)}
               ,overtime_pay_rate=${db.escape(req.body.overtime_pay_rate)}
               ,allowance1=${db.escape(req.body.allowance1)}
@@ -336,6 +342,7 @@ app.post('/edit-jobinformation', (req, res, next) => {
                   termination_reason: req.body.termination_reason,
                   department: req.body.department,
                   basic_pay: req.body.basic_pay,
+                  hourly_pay: req.body.hourly_pay,
                   levy_amount: req.body.levy_amount,
                   working_days: req.body.working_days,
                   payment_type: req.body.payment_type,
@@ -435,6 +442,7 @@ app.post('/edit-jobinformation', (req, res, next) => {
                 db.query(`SELECT 
                 e.employee_id
                ,e.first_name
+               ,e.employee_name
                ,e.nric_no
                ,e.fin_no
                ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count

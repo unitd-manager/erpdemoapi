@@ -18,7 +18,7 @@ app.use(fileUpload({
 }));
 
 app.get('/getCompany', (req, res, next) => {
-  db.query("SELECT company_id, company_name FROM company",
+  db.query("SELECT company_id, company_name,company_name_arb FROM company",
     (err, result) => {
       if (err) {
         console.log("error: ", err);

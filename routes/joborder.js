@@ -19,11 +19,16 @@ app.use(fileUpload({
 
 app.post('/getJobOrderById', (req, res, next) => {
     db.query(` SELECT q.job_date
+    ,q.job_date_arb
     ,q.project_job_id
     ,q.job_code
+    ,q.job_code_arb
     ,q.job_title
+    ,q.job_title_arb
     ,q.job_status
+    ,q.job_status_arb
     ,q.ref_no_job
+    ,q.ref_no_job_arb
     ,q.project_location
     ,q.project_reference
     ,q.payment_method
@@ -33,7 +38,9 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.company_id
     ,q.contact_id
     ,c.company_name
+    ,c.company_name_arb
     ,cont.first_name
+    ,cont.first_name_arb
     ,q.creation_date
     ,q.modification_date
     ,q.created_by
@@ -62,7 +69,25 @@ app.post('/getJobOrderById', (req, res, next) => {
     );
   });
 
-
+  app.get('/getTranslationForJopOrder', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdJobOrder%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
+  
 
   app.post('/getProjectJobOrderById', (req, res, next) => {
     db.query(` SELECT q.job_date
@@ -112,11 +137,16 @@ app.post('/getJobOrderById', (req, res, next) => {
 
   app.get('/getJobOrder', (req, res, next) => {
     db.query(` SELECT q.job_date
+    ,q.job_date_arb
     ,q.project_job_id
     ,q.job_code
+    ,q.job_code_arb
     ,q.job_title
+    ,q.job_title_arb
     ,q.job_status
     ,q.ref_no_job
+    ,q.ref_no_job_arb
+    ,q.job_status_arb
     ,q.project_location
     ,q.project_reference
     ,q.payment_method
@@ -126,7 +156,9 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.company_id
     ,q.contact_id
     ,c.company_name
+    ,c.company_name_arb
     ,cont.first_name
+    ,cont.first_name_arb
     FROM project_job q  
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
     LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
@@ -153,9 +185,13 @@ app.post('/getJobOrderById', (req, res, next) => {
   app.post('/edit-Tradingjob', (req, res, next) => {
     db.query(`UPDATE project_job 
               SET job_date=${db.escape(req.body.job_date)}
+              ,job_date_arb=${db.escape(req.body.job_date_arb)}
               ,job_code=${db.escape(req.body.job_code)}
+              ,job_code_arb=${db.escape(req.body.job_code_arb)}
+              ,job_title_arb=${db.escape(req.body.job_title_arb)}
               ,job_title=${db.escape(req.body.job_title)}
               ,job_status=${db.escape(req.body.job_status)}
+              ,job_status_arb=${db.escape(req.body.job_status_arb)}
               ,project_location=${db.escape(req.body.project_location)}
               ,project_reference=${db.escape(req.body.project_reference)}
               ,payment_method=${db.escape(req.body.payment_method)}
@@ -166,6 +202,7 @@ app.post('/getJobOrderById', (req, res, next) => {
               ,our_reference=${db.escape(req.body.our_reference)}
               ,drawing_nos=${db.escape(req.body.drawing_nos)}
               ,ref_no_job=${db.escape(req.body.ref_no_job)}
+              ,ref_no_job_arb=${db.escape(req.body.ref_no_job_arb)}
               ,discount=${db.escape(req.body.discount)}
               ,total_amount=${db.escape(req.body.total_amount)}
               ,company_id=${db.escape(req.body.company_id)}

@@ -6,12 +6,12 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Reference', 'Reference', 'Trading Enquiry reference field', NULL, NULL, NULL, NULL, NULL, '0', 'مرجع');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Expiry Date', 'Expiry Date', 'Trading Enquiry Expiry Date', NULL, NULL, NULL, NULL, NULL, '0', 'تاريخ الانتهاء');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Notes', 'Notes', 'Trading Enquiry Notes', NULL, NULL, NULL, NULL, NULL, '0', 'ملحوظات');
-INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTrading.EnquiryItemTitle', 'Title', 'Trading Enquiry Item Title', NULL, NULL, NULL, NULL, NULL, '0', 'عنوان');
-INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTrading.EnquiryItemDescription', 'Description', 'Trading Enquiry Item Description', NULL, NULL, NULL, NULL, NULL, '0', 'وصف');
-INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTrading.EnquiryItemQuantity', 'Quantity', 'Trading Enquiry Quantity Field', NULL, NULL, NULL, NULL, NULL, '0', 'كمية');
-INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTrading.EnquiryUnitPrice', 'Unit Price', 'Trading Enquiry unit price Field', NULL, NULL, NULL, NULL, NULL, '0', 'سعر الوحدة');
-INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTrading.EnquiryAmount', 'Amount', 'Trading Enquiry Amount field', NULL, NULL, NULL, NULL, NULL, '0', 'كمية');
-INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTrading.Category', 'Category', 'Trading Enquiry CategoryField', NULL, NULL, NULL, NULL, NULL, '0', 'فئة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Title', 'Title', 'Trading Enquiry Item Title', NULL, NULL, NULL, NULL, NULL, '0', 'عنوان');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Description', 'Description', 'Trading Enquiry Item Description', NULL, NULL, NULL, NULL, NULL, '0', 'وصف');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Quantity', 'Quantity', 'Trading Enquiry Quantity Field', NULL, NULL, NULL, NULL, NULL, '0', 'كمية');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.UnitPrice', 'Unit Price', 'Trading Enquiry unit price Field', NULL, NULL, NULL, NULL, NULL, '0', 'سعر الوحدة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Amount', 'Amount', 'Trading Enquiry Amount field', NULL, NULL, NULL, NULL, NULL, '0', 'كمية');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingEnq.Category', 'Category', 'Trading Enquiry CategoryField', NULL, NULL, NULL, NULL, NULL, '0', 'فئة');
 
 ********************************(20/03/2024 project_enquiry(Trading-enquiry Creates field))**************************************(Gokila)
 ALTER TABLE `opportunity` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`; 
@@ -42,5 +42,11 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `
 ALTER TABLE `order_item` ADD `item_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `item_title`; 
 ALTER TABLE `order_item` ADD `unit_arb` VARCHAR(255) NOT NULL AFTER `unit`; 
 ALTER TABLE `order_item` ADD `qty_arb` INT(11) NULL DEFAULT NULL AFTER `qty`; 
+
+
+********************************(21/03/2024 project_enquiry(Trading-enquiry Creates field))**************************************(Gokila)
+ALTER TABLE `opportunity` ADD `enquiry_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `enquiry_date`; 
+ALTER TABLE `opportunity` ADD `Project_end_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `project_end_date`;
+ALTER TABLE `opportunity` ADD `office_ref_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `office_ref_no`;
 
 
