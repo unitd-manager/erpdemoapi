@@ -160,6 +160,25 @@ app.post('/deleteTranslation', (req, res, next) => {
 );
 });
 
+app.get('/getTranslationForCompanyJournal', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdJournal%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/getTranslationForCompanyAcc', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdChartAcc%'`,
   (err, result) => {

@@ -43,7 +43,7 @@ app.get('/getTenders', (req, res, next) => {
             ORDER BY o.opportunity_id DESC`,
     (err, result) => {
      
-      if (result.length == 0) {
+      if (err) {
         return res.status(400).send({
           msg: 'No result found'
         });

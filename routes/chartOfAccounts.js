@@ -14,31 +14,40 @@ var app = express();
 app.use(cors());
 
 app.get('/getChartOfAccounts', (req, res, next) => {
-    db.query(`SELECT ah.*, ac.title as category
-    FROM acc_head ah
-    LEFT JOIN acc_category ac ON ac.acc_category_id = ah.acc_category_id
-    WHERE ah.acc_category_id != ''
-    `,
-      (err, result) => {
-         
-        if (err) {
-          console.log('error: ', err)
-          return res.status(400).send({
-            data: err,
-            msg: 'failed',
-          })
-        } else {
-          return res.status(200).send({
-            data: result,
-            msg: 'Success',
-              });
-          }
+  // Assuming you have some condition to determine the language preference, for example, req.query.language
+  const language = req.query.language; // Assuming language can be 'english' or 'arabic'
+
+  let joinCondition;
+  if (language === 'Arabic') {
+    joinCondition = 'ac.acc_category_id = ah.acc_category_arb_id';
+  } else {
+    joinCondition = 'ac.acc_category_id = ah.acc_category_id';
+  }
+
+  db.query(`SELECT ah.*, ac.title as category, ac.title_arb as category_arb
+            FROM acc_head ah
+            LEFT JOIN acc_category ac ON ${joinCondition}
+            WHERE ah.acc_category_id != ''`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        });
       }
-    );
-  });
+    }
+  );
+});
+
 
 app.post('/getChartofACById', (req, res, next) => {
-db.query(`select ah.*, ac.title as category
+db.query(`select ah.*, ac.title as category,ac.title_arb as category_arb
             From acc_head ah
             LEFT JOIN acc_category ac ON ac.acc_category_id = ah.acc_category_id
             where acc_head_id = ${db.escape(req.body.acc_head_id)}`,
@@ -68,6 +77,7 @@ app.post('/editChartAc', (req, res, next) => {
             ,title_arb =${db.escape(req.body.title_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,acc_category_id = ${db.escape(req.body.acc_category_id)}
+            ,acc_category_arb_id = ${db.escape(req.body.acc_category_arb_id)}
             WHERE acc_head_id = ${db.escape(req.body.acc_head_id)}`,
     (err, result) => {
      
@@ -91,8 +101,10 @@ app.post('/insertChartAc', (req, res, next) => {
 
   let data = {
     title	: req.body.title	
+    , title_arb	: req.body.title_arb	
    , creation_date: req.body.creation_date
    , acc_category_id: req.body.acc_category_id
+   , acc_category_arb_id: req.body.acc_category_arb_id
   };
   let sql = "INSERT INTO acc_head SET ?";
   let query = db.query(sql, data,(err, result) => {

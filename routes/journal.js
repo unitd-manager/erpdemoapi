@@ -25,6 +25,7 @@ app.get("/getJournal", (req, res, next) => {
     ,jm.entry_date
     ,jm.voucher_type
     ,jm.narration AS narration_main
+    ,jm.narration_arb AS narrationarb_main
     ,jm.ledger_authorized
     ,j.journal_id
     ,j.credit
@@ -33,6 +34,7 @@ app.get("/getJournal", (req, res, next) => {
     ,j.credit_base
     ,j.debit_base
     ,j.narration
+    ,j.narration_arb
     ,j.pending
     ,j.avg_buy_rate
     ,j.avg_stock_rate
@@ -84,6 +86,7 @@ app.post('/getJournalById', (req, res, next) => {
     ,jm.entry_date
     ,jm.voucher_type
     ,jm.narration AS narration_main
+    ,jm.narration_arb AS narrationarb_main
     ,jm.ledger_authorized
     ,j.journal_id
     ,j.credit
@@ -92,6 +95,7 @@ app.post('/getJournalById', (req, res, next) => {
     ,j.credit_base
     ,j.debit_base
     ,j.narration
+    ,j.narration_arb
     ,j.pending
     ,j.avg_buy_rate
     ,j.avg_stock_rate
@@ -131,6 +135,7 @@ app.post('/getJournalById', (req, res, next) => {
         `UPDATE journal
          SET acc_head_id = ${db.escape(update.acc_head_id)},
             narration = ${db.escape(update.narration)},
+            narration_arb = ${db.escape(update.narration_arb)},
              debit = ${db.escape(update.debit)},
              credit = ${db.escape(update.credit)}
              ,modification_date=${db.escape(req.body.modification_date)}
@@ -176,6 +181,7 @@ app.post('/getJournalMasterById', (req, res, next) => {
               SET entry_date =${db.escape(req.body.entry_date)}
               ,modification_date=${db.escape(req.body.modification_date)}
               ,narration = ${db.escape(req.body.narration)}
+              ,narration_arb = ${db.escape(req.body.narration_arb)}
               WHERE journal_master_id = ${db.escape(req.body.journal_master_id)}`,
       (err, result) => {
        
@@ -200,6 +206,7 @@ app.post('/getJournalMasterById', (req, res, next) => {
       entry_date: req.body.entry_date,
       voucher_type: req.body.voucher_type,
       narration: req.body.narration,
+      narration_arb: req.body.narration_arb,
       acc_company_id: req.body.acc_company_id,
       staff_id: req.body.staff_id,
       creation_date: req.body.creation_date,
@@ -212,6 +219,7 @@ app.post('/getJournalMasterById', (req, res, next) => {
       debit_base: req.body.debit_base_1,
       credit_base: req.body.credit_base_1,
       narration: req.body.narration_1,
+      narration_arb: req.body.narrationarb_1,
       creation_date: req.body.creation_date,
     };
   
@@ -221,7 +229,7 @@ app.post('/getJournalMasterById', (req, res, next) => {
       credit: req.body.credit_2,
       debit_base: req.body.debit_base_2,
       credit_base: req.body.credit_base_2,
-      narration: req.body.narration_2,
+      narration_arb: req.body.narrationarb_2,
       creation_date: req.body.creation_date,
     };
   
