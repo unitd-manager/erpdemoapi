@@ -75,3 +75,6 @@ ALTER TABLE `purchase_return_items` ADD `description_arb` VARCHAR(255) NULL DEFA
 
 ********************************(22/03/2024 Translation(PurchaseRequest insertField))**************************************(Sabina)
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseRequest.Product Name', 'Product Name', 'اسم المنتج', 'PurchaseRequest Product Name field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(23/03/2024 Translation(PurchaseReturn insertField))**************************************(Sabina)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseReturn.Purchase Invoice Date', 'Purchase Invoice Date', 'تاريخ فاتورة الشراء', 'PurchaseReturn Purchase Invoice Date field', NULL, NULL, NULL, NULL, NULL, '0');
