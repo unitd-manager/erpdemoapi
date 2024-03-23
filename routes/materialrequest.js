@@ -21,16 +21,27 @@ app.get('/getMaterialRequest', (req, res, next) => {
   lr.material_request_id
   ,lr.project_id
   ,lr.material_request_code
+  ,lr.material_request_code_arb
   ,lr.material_request_date
+  ,lr.material_request_date_arb
   ,lr.request_date
+  ,lr.request_date_arb
   ,lr.site_reference
+  ,lr.site_reference_arb
   ,lr.approved_by
+  ,lr.approved_by_arb
             ,lr.approved_date
+            ,lr.approved_date_arb
             ,lr.shipping_method
+            ,lr.shipping_method_arb
             ,lr.payment_terms
+            ,lr.payment_terms_arb
             ,lr.material_status
+            ,lr.material_status_arb
             ,lr.delivery_terms
+            ,lr.delivery_terms_arb
             ,lr.request_by
+            ,lr.request_by_arb
   ,lr.creation_date
   ,lr.modification_date
   ,p.title AS proj_title
@@ -58,21 +69,51 @@ app.get('/getMaterialRequest', (req, res, next) => {
 });
 
 
+app.get('/getTranslationForMaterialRequest', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdMaterialRequest%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.post('/getMaterialRequestById', (req, res, next) => {
   db.query(`select
   lr.material_request_id
   ,lr.project_id
   ,lr.material_request_code
+  ,lr.material_request_code_arb
   ,lr.material_request_date
+  ,lr.material_request_date_arb
   ,lr.request_date
+  ,lr.request_date_arb
   ,lr.site_reference
+  ,lr.site_reference_arb
   ,lr.approved_by
-  ,lr.request_by
+  ,lr.approved_by_arb
             ,lr.approved_date
+            ,lr.approved_date_arb
             ,lr.shipping_method
+            ,lr.shipping_method_arb
             ,lr.payment_terms
-            ,lr.delivery_terms
+            ,lr.payment_terms_arb
             ,lr.material_status
+            ,lr.material_status_arb
+            ,lr.delivery_terms
+            ,lr.delivery_terms_arb
+            ,lr.request_by
+            ,lr.request_by_arb
   ,lr.creation_date
   ,lr.modification_date
   ,p.title AS proj_title
@@ -105,16 +146,24 @@ app.post('/editMaterialRequest', (req, res, next) => {
             SET 
             project_id=${db.escape(req.body.project_id)}
             ,request_date=${db.escape(req.body.request_date)}
+            ,request_date_arb=${db.escape(req.body.request_date_arb)}
             ,request_by=${db.escape(req.body.request_by)}
+            ,request_by_arb=${db.escape(req.body.request_by_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,material_request_date=${db.escape(req.body.material_request_date)}
             ,material_status=${db.escape(req.body.material_status)}
+            ,material_status_arb=${db.escape(req.body.material_status_arb)}
             ,site_reference=${db.escape(req.body.site_reference)}
+            ,site_reference_arb=${db.escape(req.body.site_reference_arb)}
             ,delivery_terms=${db.escape(req.body.delivery_terms)}
+            ,delivery_terms_arb=${db.escape(req.body.delivery_terms_arb)}
             ,approved_by=${db.escape(req.body.approved_by)}
+            ,approved_by_arb=${db.escape(req.body.approved_by_arb)}
             ,approved_date=${db.escape(req.body.approved_date)}
             ,payment_terms=${db.escape(req.body.payment_terms)}
+            ,payment_terms_arb=${db.escape(req.body.payment_terms_arb)}
             ,shipping_method=${db.escape(req.body.shipping_method)}
+            ,shipping_method_arb=${db.escape(req.body.shipping_method_arb)}
             WHERE material_request_id = ${db.escape(req.body.material_request_id)}`,
     (err, result) => {
      

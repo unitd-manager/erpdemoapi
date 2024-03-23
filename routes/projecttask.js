@@ -27,26 +27,41 @@ app.get('/getProjectTask', (req, res, next) => {
   ,pt.company_id
   ,pt.employee_id
   ,pt.start_date
+  ,pt.start_date_arb
   ,pt.end_date
+  ,pt.end_date_arb
   ,pt.completion
+  ,pt.completion_arb
   ,pt.task_title
+  ,pt.task_title_arb
   ,pt.status
+  ,pt.status_arb
   ,pt.media_id
   ,pt.description
+  ,pt.description_arb
   ,pt.job_order_id
   ,pt.estimated_hours
+  ,pt.estimated_hours_arb
+  ,pt.description_arb
   ,pt.actual_hours
+  ,pt.actual_hours_arb
   ,pt.actual_completed_date
+  ,pt.actual_completed_date_arb
   ,pt.task_type
+  ,pt.task_type_arb
   ,pt.priority
+  ,pt.priority_arb
   ,pt.creation_date
   ,pt.created_by
   ,pt.modification_date
   ,pt.modified_by
   ,p.title
+  ,p.title_arb
   ,e.first_name
+  ,e.first_name_arb
   ,e.employee_id
   ,jo.job_order_title
+  ,jo.job_order_title_arb
   ,jo.job_order_code
   FROM project_task pt
   LEFT JOIN project p ON p.project_id = pt.project_id
@@ -77,32 +92,47 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,pt.company_id
     ,pt.employee_id
     ,pt.start_date
+    ,pt.start_date_arb
     ,pt.end_date
+    ,pt.end_date_arb
     ,pt.completion
+    ,pt.completion_arb
     ,pt.task_title
+    ,pt.task_title_arb
     ,pt.status
+    ,pt.status_arb
     ,pt.media_id
     ,pt.description
+    ,pt.description_arb
     ,pt.job_order_id
     ,pt.estimated_hours
+    ,pt.estimated_hours_arb
+    ,pt.description_arb
     ,pt.actual_hours
+    ,pt.actual_hours_arb
     ,pt.actual_completed_date
+    ,pt.actual_completed_date_arb
     ,pt.task_type
+    ,pt.task_type_arb
     ,pt.priority
+    ,pt.priority_arb
     ,pt.creation_date
     ,pt.created_by
     ,pt.modification_date
     ,pt.modified_by
     ,p.title
+    ,p.title_arb
     ,e.first_name
+    ,e.first_name_arb
     ,e.employee_id
     ,jo.job_order_title
+    ,jo.job_order_title_arb
     ,jo.job_order_code
     FROM project_task pt
     LEFT JOIN project p ON p.project_id = pt.project_id
     LEFT JOIN employee e ON e.employee_id = pt.employee_id
     LEFT JOIN job_order jo ON jo.job_order_id = pt.job_order_id
-    Where pt.project_task_id=${db.escape(req.body.project_task_id)}`,
+    Where pt.project_task_id = ${db.escape(req.body.project_task_id)}`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -120,6 +150,25 @@ app.post('/getProjectTaskById', (req, res, next) => {
   );
   });
 
+  app.get('/getTranslationForProjectTask', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProjectTask%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
+  
 app.get("/getProjectTitle", (req, res, next) => {
     db.query(
       `SELECT
@@ -295,18 +344,29 @@ app.get("/getProjectTitle", (req, res, next) => {
               ,employee_id=${db.escape(req.body.employee_id)}
               ,company_id=${db.escape(req.body.company_id)}
               ,start_date=${db.escape(req.body.start_date)}
+              ,start_date_arb=${db.escape(req.body.start_date_arb)}
               ,end_date=${db.escape(req.body.end_date)}
+              ,end_date_arb=${db.escape(req.body.end_date_arb)}
               ,completion=${db.escape(req.body.completion)}
+              ,completion_arb=${db.escape(req.body.completion_arb)}
               ,task_title=${db.escape(req.body.task_title)}
+              ,task_title_arb=${db.escape(req.body.task_title_arb)}
               ,status=${db.escape(req.body.status)}
+              ,status_arb=${db.escape(req.body.status_arb)}
               ,media_id=${db.escape(req.body.media_id)}
               ,description=${db.escape(req.body.description)}
+              ,description_arb=${db.escape(req.body.description_arb)}
               ,job_order_id=${db.escape(req.body.job_order_id)}
               ,estimated_hours=${db.escape(req.body.estimated_hours)}
+              ,estimated_hours_arb=${db.escape(req.body.estimated_hours_arb)}
               ,actual_completed_date=${db.escape(req.body.actual_completed_date)}
+              ,actual_completed_date_arb=${db.escape(req.body.actual_completed_date_arb)}
               ,actual_hours=${db.escape(req.body.actual_hours)}
+              ,actual_hours_arb=${db.escape(req.body.actual_hours_arb)}
               ,task_type=${db.escape(req.body.task_type)}
+              ,task_type_arb=${db.escape(req.body.task_type_arb)}
               ,priority=${db.escape(req.body.priority)}
+              ,priority_arb=${db.escape(req.body.priority_arb)}
               ,creation_date=${db.escape(req.body.creation_date)}
               ,created_by=${db.escape(req.body.created_by)}
               ,modification_date=${db.escape(req.body.modification_date)}

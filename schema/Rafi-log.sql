@@ -120,3 +120,200 @@ ALTER TABLE `material_issue` ADD `material_issue_date_arb` VARCHAR(255) NULL DEF
 ALTER TABLE `material_issue` ADD `reason_for_issue_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `reason_for_issue`;
 ALTER TABLE `material_issue` ADD `authorized_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `authorized_by`;
 ALTER TABLE `material_issue` ADD `notes_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `notes`;
+
+********************************(22/03/2024 Translation(Subcon inserts field))*************************************
+
+INSERT INTO `translation`
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES (NULL, 'mdSubcon.Postal Code', 'Postal Code', 'رمز بريدي', 'Subcon Postal Code field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Name', 'Name', 'اسم', 'Suncon Name field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Email', 'Email', 'بريد إلكتروني', 'subcon Email field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Fax', 'Fax', 'فاكس', 'subcon Fax field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Mobile', 'Mobile', 'متحرك', 'subcon Mobile field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Status', 'Status', NULL, 'حالة', 'Subcon Status field', NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Address 1', 'Address 1', 'العنوان 1', 'subcon Address 1 field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Address 2', 'Address 2', 'العنوان 2', 'subcon Address 2 field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Country', 'Country', 'دولة', 'subcon Country field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdSubcon.Postal Code', 'Postal Code', 'رمز بريدي', 'subcon Postal Code field', NULL, NULL, NULL, NULL, NULL, '0')
+
+
+********************************(22/03/2024 subcon(subcon Creates field))**************************************
+
+ALTER TABLE `sub_con` ADD `email_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `email`;
+ALTER TABLE `sub_con` ADD `address_street_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_street`;
+ALTER TABLE `sub_con` ADD `address_town_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_town`;
+ALTER TABLE `sub_con` ADD `address_state_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_state`;
+ALTER TABLE `sub_con` ADD `phone_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`;
+ALTER TABLE `sub_con` ADD `fax_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `fax`;
+ALTER TABLE `sub_con` ADD `mobile_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`;
+ALTER TABLE `sub_con` ADD `address_flat_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_flat`;
+ALTER TABLE `sub_con` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;
+ALTER TABLE `sub_con` ADD `website_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `website`;
+ALTER TABLE `sub_con` ADD `category_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `category`;
+ALTER TABLE `sub_con` ADD `company_name_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `company_name`;
+
+
+********************************(22/03/2024 Translation(Project Task inserts field))*************************************
+INSERT INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdProjectTask.Task Title', 'Task Title', 'عنوان المهمة', 'Project Task Task Title field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Job Order Title', 'Job Order Title', 'عنوان أمر الوظيفة', 'project task Job Order Title field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Job Order Code', 'Job Order Code', 'رمز طلب الوظيفة', 'project task Job Order Code field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Project Name', 'Project Name', 'اسم المشروع', 'Project task Project Name field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Staff Name', 'Staff Name', 'اسم الموظفين', 'Project task Staff Name field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Start Date', 'Start Date', 'تاريخ البدء', 'project task Start Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.End Date', 'End Date', 'تاريخ الانتهاء', 'project task End Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Actual Comp Date', 'Actual Comp Date', 'تاريخ الشركات الفعلي', 'Project task Actual Comp Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Status', 'Status', 'حالة', 'Project task Status field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Task Type', 'Task Type', 'نوع المهمة', 'Project task Task Type field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Priority', 'Priority', 'أولوية', 'Project task Priority field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdProjectTask.Completion', 'Completion', 'انتهاء', 'Project task Completion field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (
+    `translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdProjectTask.Actual Hours', 'Actual Hours', 'الساعات الفعلية', 'Project Task Actual Hours field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdProjectTask.Estimated Hours', 'Estimated Hours', 'الساعات المقدرة', 'Projec Task Estimated Hours field', NULL, NULL, NULL, NULL, NULL, '0');
+********************************(22/03/2024 project_task(project_task Creates field))**************************************
+
+ALTER TABLE `project_task` ADD `start_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `start_date`;
+ALTER TABLE `project_task` ADD `end_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `end_date`;
+ALTER TABLE `project_task` ADD `completion_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `completion`;
+ALTER TABLE `project_task` ADD `task_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `task_title`;
+ALTER TABLE `project_task` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;
+ALTER TABLE `project_task` ADD `description_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `description`;
+ALTER TABLE `project_task` ADD `estimated_hours_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `estimated_hours`;
+ALTER TABLE `project_task` ADD `actual_hours_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `actual_hours`;
+ALTER TABLE `project_task` ADD `actual_completed_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `actual_completed_date`;
+ALTER TABLE `project_task` ADD `task_type_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `task_type`;
+ALTER TABLE `project_task` ADD `priority_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `priority`;
+
+
+********************************(23/03/2024 Translation(Material request inserts field))*************************************
+
+INSERT INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES
+(NULL, 'mdMaterialRequest.Action', 'Action', 'فعل', 'Material Request Action field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdMaterialRequest.Updated By', 'Updated By', 'تم التحديث بواسطة', 'Material Request Updated By field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdMaterialRequest.Amount', 'Amount', 'كمية', 'Material Request Amount field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdMaterialRequest.Unit Price', 'Unit Price', 'سعر الوحدة', 'Material Request Unit Price field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Qty', 'Qty', 'الكمية', 'Material Request Qty field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Supplier', 'Supplier', 'المورد', 'Material Request Supplier field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Brand', 'Brand', 'ماركة', 'Material Request Brand field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Description', 'Description', 'وصف', 'Material Request Description field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Approved Date', 'Approved Date', 'تاريخ الموافقة', 'Material Request Approved Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Approved By', 'Approved By', 'تمت الموافقة عليه من قبل', 'Material Request Approved By field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Request By', 'Request By', 'الطلب بواسطة', 'Material Request Request By field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Material Request Date', 'Material Request Date', 'تاريخ الطلب', 'Material Request Material Request Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Status', 'Status', 'حالة', 'Material Request Status field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Payment Terms', 'Payment Terms', 'شروط الدفع', 'Material Request Payment Terms field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Date', 'Date', 'تاريخ', 'Material Request Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdMaterialRequest.Request Code', 'Request Code', 'كود الطلب', 'Material Request Request Code field', NULL, NULL, NULL, NULL, NULL, '0');
+
+INSERT INTO 
+`translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES (NULL, 'mdMaterialRequest.Shipping Method', 'Shipping Method', 'طريقة الشحن', 'Material Request Shipping Method field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdMaterialRequest.Site Reference', 'Site Reference', 'مرجع الموقع', 'Material Request Site Reference field', NULL, NULL, NULL, NULL, NULL, '0');
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES
+ (NULL, 'mdMaterialRequest.Title', 'Title', 'عنوان', 'Material Request Title field', NULL, NULL, NULL, NULL, NULL, '0'),
+ (NULL, 'mdMaterialRequest.Remarks', 'Remarks', 'ملاحظات', 'Material Request Remarks field', NULL, NULL, NULL, NULL, NULL, '0'),
+ (NULL, 'mdMaterialRequest.Unit', 'Unit', 'وحدة', 'Material Request Unit field', NULL, NULL, NULL, NULL, NULL, '0');
+
+ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+ VALUES 
+ (NULL, 'mdMaterialRequest.Project Name', 'Project Name', 'اسم المشروع', 'Material Request Project Name field', NULL, NULL, NULL, NULL, NULL, '0');
+
+
+********************************(23/03/2024 material_request(material_request Creates field))**************************************
+
+ALTER TABLE `material_request` ADD `material_request_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `material_request_code`;
+ALTER TABLE `material_request` ADD `material_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `material_status`;
+ALTER TABLE `material_request` ADD `material_request_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `material_request_date`;
+ALTER TABLE `material_request` ADD `request_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_date`;
+ALTER TABLE `material_request` ADD `site_reference_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `site_reference`;
+ALTER TABLE `material_request` ADD `request_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_by`;
+ALTER TABLE `material_request` ADD `approved_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `approved_by`;
+ALTER TABLE `material_request` ADD `approved_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `approved_date`;
+ALTER TABLE `material_request` ADD `shipping_method_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `shipping_method`;
+ALTER TABLE `material_request` ADD `payment_terms_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `payment_terms`;
+ALTER TABLE `material_request` ADD `delivery_terms_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `delivery_terms`;
+
+********************************(23/03/2024 Translation(Equipment request inserts field))*************************************
+
+INSERT INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES
+(NULL, 'mdEquipmentRequest.Action', 'Action', 'فعل', 'Equipment Request Action field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdEquipmentRequest.Updated By', 'Updated By', 'تم التحديث بواسطة', 'Equipment Request Updated By field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdEquipmentRequest.Amount', 'Amount', 'كمية', 'Equipment Request Amount field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdEquipmentRequest.Unit Price', 'Unit Price', 'سعر الوحدة', 'Equipment Request Unit Price field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Qty', 'Qty', 'الكمية', 'Equipment Request Qty field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Supplier', 'Supplier', 'المورد', 'Equipment Request Supplier field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Brand', 'Brand', 'ماركة', 'Equipment Request Brand field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Description', 'Description', 'وصف', 'Equipment Request Description field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Approved Date', 'Approved Date', 'تاريخ الموافقة', 'Equipment Request Approved Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Approved By', 'Approved By', 'تمت الموافقة عليه من قبل', 'Equipment Request Approved By field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Request By', 'Request By', 'الطلب بواسطة', 'Equipment Request Request By field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Equipment Request Date', 'Equipment Request Date', 'تاريخ طلب المعدات', 'Equipment Request Equipment Request Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Status', 'Status', 'حالة', 'Equipment Request Status field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Payment Terms', 'Payment Terms', 'شروط الدفع', 'Equipment Request Payment Terms field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Date', 'Date', 'تاريخ', 'Equipment Request Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Request Code', 'Request Code', 'كود الطلب', 'Equipment Request Request Code field', NULL, NULL, NULL, NULL, NULL, '0');
+
+INSERT INTO 
+`translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES (NULL, 'mdEquipmentRequest.Shipping Method', 'Shipping Method', 'طريقة الشحن', 'Equipment Request Shipping Method field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdEquipmentRequest.Site Reference', 'Site Reference', 'مرجع الموقع', 'Equipment Request Site Reference field', NULL, NULL, NULL, NULL, NULL, '0');
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES
+ (NULL, 'mdEquipmentRequest.Title', 'Title', 'عنوان', 'Material Request Title field', NULL, NULL, NULL, NULL, NULL, '0'),
+ (NULL, 'mdEquipmentRequest.Remarks', 'Remarks', 'ملاحظات', 'Material Request Remarks field', NULL, NULL, NULL, NULL, NULL, '0'),
+ (NULL, 'mdEquipmentRequest.Unit', 'Unit', 'وحدة', 'Material Request Unit field', NULL, NULL, NULL, NULL, NULL, '0');
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+ VALUES 
+ (NULL, 'mdEquipmentRequest.Project Name', 'Project Name', 'اسم المشروع', 'Material Request Project Name field', NULL, NULL, NULL, NULL, NULL, '0'); 
+
+********************************(23/03/2024 equipment_request(equipment_request Creates field))**************************************
+
+
+ ALTER TABLE `equipment_request` ADD `equipment_request_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `equipment_request_code`;
+ALTER TABLE `equipment_request` ADD `equipment_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `equipment_status`;
+ALTER TABLE `equipment_request` ADD `equipment_request_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `equipment_request_date`;
+ALTER TABLE `equipment_request` ADD `request_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_date`;
+ALTER TABLE `equipment_request` ADD `site_reference_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `site_reference`;
+ALTER TABLE `equipment_request` ADD `request_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_by`;
+ALTER TABLE `equipment_request` ADD `approved_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `approved_by`;
+ALTER TABLE `equipment_request` ADD `approved_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `approved_date`;
+ALTER TABLE `equipment_request` ADD `shipping_method_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `shipping_method`;
+ALTER TABLE `equipment_request` ADD `payment_terms_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `payment_terms`;
+ALTER TABLE `equipment_request` ADD `delivery_terms_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `delivery_terms`;
+
+********************************(23/03/2024 Translation(Labour request inserts field))*************************************
+
+INSERT INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES
+(NULL, 'mdLabourRequest.Code', 'Code', 'فعل', 'Labour Request Code field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdLabourRequest.Request Date', 'Request Date', 'تم التحديث بواسطة', 'Labour Request Request Date field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdLabourRequest.Project Name', 'Project Name', 'كمية', 'Labour Request Project Name field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdLabourRequest.Start Date', 'Start Date', 'سعر الوحدة', 'Labour Request Start Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.No Of Employee', 'No Of Employee', 'الكمية', 'Labour Request No Of Employee field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.Job Description', 'Job Description', 'المورد', 'Labour Request Job Description field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.End Date', 'End Date', 'ماركة', 'Labour Request End Date field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.Request By', 'Request By', 'وصف', 'Labour Request Request By field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.Request Urgency', 'Request Urgency', 'تاريخ الموافقة', 'Labour Request Request Urgency field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.Request Type', 'Request Type', 'تمت الموافقة عليه من قبل', 'Labour Request Request Type field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.Skills Required', 'Skills Required', 'الطلب بواسطة', 'Labour Request Skills Required field', NULL, NULL, NULL, NULL, NULL, '0'), 
+(NULL, 'mdLabourRequest.Department', 'Department', 'تاريخ طلب المعدات', 'Labour Request Department field', NULL, NULL, NULL, NULL, NULL, '0'); 
+
+********************************(23/03/2024 labour_request(labour_request Creates field))**************************************
+
+ ALTER TABLE `labour_request` ADD `request_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_by`;
+ALTER TABLE `labour_request` ADD `request_urgency_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_urgency`;
+ALTER TABLE `labour_request` ADD `request_type_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_type`;
+ALTER TABLE `labour_request` ADD `job_description_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `job_description`;
+ALTER TABLE `labour_request` ADD `skills_required_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `skills_required`;
+ALTER TABLE `labour_request` ADD `no_of_employees_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `no_of_employees`;
+ALTER TABLE `labour_request` ADD `department_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `department`;
+ALTER TABLE `labour_request` ADD `request_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_date`;
+ALTER TABLE `labour_request` ADD `request_start_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_start_date`;
+ALTER TABLE `labour_request` ADD `request_end_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `request_end_date`;
+

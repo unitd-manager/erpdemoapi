@@ -19,16 +19,25 @@ app.use(fileUpload({
 
 app.post('/getSubconById', (req, res, next) => {
   db.query(`SELECT s.company_name
+  ,s.company_name_arb
   ,s.sub_con_id
   ,s.email
+  ,s.email_arb
   ,s.fax
+  ,s.fax_arb
   ,s.mobile
+  ,s.mobile_arb
   ,s.status
+  ,s.status_arb
   ,s.address_flat
+  ,s.address_flat_arb
   ,s.address_street
+  ,s.address_street_arb
   ,s.address_state
+  ,s.address_state_arb
   ,s.address_country
   ,s.phone
+  ,s.phone_arb
   ,s.creation_date
   ,s.modification_date
   ,gc.name AS country_name 
@@ -49,18 +58,47 @@ app.post('/getSubconById', (req, res, next) => {
   }
 );
 });
+
+app.get('/getTranslationForSubcon', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdSubcon%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/getSubcon', (req, res, next) => {
   db.query(`SELECT s.company_name
+  ,s.company_name_arb
   ,s.sub_con_id
   ,s.email
+  ,s.email_arb
   ,s.fax
+  ,s.fax_arb
   ,s.mobile
+  ,s.mobile_arb
   ,s.status
+  ,s.status_arb
   ,s.address_flat
+  ,s.address_flat_arb
   ,s.address_street
+  ,s.address_street_arb
   ,s.address_state
+  ,s.address_state_arb
   ,s.address_country
   ,s.phone
+  ,s.phone_arb
   ,gc.name AS country_name 
   FROM sub_con s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.sub_con_id != ''`,
   (err, result) => {
@@ -83,13 +121,21 @@ app.get('/getSubcon', (req, res, next) => {
 app.post('/edit-Subcon', (req, res, next) => {
   db.query(`UPDATE sub_con 
             SET company_name=${db.escape(req.body.company_name)}
+            ,company_name_arb=${db.escape(req.body.company_name_arb)}
             ,email=${db.escape(req.body.email)}
+            ,email_arb=${db.escape(req.body.email_arb)}
             ,fax=${db.escape(req.body.fax)}
+            ,fax_arb=${db.escape(req.body.fax_arb)}
             ,mobile=${db.escape(req.body.mobile)}
+            ,mobile_arb=${db.escape(req.body.mobile_arb)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,address_flat=${db.escape(req.body.address_flat)}
+            ,address_flat_arb=${db.escape(req.body.address_flat_arb)}
             ,address_street=${db.escape(req.body.address_street)}
+            ,address_street_arb=${db.escape(req.body.address_street_arb)}
             ,address_state=${db.escape(req.body.address_state)}
+            ,address_state_arb=${db.escape(req.body.address_state_arb)}
             ,address_country=${db.escape(req.body.address_country)}
             ,modification_date=${db.escape(new Date())}
             WHERE sub_con_id =  ${db.escape(req.body.sub_con_id)}`,
