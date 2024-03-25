@@ -41,6 +41,7 @@ app.get("/getJournal", (req, res, next) => {
     ,j.margin
     ,j.currency_id
     ,ah.title AS acc_head
+    ,ah.title_arb AS acc_head_arb
     ,jm.creation_date
     ,jm.modification_date
     ,CONCAT_WS('-', LEFT(jm.voucher_type, 1), jm.journal_master_id) AS voucher_code
@@ -102,6 +103,7 @@ app.post('/getJournalById', (req, res, next) => {
     ,j.margin
     ,j.currency_id
     ,ah.title AS acc_head
+    ,ah.title_arb AS acc_head_arb
     ,ah.acc_head_id
     ,jm.creation_date
     ,jm.modification_date
@@ -229,6 +231,7 @@ app.post('/getJournalMasterById', (req, res, next) => {
       credit: req.body.credit_2,
       debit_base: req.body.debit_base_2,
       credit_base: req.body.credit_base_2,
+      narration: req.body.narration_2,
       narration_arb: req.body.narrationarb_2,
       creation_date: req.body.creation_date,
     };

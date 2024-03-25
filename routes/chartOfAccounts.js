@@ -14,37 +14,28 @@ var app = express();
 app.use(cors());
 
 app.get('/getChartOfAccounts', (req, res, next) => {
-  // Assuming you have some condition to determine the language preference, for example, req.query.language
-  const language = req.query.language; // Assuming language can be 'english' or 'arabic'
-
-  let joinCondition;
-  if (language === 'Arabic') {
-    joinCondition = 'ac.acc_category_id = ah.acc_category_arb_id';
-  } else {
-    joinCondition = 'ac.acc_category_id = ah.acc_category_id';
-  }
-
-  db.query(`SELECT ah.*, ac.title as category, ac.title_arb as category_arb
-            FROM acc_head ah
-            LEFT JOIN acc_category ac ON ${joinCondition}
-            WHERE ah.acc_category_id != ''`,
-    (err, result) => {
-      if (err) {
-        console.log('error: ', err)
-        return res.status(400).send({
-          data: err,
-          msg: 'failed',
-        })
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: 'Success',
-        });
+    db.query(`SELECT ah.*, ac.title as category,ac.title_arb as category_arb
+    FROM acc_head ah
+    LEFT JOIN acc_category ac ON ac.acc_category_id  = ah.acc_category_id 
+    WHERE ah.acc_category_id != ''
+    `,
+      (err, result) => {
+         
+        if (err) {
+          console.log('error: ', err)
+          return res.status(400).send({
+            data: err,
+            msg: 'failed',
+          })
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: 'Success',
+              });
+          }
       }
-    }
-  );
-});
-
+    );
+  });
 
 app.post('/getChartofACById', (req, res, next) => {
 db.query(`select ah.*, ac.title as category,ac.title_arb as category_arb
