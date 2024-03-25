@@ -21,17 +21,22 @@ app.get('/getGoodsReceipt', (req, res, next) => {
   db.query(`SELECT
   gr.goods_receipt_id
   ,gr.goods_received_date
+  ,gr.goods_received_date_arb
   ,gr.supplier_id
   ,gr.purchase_order_id
   ,gr.employee_id
   ,gr.status
+  ,gr.status_arb
   ,gr.total_amount
+  ,gr.total_amount_arb
   ,gr.creation_date
   ,gr.modification_date
   ,gr.created_by
   ,gr.modified_by
   ,s.company_name
+  
   ,po.po_code
+  
   ,e.first_name
   ,e.employee_id
   FROM goods_receipt gr
@@ -60,17 +65,22 @@ app.post('/getGoodsReceiptById', (req, res, next) => {
   db.query(`SELECT
   gr.goods_receipt_id
   ,gr.goods_received_date
+  ,gr.goods_received_date_arb
   ,gr.supplier_id
   ,gr.purchase_order_id
   ,gr.employee_id
   ,gr.status
+  ,gr.status_arb
   ,gr.total_amount
+  ,gr.total_amount_arb
   ,gr.creation_date
   ,gr.modification_date
   ,gr.created_by
   ,gr.modified_by
   ,s.company_name
+  
   ,po.po_code
+  
   ,e.first_name
   ,e.employee_id
   FROM goods_receipt gr
@@ -444,7 +454,24 @@ app.get('/getEmployeeName', (req, res, next) => {
   });
 
   
-
+  app.get('/getTranslationForGoodsReceipt', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdGoodsReceipt%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
