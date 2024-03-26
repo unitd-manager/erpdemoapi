@@ -36,9 +36,11 @@ app.get('/getPurchaseInvoice', (req, res, next) => {
    ,pi.modification_date
    ,pi.modified_by
    ,p.title
+   ,p.title_arb
    ,p.project_id
    ,c.company_id
    ,c.company_name
+   ,c.company_name_arb
   FROM purchase_invoice pi
   LEFT JOIN project p ON (p.project_id=pi.project_id)
   LEFT JOIN purchase_invoice_items pit ON (pit.purchase_invoice_id = pi.purchase_invoice_id) 
@@ -92,6 +94,7 @@ app.post('/getPurchaseInvoiceById', (req, res, next) => {
  ,pi.company_id
  ,pi.mode_of_payment
  ,pi.terms_and_condition
+ ,pi.terms_and_condition_arb
  ,COALESCE(SUM(pit.total_cost), 0) as invoice_amount
  ,pi.status
  ,pi.creation_date
@@ -99,6 +102,8 @@ app.post('/getPurchaseInvoiceById', (req, res, next) => {
  ,pi.modification_date
  ,pi.modified_by
  ,p.title
+ ,p.title_arb
+ ,c.company_name_arb
  ,p.project_id
  ,c.company_id
  ,c.company_name
@@ -133,6 +138,7 @@ app.post('/editPurchaseInvoice', (req, res, next) => {
             ,project_id=${db.escape(req.body.project_id)}
             ,mode_of_payment=${db.escape(req.body.mode_of_payment)}
             ,terms_and_condition=${db.escape(req.body.terms_and_condition)}
+            ,terms_and_condition_arb=${db.escape(req.body.terms_and_condition_arb)}
             ,invoice_amount=${db.escape(req.body.invoice_amount)}
             ,status=${db.escape(req.body.status)}
             ,creation_date=${db.escape(req.body.creation_date)}
