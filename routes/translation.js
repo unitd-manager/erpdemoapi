@@ -297,7 +297,7 @@ app.get('/getTranslationForSupplierPriceList', (req, res, next) => {
 
 
 app.get('/getTranslationForMakeSupplier', (req, res, next) => {
-  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdSupplierPriceList%'`,
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdMakeSupplier%'`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
