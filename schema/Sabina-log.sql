@@ -78,3 +78,25 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 
 ********************************(23/03/2024 Translation(PurchaseReturn insertField))**************************************(Sabina)
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseReturn.Purchase Invoice Date', 'Purchase Invoice Date', 'تاريخ فاتورة الشراء', 'PurchaseReturn Purchase Invoice Date field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(26/03/2024 Translation(CreditNote insertField))**************************************(Sabina)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdCreditNote.Order No', 'Order No', 'رقم الطلب', 'CreditNote Order No field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdCreditNote.Code', 'Code', 'شفرة', 'CreditNote Code field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdCreditNote.Mode of Payment', 'Mode of Payment', 'طريقة الدفع', 'CreditNote Mode of Payment field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdCreditNote.Status', 'Status', 'حالة', 'CreditNote Status field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdCreditNote.Amount', 'Amount', 'كمية', 'CreditNote Amount field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdCreditNote.Date', 'Date', 'تاريخ', 'CreditNote Date field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdCreditNote.Invoice', 'Invoice', 'فاتورة', 'CreditNote Invoice field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdCreditNote.Orders', 'Orders', 'طلبات', 'CreditNote Orders field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(26/03/2024 Translation(DebitNote insertField))**************************************(Sabina)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdDebitNote.Order No', 'Order No', 'رقم الطلب', 'DebitNote Order No field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdDebitNote.Code', 'Code', 'شفرة', 'DebitNote Code field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdDebitNote.Mode of Payment', 'Mode of Payment', 'طريقة الدفع', 'DebitNote Mode of Payment field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdDebitNote.Status', 'Status', 'حالة', 'DebitNote Status field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdDebitNote.Amount', 'Amount', 'كمية', 'DebitNote Amount field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdDebitNote.Date', 'Date', 'تاريخ', 'DebitNote Date field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdDebitNote.Invoice', 'Invoice', 'فاتورة', 'DebitNote Invoice field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdDebitNote.Orders', 'Orders', 'طلبات', 'DebitNote Orders field', NULL, NULL, NULL, NULL, NULL, '0'); 
+
+********************************(26/03/2024 credit_note (credit_note createField))**************************************(Sabina)
+ALTER TABLE `credit_note` ADD `credit_note_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `credit_note_code`; 
+ALTER TABLE `credit_note` ADD `amount_arb` FLOAT(10,2) NULL DEFAULT NULL AFTER `amount`; 
+ALTER TABLE `credit_note` ADD `mode_of_payment_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `mode_of_payment`; 
+ALTER TABLE `credit_note` ADD `credit_note_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `credit_note_date`; 
+ALTER TABLE `credit_note` ADD `credit_note_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `credit_note_status`; 
+
+********************************(26/03/2024 debit_note (debit_note createField))**************************************(Sabina)
+ALTER TABLE `debit_note` ADD `debit_note_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `debit_note_code`; 
+ALTER TABLE `debit_note` ADD `amount_arb` FLOAT(10,2) NULL DEFAULT NULL AFTER `amount`; 
+ALTER TABLE `debit_note` ADD `mode_of_payment_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `mode_of_payment`; 
+ALTER TABLE `debit_note` ADD `debit_note_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `debit_note_date`; 
+ALTER TABLE `debit_note` ADD `debit_note_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `debit_note_status`; 
