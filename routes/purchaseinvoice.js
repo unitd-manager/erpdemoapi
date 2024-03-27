@@ -276,6 +276,7 @@ app.post('/editPurchaseInvoiceItems', (req, res, next) => {
           ,purchase_invoice_id
           ,purchase_order_id
           ,item_title
+          ,item_title_arb
           ,unit
           ,ordered_quantity
           ,cost_price
@@ -309,6 +310,7 @@ app.post('/editPurchaseInvoiceItems', (req, res, next) => {
           db.query(`SELECT
           pop.unit
           ,pop.item_title
+          ,pop.item_title_arb
           ,pop.quantity
           ,pop.po_product_id
           ,pop.purchase_order_id

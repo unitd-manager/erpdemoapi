@@ -1,23 +1,26 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../config/Database.js');
-const userMiddleware = require('../middleware/UserModel.js');
-var md5 = require('md5');
-const fileUpload = require('express-fileupload');
-const _ = require('lodash');
-const mime = require('mime-types')
-var bodyParser = require('body-parser');
-var cors = require('cors');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const db = require("../config/Database.js");
+const userMiddleware = require("../middleware/UserModel.js");
+var md5 = require("md5");
+const fileUpload = require("express-fileupload");
+const _ = require("lodash");
+const mime = require("mime-types");
+var bodyParser = require("body-parser");
+var cors = require("cors");
 var app = express();
 app.use(cors());
 
-app.use(fileUpload({
-    createParentPath: true
-}));
-app.get('/getClients', (req, res, next) => {
-  db.query(`SELECT c.company_name
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
+app.get("/getClients", (req, res, next) => {
+  db.query(
+    `SELECT c.company_name
   ,c.company_name_arb
   ,c.company_id
   ,c.phone
@@ -46,25 +49,24 @@ app.get('/getClients', (req, res, next) => {
   ORDER BY c.company_id DESC`,
     (err, result) => {
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
-
-        }
- 
+          msg: "Success",
+        });
+      }
     }
   );
 });
 
-app.post('/getClientsById', (req, res, next) => {
-  db.query(`Select c.company_name
+app.post("/getClientsById", (req, res, next) => {
+  db.query(
+    `Select c.company_name
   ,c.company_name_arb
   ,c.company_id
   ,c.phone
@@ -92,47 +94,42 @@ app.post('/getClientsById', (req, res, next) => {
   Where c.company_id =${db.escape(req.body.company_id)}`,
     (err, result) => {
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
-
-        }
- 
+          msg: "Success",
+        });
+      }
     }
   );
 });
 
-app.post('/getContactByCompanyId', (req, res, next) => {
-  db.query(`SELECT * FROM contact WHERE company_id =${db.escape(req.body.company_id)}`,
+app.post("/getContactByCompanyId", (req, res, next) => {
+  db.query(
+    `SELECT * FROM contact WHERE company_id =${db.escape(req.body.company_id)}`,
     (err, result) => {
-     
       if (result.length == 0) {
         return res.status(400).send({
-          msg: 'No result found'
+          msg: "No result found",
         });
       } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-        }
- 
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
     }
   );
 });
 
-
-
-
-app.post('/editClients', (req, res, next) => {
-  db.query(`UPDATE company
+app.post("/editClients", (req, res, next) => {
+  db.query(
+    `UPDATE company
             SET company_name=${db.escape(req.body.company_name)}
             ,company_name_arb=${db.escape(req.body.company_name_arb)}
             ,phone=${db.escape(req.body.phone)}
@@ -155,135 +152,137 @@ app.post('/editClients', (req, res, next) => {
             ,retention=${db.escape(req.body.retention)}
             WHERE company_id=${db.escape(req.body.company_id)}`,
     (err, result) => {
-     
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
+          msg: "Success",
+        });
       }
-     }
+    }
   );
 });
 
-
-app.post('/insertCompany', (req, res, next) => {
-
-  let data = {company_name	:req.body.company_name	
-    , company_name_arb	: req.body.company_name_arb
-   , email	: req.body.email	
-   , address_street: req.body.address_street
-   , address_town: req.body.address_town
-   , address_state: req.body.address_state
-   , address_country	: req.body.address_country
-   , address_po_code	: req.body.address_po_code
-   , phone: req.body.phone
-   , fax: req.body.fax
-   , notes: req.body.notes
-   , creation_date: req.body.creation_date
-   , modification_date	: req.body.modification_date	
-   , mobile	: req.body.mobile	
-   , flag: req.body.flag
-   , address_flat: req.body.address_flat
-   , status: 'current'
-   , website: req.body.website
-   , category: req.body.category
-   , comment_by	: req.body.comment_by
-   , company_size	: req.body.company_size
-   , industry: req.body.industry
-   , source: req.body.source
-   , group_name: req.body.group_name
-   , supplier_type: req.body.supplier_type
-   , created_by		: req.body.created_by
-   , modified_by	: req.body.modified_by	
-   , chi_company_name: req.body.chi_company_name
-   , chi_company_address: req.body.chi_company_address
-   , company_address_id: req.body.company_address_id
-   , contact_person: req.body.contact_person
-   , billing_address_flat	: req.body.billing_address_flat
-   , billing_address_street	: req.body.billing_address_street
-   , billing_address_country: req.body.billing_address_country
-   , billing_address_po_code: req.body.billing_address_po_code
-   , client_code: req.body.client_code
-   , latitude: req.body.latitude
-   , longitude	: req.body.longitude	
-   , retention	: req.body.retention };
+app.post("/insertCompany", (req, res, next) => {
+  let data = {
+    company_name: req.body.company_name,
+    company_name_arb: req.body.company_name_arb,
+    email: req.body.email,
+    address_street: req.body.address_street,
+    address_town: req.body.address_town,
+    address_state: req.body.address_state,
+    address_country: req.body.address_country,
+    address_po_code: req.body.address_po_code,
+    phone: req.body.phone,
+    fax: req.body.fax,
+    notes: req.body.notes,
+    creation_date: req.body.creation_date,
+    modification_date: req.body.modification_date,
+    mobile: req.body.mobile,
+    flag: req.body.flag,
+    address_flat: req.body.address_flat,
+    status: "current",
+    website: req.body.website,
+    category: req.body.category,
+    comment_by: req.body.comment_by,
+    company_size: req.body.company_size,
+    industry: req.body.industry,
+    source: req.body.source,
+    group_name: req.body.group_name,
+    supplier_type: req.body.supplier_type,
+    created_by: req.body.created_by,
+    modified_by: req.body.modified_by,
+    chi_company_name: req.body.chi_company_name,
+    chi_company_address: req.body.chi_company_address,
+    company_address_id: req.body.company_address_id,
+    contact_person: req.body.contact_person,
+    billing_address_flat: req.body.billing_address_flat,
+    billing_address_street: req.body.billing_address_street,
+    billing_address_country: req.body.billing_address_country,
+    billing_address_po_code: req.body.billing_address_po_code,
+    client_code: req.body.client_code,
+    latitude: req.body.latitude,
+    longitude: req.body.longitude,
+    retention: req.body.retention,
+  };
   let sql = "INSERT INTO company SET ?";
-  let query = db.query(sql, data,(err, result) => {
+  let query = db.query(sql, data, (err, result) => {
     if (err) {
-      console.log('error: ', err)
+      console.log("error: ", err);
       return res.status(400).send({
         data: err,
-        msg: 'failed',
-      })
+        msg: "failed",
+      });
     } else {
       return res.status(200).send({
         data: result,
-        msg: 'Success',
-          });
+        msg: "Success",
+      });
     }
   });
 });
 
-app.post('/deleteCompany', (req, res, next) => {
-
-  let data = {company_id: req.body.company_id};
+app.post("/deleteCompany", (req, res, next) => {
+  let data = { company_id: req.body.company_id };
   let sql = "DELETE FROM company WHERE ?";
-  let query = db.query(sql, data,(err, result) => {
+  let query = db.query(sql, data, (err, result) => {
     if (err) {
-      console.log('error: ', err)
+      console.log("error: ", err);
       return res.status(400).send({
         data: err,
-        msg: 'failed',
-      })
+        msg: "failed",
+      });
     } else {
       return res.status(200).send({
         data: result,
-        msg: 'Success',
-          });
+        msg: "Success",
+      });
     }
   });
 });
 
-
-app.get('/getContactLinked', (req, res, next) => {
-  db.query(`SELECT c.contact_id 
+app.get("/getContactLinked", (req, res, next) => {
+  db.query(
+    `SELECT c.contact_id 
   ,c.first_name
   ,c.first_name_arb
   ,c.email
   ,c.phone
   ,c.mobile
+  ,c.position_arb
   ,c.position
   ,c.department 
-   ,c.salutation
+  ,c.department_arb
+  ,c.salutation
+ ,c.salutation_arb
   FROM contact c WHERE c.company_id != ''`,
     (err, result) => {
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
-
-        }
- 
+          msg: "Success",
+        });
+      }
     }
   );
 });
 
-app.post('/getContactLinkedByCompanyId', (req, res, next) => {
-  db.query(`SELECT c.company_id
+
+
+app.post("/getContactLinkedByCompanyId", (req, res, next) => {
+  db.query(
+    `SELECT c.company_id
    ,c.contact_id 
   ,c.first_name
   ,c.first_name_arb
@@ -298,25 +297,24 @@ app.post('/getContactLinkedByCompanyId', (req, res, next) => {
   FROM contact c WHERE company_id=${db.escape(req.body.company_id)}`,
     (err, result) => {
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
-
-        }
- 
+          msg: "Success",
+        });
+      }
     }
   );
 });
 
-app.post('/getContactLinkedByContactId', (req, res, next) => {
-  db.query(`SELECT c.company_id
+app.post("/getContactLinkedByContactId", (req, res, next) => {
+  db.query(
+    `SELECT c.company_id
   ,c.contact_id 
   ,c.first_name
   ,c.first_name_arb
@@ -331,25 +329,24 @@ app.post('/getContactLinkedByContactId', (req, res, next) => {
   FROM contact c WHERE contact_id =  ${db.escape(req.body.contact_id)}`,
     (err, result) => {
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
-
-        }
- 
+          msg: "Success",
+        });
+      }
     }
   );
 });
 
-app.post('/editContact', (req, res, next) => {
-  db.query(`UPDATE contact
+app.post("/editContact", (req, res, next) => {
+  db.query(
+    `UPDATE contact
             SET 
             first_name=${db.escape(req.body.first_name)}
             first_name_arb=${db.escape(req.body.first_name_arb)}
@@ -363,25 +360,25 @@ app.post('/editContact', (req, res, next) => {
             ,salutation=${db.escape(req.body.salutation)}
             WHERE contact_id = ${db.escape(req.body.contact_id)}`,
     (err, result) => {
-     
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
+          msg: "Success",
+        });
       }
-     }
+    }
   );
 });
 
-app.post('/getContactLinkedById', (req, res, next) => {
-  db.query(`SELECT 
+app.post("/getContactLinkedById", (req, res, next) => {
+  db.query(
+    `SELECT 
    c.contact_id 
   ,c.first_name
   ,c.first_name_arb
@@ -394,110 +391,27 @@ app.post('/getContactLinkedById', (req, res, next) => {
   FROM contact c WHERE company_id =  ${db.escape(req.body.company_id)}`,
     (err, result) => {
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
-
-        }
- 
+          msg: "Success",
+        });
+      }
     }
   );
 });
-app.get('/getCountry', (req, res, next) => {
-  db.query(
-    `SELECT * from geo_country`,
-    (err, result) => {
-      if (err) {
-        console.log('error: ', err)
-        return res.status(400).send({
-          data: err,
-          msg: 'failed',
-        })
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: 'Success',
-        })
-      }
-    },
-  )
-})
-
-
-app.post('/insertContact', (req, res, next) => {
-
-  let data = {company_name	:req.body.company_name	
-   , position	: req.body.position	
-   , email: req.body.email
-   , address_street: req.body.address_street
-   , address_area: req.body.address_area
-   , address_town: req.body.address_town
-   , address_state: req.body.address_state
-   , address_country	: req.body.address_country
-   , address_po_code	: req.body.address_po_code
-   , phone: req.body.phone
-   , fax: req.body.fax
-   , sort_order: req.body.sort_order
-   , published: req.body.published
-   , creation_date		: req.body.creation_date		
-   , modification_date	: req.body.modification_date	
-   , protected	: req.body.protected	
-   , pass_word: req.body.pass_word
-   , subscribe: req.body.subscribe
-   , first_name: req.body.first_name
-   , first_name_arb: req.body.first_name_arb
-   , last_name: req.body.last_name
-   , mobile: req.body.mobile
-   , religion	: req.body.religion
-   , relationship	: req.body.relationship
-   , known_as_name: req.body.known_as_name
-   , address_street1: req.body.address_street1
-   , address_town1: req.body.address_town1
-   , address_country1: req.body.address_country1
-   , flag		: req.body.flag		
-   , sex	: req.body.sex	
-   , date_of_birth: req.body.date_of_birth
-   , random_no: req.body.random_no
-   , member_status: req.body.member_status
-   , direct_tel: req.body.direct_tel
-   , member_type	: req.body.member_type
-   , address_flat	: req.body.address_flat
-   , phone_direct: req.body.phone_direct
-   , company_id : req.body.company_id 
-   , salutation: req.body.salutation
-   , department: req.body.department
-   , created_by: req.body.created_by
-   , modified_by	: req.body.modified_by	
-   , published_test	: req.body.published_test	
-   , company_address_street	: req.body.company_address_street
-   , company_address_flat	: req.body.company_address_flat
-   , company_address_town: req.body.company_address_town
-   , company_address_state: req.body.company_address_state
-   , company_address_country: req.body.company_address_country
-   , company_address_id: req.body.company_address_id
-   , category	: req.body.category	
-   , status	: req.body.status	
-   , user_group_id	: req.body.user_group_id	
-   , name	: req.body.name	
-   , notes	: req.body.notes	
-   , user_name	: req.body.user_name	
-   , address	: req.body.address	
-   , login_count	: req.body.login_count	
-  
-    
- };
-  let sql = "INSERT INTO contact SET ?";
- let query = db.query(sql, data, (err, result) => {
+app.get("/getCountry", (req, res, next) => {
+  db.query(`SELECT * from geo_country`, (err, result) => {
     if (err) {
+      console.log("error: ", err);
       return res.status(400).send({
-        data: err
+        data: err,
+        msg: "failed",
       });
     } else {
       return res.status(200).send({
@@ -508,28 +422,105 @@ app.post('/insertContact', (req, res, next) => {
   });
 });
 
-
-app.post('/deleteContact', (req, res, next) => {
-
-  let data = {contact_id: req.body.contact_id};
-  let sql = "DELETE FROM contact WHERE ?";
-  let query = db.query(sql, data,(err, result) => {
+app.post("/insertContact", (req, res, next) => {
+  let data = {
+    company_name: req.body.company_name,
+    position: req.body.position,
+    position: req.body.position_arb,
+    email: req.body.email,
+    email_arb: req.body.email_arb,
+    address_street: req.body.address_street,
+    address_area: req.body.address_area,
+    address_town: req.body.address_town,
+    address_state: req.body.address_state,
+    address_country: req.body.address_country,
+    address_po_code: req.body.address_po_code,
+    phone: req.body.phone,
+    phone_arb: req.body.phone_arb,
+    fax: req.body.fax,
+    sort_order: req.body.sort_order,
+    published: req.body.published,
+    creation_date: req.body.creation_date,
+    modification_date: req.body.modification_date,
+    protected: req.body.protected,
+    pass_word: req.body.pass_word,
+    subscribe: req.body.subscribe,
+    first_name: req.body.first_name,
+    first_name_arb: req.body.first_name_arb,
+    last_name: req.body.last_name,
+    mobile: req.body.mobile,
+    religion: req.body.religion,
+    relationship: req.body.relationship,
+    known_as_name: req.body.known_as_name,
+    address_street1: req.body.address_street1,
+    address_town1: req.body.address_town1,
+    address_country1: req.body.address_country1,
+    flag: req.body.flag,
+    sex: req.body.sex,
+    date_of_birth: req.body.date_of_birth,
+    random_no: req.body.random_no,
+    member_status: req.body.member_status,
+    direct_tel: req.body.direct_tel,
+    member_type: req.body.member_type,
+    address_flat: req.body.address_flat,
+    phone_direct: req.body.phone_direct,
+    company_id: req.body.company_id,
+    salutation: req.body.salutation,
+    department: req.body.department,
+    created_by: req.body.created_by,
+    modified_by: req.body.modified_by,
+    published_test: req.body.published_test,
+    company_address_street: req.body.company_address_street,
+    company_address_flat: req.body.company_address_flat,
+    company_address_town: req.body.company_address_town,
+    company_address_state: req.body.company_address_state,
+    company_address_country: req.body.company_address_country,
+    company_address_id: req.body.company_address_id,
+    category: req.body.category,
+    status: req.body.status,
+    user_group_id: req.body.user_group_id,
+    name: req.body.name,
+    notes: req.body.notes,
+    user_name: req.body.user_name,
+    address: req.body.address,
+    login_count: req.body.login_count,
+  };
+  let sql = "INSERT INTO contact SET ?";
+  let query = db.query(sql, data, (err, result) => {
     if (err) {
-      console.log('error: ', err)
       return res.status(400).send({
         data: err,
-        msg: 'failed',
-      })
+      });
     } else {
       return res.status(200).send({
         data: result,
-        msg: 'Success',
-          });
+        msg: "Success",
+      });
     }
   });
 });
-app.post('/getProjectsByIdCompany', (req, res, next) => {
-  db.query(`SELECT title
+
+app.post("/deleteContact", (req, res, next) => {
+  let data = { contact_id: req.body.contact_id };
+  let sql = "DELETE FROM contact WHERE ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  });
+});
+app.post("/getProjectsByIdCompany", (req, res, next) => {
+  db.query(
+    `SELECT title
   ,category
   ,company_id
   ,project_value
@@ -541,30 +532,25 @@ app.post('/getProjectsByIdCompany', (req, res, next) => {
   ,project_manager_id
   ,project_id
   ,project_code
-  FROM project WHERE company_id=${db.escape(req.body.company_id)}` ,
+  FROM project WHERE company_id=${db.escape(req.body.company_id)}`,
     (err, result) => {
-       
       if (result.length == 0) {
         return res.status(400).send({
-          msg: 'No result found'
+          msg: "No result found",
         });
       } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
-        }
- 
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
     }
   );
 });
 
-
-
-
-app.post('/getTendersByIdcompany', (req, res, next) => {
-  db.query(`SELECT 
+app.post("/getTendersByIdcompany", (req, res, next) => {
+  db.query(
+    `SELECT 
   title
   ,office_ref_no
   ,company_id
@@ -581,26 +567,24 @@ app.post('/getTendersByIdcompany', (req, res, next) => {
   ,opportunity_code
   ,price
   ,itq_ref_no
-  FROM opportunity WHERE company_id=${db.escape(req.body.company_id)}` ,
+  FROM opportunity WHERE company_id=${db.escape(req.body.company_id)}`,
     (err, result) => {
-       
       if (result.length == 0) {
         return res.status(400).send({
-          msg: 'No result found'
+          msg: "No result found",
         });
       } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
-        }
- 
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
     }
   );
 });
-app.post('/getMainInvoiceByidCompany', (req, res, next) => {
-  db.query(`SELECT 
+app.post("/getMainInvoiceByidCompany", (req, res, next) => {
+  db.query(
+    `SELECT 
   i.invoice_id
   ,i.invoice_code
   ,i.invoice_date
@@ -642,49 +626,47 @@ app.post('/getMainInvoiceByidCompany', (req, res, next) => {
   LEFT JOIN branch b ON(p.branch_id = b.branch_id)
    WHERE c.company_id = ${db.escape(req.body.company_id)}`,
     (err, result) => {
-
       if (err) {
-        console.log('error: ', err)
+        console.log("error: ", err);
         return res.status(400).send({
           data: err,
-          msg: 'failed',
-        })
+          msg: "failed",
+        });
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Success',
-            });
-
+          msg: "Success",
+        });
       }
-
     }
   );
 });
 
-app.post('/update-flag', (req, res, next) => {
-  db.query(`UPDATE company
+app.post("/update-flag", (req, res, next) => {
+  db.query(
+    `UPDATE company
             SET flag=${db.escape(req.body.flag)}
             WHERE company_id=${db.escape(req.body.company_id)}`,
-            (err, result) => {
-             
-              if (err) {
-                console.log('error: ', err)
-                return res.status(400).send({
-                  data: err,
-                  msg: 'failed',
-                })
-              } else {
-                return res.status(200).send({
-                  data: result,
-                  msg: 'Success',
-                    });
-              }
-             }
-          );
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
 });
 
-app.post('/getInvoiceLinkedById', (req, res, next) => {
-  db.query(`SELECT
+app.post("/getInvoiceLinkedById", (req, res, next) => {
+  db.query(
+    `SELECT
   i.invoice_id
  ,i.item_title
  ,i.description
@@ -707,29 +689,24 @@ app.post('/getInvoiceLinkedById', (req, res, next) => {
   LEFT JOIN company c  ON c.company_id=o.company_id
 WHERE c.company_id= ${db.escape(req.body.company_id)}`,
     (err, result) => {
-
       if (err) {
         return res.status(400).send({
-              data: err,
-              msg:'failed'
-            });
+          data: err,
+          msg: "failed",
+        });
       } else {
-            return res.status(200).send({
-              data: result,
-              msg:'Success'
-            });
-
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
       }
-
     }
   );
 });
 
-
-
-app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
+app.get("/secret-route", userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
-  res.send('This is the secret content. Only logged in users can see that!');
+  res.send("This is the secret content. Only logged in users can see that!");
 });
 
 module.exports = app;
