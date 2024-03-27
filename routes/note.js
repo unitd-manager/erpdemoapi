@@ -11,8 +11,10 @@ app.use(fileUpload({
 }));
 
 app.post('/addNote', (req, res, next) => {
-    let data = {comments:req.body.comments	
+    let data = {
+      comments:req.body.comments	
    , room_name	: req.body.room_name	
+   ,comments_arb:req.body.comments_arb
    , record_id: req.body.record_id
    , creation_date: req.body.creation_date
    , created_by: req.body.created_by

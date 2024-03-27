@@ -21,15 +21,21 @@ app.get('/getPurchaseRequest', (req, res, next) => {
   db.query(`SELECT 
   pr.purchase_request_id,
   pr.purchase_request_code,
+  pr.purchase_request_code_arb,
   pr.purchase_request_date,
+  pr.purchase_request_date_arb,
   pr.purchase_delivery_date,
+  pr.purchase_delivery_date_arb,
   pr.department,
+  pr.department_arb,
   pr.status,
+  pr.status_arb,
   pr.creation_date,
   pr.modification_date,
   pr.created_by,
   pr.modified_by,
   pr.priority,
+  pr.priority_arb,
   c.company_name,
   c.company_id
   FROM purchase_request pr
@@ -56,15 +62,21 @@ app.post('/getPurchaseRequestById', (req, res, next) => {
   db.query(`SELECT 
   pr.purchase_request_id,
   pr.purchase_request_code,
+  pr.purchase_request_code_arb,
   pr.purchase_request_date,
+  pr.purchase_request_date_arb,
   pr.purchase_delivery_date,
+  pr.purchase_delivery_date_arb,
   pr.department,
+  pr.department_arb,
   pr.status,
+  pr.status_arb,
   pr.creation_date,
   pr.modification_date,
   pr.created_by,
   pr.modified_by,
   pr.priority,
+  pr.priority_arb,
   c.company_name,
   c.company_id
   FROM purchase_request pr
@@ -90,10 +102,15 @@ app.post('/getPurchaseRequestById', (req, res, next) => {
 app.post('/editPurchaseRequest', (req, res, next) => {
   db.query(`UPDATE purchase_request 
             SET purchase_request_date=${db.escape(req.body.purchase_request_date)}
+            ,purchase_request_date_arb==${db.escape(req.body.purchase_request_date_arb)}
             ,purchase_delivery_date=${db.escape(req.body.purchase_delivery_date)}
+            ,purchase_delivery_date_arb=${db.escape(req.body.purchase_delivery_date_arb)}
             ,department=${db.escape(req.body.department)}
+            ,department_arb=${db.escape(req.body.department_arb)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,priority=${db.escape(req.body.priority)}
+            ,priority_arb=${db.escape(req.body.priority_arb)}
             ,company_id=${db.escape(req.body.company_id)}
             ,description=${db.escape(req.body.description)}
             ,creation_date=${db.escape(req.body.creation_date)}
@@ -413,12 +430,17 @@ app.post("/getCodeValue", (req, res, next) => {
     , purchase_request_id
     , product_id
     , title
+    , title_arb
     , purchase_request_qty
+    , purchase_request_qty_arb
     , unit
+    , unit_arb
     , creation_date
     , modification_date
     , created_by
+    , created_by_arb
     , modified_by
+    , modified_by_arb
     FROM purchase_request_items
     WHERE purchase_request_id = ${db.escape(req.body.purchase_request_id)}`,
     (err, result) => {
@@ -442,12 +464,17 @@ app.post("/getCodeValue", (req, res, next) => {
               SET purchase_request_id=${db.escape(req.body.purchase_request_id)}
               ,product_id=${db.escape(req.body.product_id)}
               ,title=${db.escape(req.body.title)} 
+              ,title_arb=${db.escape(req.body.title_arb)} 
               ,purchase_request_qty=${db.escape(req.body.purchase_request_qty)}
+              ,purchase_request_qty_arb=${db.escape(req.body.purchase_request_qty_arb)}
               ,unit=${db.escape(req.body.unit)}
+              ,unit_arb=${db.escape(req.body.unit_arb)}
               ,creation_date=${db.escape(req.body.creation_date)}
               ,created_by=${db.escape(req.body.created_by)}
+              ,created_by_arb=${db.escape(req.body.created_by_arb)}
               ,modification_date=${db.escape(req.body.modification_date)}
               ,modified_by=${db.escape(req.body.modified_by)}
+              ,modified_by_arb=${db.escape(req.body.modified_by_arb)}
               WHERE purchase_request_items_id  = ${db.escape(req.body.purchase_request_items_id )}`,
               (err, result) => {
                 if (err) {
@@ -665,9 +692,30 @@ app.post("/getCodeValue", (req, res, next) => {
     );
   });
 
+  app.get('/getTranslationForPurchaseRequest', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdPurchaseRequest%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
+
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');
 });
+
+
 
 module.exports = app;

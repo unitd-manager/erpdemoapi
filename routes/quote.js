@@ -154,7 +154,7 @@ app.post('/getPurchaseQuoteRequestById', (req, res, next) => {
   db.query(`SELECT
   p.product_code
   ,pr.unit
-  ,pr.purchase_request_qty
+  ,pr.purchase_request_qty,
   pr.creation_date,
    pr.modification_date,
   pr.created_by
@@ -569,7 +569,7 @@ app.post('/SupplierQuote', (req, res, next) => {
   });
 
   app.get('/getTranslationForReqForQuote', (req, res, next) => {
-    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProjectQuote%'`,
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdRequestForQuote%'`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)

@@ -54,6 +54,24 @@ app.get('/getEquipmentIssue', (req, res, next) => {
   );
 });
 
+app.get('/getTranslationForEquipmentIssue', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdEquipmentIssue%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 
 app.post('/getEquipmentIssuesById', (req, res, next) => {
   db.query(`select

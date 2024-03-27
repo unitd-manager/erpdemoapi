@@ -14,9 +14,9 @@ var app = express();
 app.use(cors());
 
 app.get('/getChartOfAccounts', (req, res, next) => {
-    db.query(`SELECT ah.*, ac.title as category
+    db.query(`SELECT ah.*, ac.title as category,ac.title_arb as category_arb
     FROM acc_head ah
-    LEFT JOIN acc_category ac ON ac.acc_category_id = ah.acc_category_id
+    LEFT JOIN acc_category ac ON ac.acc_category_id  = ah.acc_category_id 
     WHERE ah.acc_category_id != ''
     `,
       (err, result) => {
@@ -38,7 +38,7 @@ app.get('/getChartOfAccounts', (req, res, next) => {
   });
 
 app.post('/getChartofACById', (req, res, next) => {
-db.query(`select ah.*, ac.title as category
+db.query(`select ah.*, ac.title as category,ac.title_arb as category_arb
             From acc_head ah
             LEFT JOIN acc_category ac ON ac.acc_category_id = ah.acc_category_id
             where acc_head_id = ${db.escape(req.body.acc_head_id)}`,
@@ -68,6 +68,7 @@ app.post('/editChartAc', (req, res, next) => {
             ,title_arb =${db.escape(req.body.title_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,acc_category_id = ${db.escape(req.body.acc_category_id)}
+            ,acc_category_arb_id = ${db.escape(req.body.acc_category_arb_id)}
             WHERE acc_head_id = ${db.escape(req.body.acc_head_id)}`,
     (err, result) => {
      
@@ -91,8 +92,10 @@ app.post('/insertChartAc', (req, res, next) => {
 
   let data = {
     title	: req.body.title	
+    , title_arb	: req.body.title_arb	
    , creation_date: req.body.creation_date
    , acc_category_id: req.body.acc_category_id
+   , acc_category_arb_id: req.body.acc_category_arb_id
   };
   let sql = "INSERT INTO acc_head SET ?";
   let query = db.query(sql, data,(err, result) => {

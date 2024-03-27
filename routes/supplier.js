@@ -27,10 +27,15 @@ app.get('/getSupplier', (req, res, next) => {
   ,s.status
   ,s.gst_no
   ,s.contact_person
+  ,s.contact_person_arb
   ,s.address_flat
   ,s.address_street
   ,s.address_state
   ,s.address_country
+  ,s.address_flat_arb
+  ,s.address_street_arb
+  ,s.address_state_arb
+  ,s.address_country_arb
   ,s.address_po_code
   ,s.payment_details
   ,s.creation_date
@@ -38,6 +43,7 @@ app.get('/getSupplier', (req, res, next) => {
   ,s.modified_by
   ,s.modification_date
   ,s.terms
+  ,s.terms_arb
   ,s.phone
   ,gc.name AS country_name 
   FROM supplier s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.supplier_id != ''`,
@@ -73,6 +79,13 @@ app.post('/get-SupplierById', (req, res, next) => {
   ,s.address_po_code
   ,s.payment_details
   ,s.terms
+  ,s.contact_person_arb
+  ,s.address_flat_arb
+  ,s.address_street_arb
+  ,s.address_state_arb
+  ,s.address_country_arb
+  ,s.payment_details_arb
+  ,s.terms_arb
   ,s.phone
   ,s.creation_date
   ,s.created_by
@@ -232,7 +245,7 @@ app.post('/insert-Supplier', (req, res, next) => {
 
 app.post('/insert-SupplierReceipt', (req, res, next) => {
 
-  let data = {receipt_code: req.body.receipt_code,
+  let data = {supplier_receipt_code: req.body.receipt_code,
               amount: req.body.amount,
               mode_of_payment: req.body.mode_of_payment,
               remarks: req.body.remarks,
@@ -282,6 +295,7 @@ app.get('/getSupplierReceipts', (req, res, next) => {
   db.query(
     `select i.supplier_receipt_id
     ,i.remarks
+    ,i.remarks_arb
     ,i.creation_date
     ,i.modification_date
     ,i.created_by
@@ -290,6 +304,7 @@ app.get('/getSupplierReceipts', (req, res, next) => {
     ,o.payment_status
     ,i.amount
     ,i.mode_of_payment
+    ,i.mode_of_payment_arb
     ,o.po_code
      ,i.date
      from supplier_receipt i

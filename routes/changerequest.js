@@ -87,6 +87,25 @@ app.post('/getChangeRequestById', (req, res, next) => {
 );
 });
 
+app.get('/getTranslationForChangeRequest', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdChangeRequest%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.post('/editChangeRequest', (req, res, next) => {
   db.query(`UPDATE change_request 
             SET project_id=${db.escape(req.body.project_id)}
