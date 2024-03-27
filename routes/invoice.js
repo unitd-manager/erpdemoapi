@@ -1601,6 +1601,25 @@ WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
   );
 });
 
+
+app.get('/getTranslationforTradingInvoice', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingInvoice%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 app.post('/getInvoiceCancel', (req, res, next) => {
   db.query(`select i.invoice_id
   ,i.invoice_code  
@@ -1732,7 +1751,24 @@ app.post('/getInvoiceByInvoiceId', (req, res, next) => {
    );
 });
 
-
+app.get('/getTranslationforTradingReceipt', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingReceipt%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 
 app.post('/getReceiptData', (req, res, next) => {
   db.query(`select i.receipt_id
