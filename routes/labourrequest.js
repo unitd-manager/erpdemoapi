@@ -21,15 +21,25 @@ app.get('/getLabourRequest', (req, res, next) => {
   lr.labour_request_id
   ,lr.project_id
   ,lr.request_urgency
+  ,lr.request_urgency_arb
   ,lr.request_date
+  ,lr.request_date_arb
   ,lr.request_start_date
+  ,lr.request_start_date_arb
   ,lr.request_end_date
+  ,lr.request_end_date_arb
   ,lr.request_by
+  ,lr.request_by_arb
   ,lr.job_description
+  ,lr.job_description_arb
   ,lr.request_type
+  ,lr.request_type_arb
             ,lr.no_of_employees
+            ,lr.no_of_employees_arb
             ,lr.skills_required
+            ,lr.skills_required_arb
             ,lr.department
+            ,lr.department_arb
   ,lr.creation_date
   ,lr.modification_date
   ,p.title AS proj_title
@@ -96,29 +106,55 @@ app.get('/getLabourRequestSummary', (req, res, next) => {
   );
 });
 
+app.get('/getTranslationForLabourRequest', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdLabourRequest%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 
 app.post('/getLabourRequestById', (req, res, next) => {
   db.query(`select
-          lr.labour_request_id
-            ,lr.project_id
-            ,lr.request_urgency
-            ,lr.request_date
-            ,lr.request_type
-            ,lr.request_start_date
-            ,lr.request_end_date
-            ,lr.request_by
-            ,lr.job_description
+  lr.labour_request_id
+  ,lr.project_id
+  ,lr.request_urgency
+  ,lr.request_urgency_arb
+  ,lr.request_date
+  ,lr.request_date_arb
+  ,lr.request_start_date
+  ,lr.request_start_date_arb
+  ,lr.request_end_date
+  ,lr.request_end_date_arb
+  ,lr.request_by
+  ,lr.request_by_arb
+  ,lr.job_description
+  ,lr.job_description_arb
+  ,lr.request_type
+  ,lr.request_type_arb
             ,lr.no_of_employees
+            ,lr.no_of_employees_arb
             ,lr.skills_required
+            ,lr.skills_required_arb
             ,lr.department
-            ,lr.creation_date
-            ,lr.modification_date
-            ,lr.created_by
-            ,lr.modified_by
-            ,p.title AS proj_title
-            ,p.project_code
-            From labour_request lr
-            LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
+            ,lr.department_arb
+  ,lr.creation_date
+  ,lr.modification_date
+  ,p.title AS proj_title
+  ,p.project_code
+  From labour_request lr
+  LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
             where lr.labour_request_id = ${db.escape(req.body.labour_request_id)}`,
     (err, result) => {
       if (err) {
@@ -145,17 +181,27 @@ app.post('/editLabourRequest', (req, res, next) => {
             SET 
             project_id=${db.escape(req.body.project_id)}
             ,request_urgency=${db.escape(req.body.request_urgency)}
+            ,request_urgency_arb=${db.escape(req.body.request_urgency_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
             ,request_start_date=${db.escape(req.body.request_start_date)}
+            ,request_start_date_arb=${db.escape(req.body.request_start_date_arb)}
             ,request_end_date=${db.escape(req.body.request_end_date)}
+            ,request_end_date_arb=${db.escape(req.body.request_end_date_arb)}
             ,department=${db.escape(req.body.department)}
+            ,department_arb=${db.escape(req.body.department_arb)}
             ,request_type=${db.escape(req.body.request_type)}
+            ,request_type_arb=${db.escape(req.body.request_type_arb)}
             ,request_date=${db.escape(req.body.request_date)}
+            ,request_date_arb=${db.escape(req.body.request_date_arb)}
             ,request_by=${db.escape(req.body.request_by)}
+            ,request_by_arb=${db.escape(req.body.request_by_arb)}
             ,job_description=${db.escape(req.body.job_description)}
+            ,job_description_arb=${db.escape(req.body.job_description_arb)}
             ,no_of_employees=${db.escape(req.body.no_of_employees)}
+            ,no_of_employees_arb=${db.escape(req.body.no_of_employees_arb)}
             ,skills_required=${db.escape(req.body.skills_required)}
+            ,skills_required_arb=${db.escape(req.body.skills_required_arb)}
             WHERE labour_request_id = ${db.escape(req.body.labour_request_id)}`,
     (err, result) => {
      

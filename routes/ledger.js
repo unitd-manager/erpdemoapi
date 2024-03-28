@@ -25,6 +25,7 @@ app.post('/getAccounts', (req, res, next) => {
     ,jm.entry_date
     ,jm.voucher_type
     ,jm.narration AS narration_main
+    ,jm.narration_arb AS narrationarb_main
     ,jm.ledger_authorized
     ,j.journal_id
     ,j.credit
@@ -33,6 +34,7 @@ app.post('/getAccounts', (req, res, next) => {
     ,j.credit_base
     ,j.debit_base
     ,j.narration
+    ,j.narration_arb
     ,j.pending
     ,j.avg_buy_rate
     ,j.avg_stock_rate

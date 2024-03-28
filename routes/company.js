@@ -44,6 +44,37 @@ app.get('/getCompany', (req, res, next) => {
   );
 });
 
+app.get('/getNewCompanies', (req, res, next) => {
+  const { selectedMonth } = req.query;
+
+  if (!selectedMonth) {
+    return res.status(400).send({
+      msg: 'Missing selectedMonth parameter',
+    });
+  }
+
+  db.query(
+    `SELECT COUNT(*) AS newCompanies 
+     FROM company 
+     WHERE MONTH(creation_date) = ?`,
+    [selectedMonth],
+    (err, result) => {
+      if (err) {
+        console.log('Error:', err);
+        return res.status(500).send({
+          msg: 'Database error',
+        });
+      }
+
+      const newCompaniesCount = result[0]?.newCompanies || 0;
+      return res.status(200).send({
+        data: { newCompanies: newCompaniesCount },
+        msg: 'Success',
+      });
+    }
+  );
+});
+
 app.post('/insertCompany', (req, res, next) => {
 
   let data = {company_name: req.body.company_name,

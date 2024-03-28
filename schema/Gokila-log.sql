@@ -49,4 +49,67 @@ ALTER TABLE `opportunity` ADD `enquiry_date_arb` VARCHAR(255) NULL DEFAULT NULL 
 ALTER TABLE `opportunity` ADD `Project_end_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `project_end_date`;
 ALTER TABLE `opportunity` ADD `office_ref_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `office_ref_no`;
 
+********************************(22/03/2024 translation(Trading-Quotation inserts field))**************************************(Gokila)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingQuote.Net Amount', 'Net Amount', 'Trading Quotation amount field', NULL, NULL, NULL, NULL, NULL, '0', 'اضف جديد');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingQuote.Amount', 'Amount', 'Trading Quotation Amount', NULL, NULL, NULL, NULL, NULL, '0', 'كمية');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingQuote.Description', 'Description', 'Trading Quotation Description', NULL, NULL, NULL, NULL, NULL, '0', 'وصف');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingQuote.Quantity', 'Quantity', 'Trading Quotation Quantity Field', NULL, NULL, NULL, NULL, NULL, '0', 'كمية');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingQuote.Title', 'Title', 'Trading Quotation Title Field', NULL, NULL, NULL, NULL, NULL, '0', 'عنوان');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingQuote.Unit Price', 'Unit Price', 'Trading Quotation Unit Price Field', NULL, NULL, NULL, NULL, NULL, '0', 'سعر الوحدة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingQuote.updated By', 'Updated By', 'Quotation Updated By Field', NULL, NULL, NULL, NULL, NULL, '0', 'تم التحديث بواسطة');
 
+********************************(22/03/2024 trading_quotation(Trading-Quotation Creates field))**************************************(Gokila)
+ALTER TABLE `quote` ADD `quote_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `quote_code`;
+ALTER TABLE `quote` ADD `ref_no_quote_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `ref_no_quote`; 
+ALTER TABLE `quote` ADD `quote_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `quote_status`;  
+
+********************************(22/03/2024 Translation(Trading-Order inserts field))**************************************(Gokila)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingOrder.Status', 'Status', 'Trading Order Status Field', NULL, NULL, NULL, NULL, NULL, '0', 'حالة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingOrder.Net Amount', 'Net Amount', 'Trading Order Amount Field', NULL, NULL, NULL, NULL, NULL, '0', 'اضف جديد');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingOrder.Customer', 'Customer', 'Trading  Order Customer Field', NULL, NULL, NULL, NULL, NULL, '0', 'عميل');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingOrder.Quote Code', 'Quote Code', 'Trading Order Quote Code Field', NULL, NULL, NULL, NULL, NULL, '0', 'رمز الاقتباس');
+
+********************************(23/03/2024 trading_Order(Trading-Quotation Creates field))**************************************(Gokila)
+ALTER TABLE `orders` ADD `order_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `order_code`; 
+ALTER TABLE `orders` ADD `order_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `order_status`; 
+ALTER TABLE `orders` ADD `order_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `order_date`; 
+
+********************************(23/03/2024 Translation(Trading-Invoice inserts field))**************************************
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingInvoice.Invoice No', 'Invoice No', 'Trading Invoice No field', NULL, NULL, NULL, NULL, NULL, '0', 'رقم الفاتورة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingInvoice.Invoice Date', 'Invoice Date', 'Trading Invoice Date Field', NULL, NULL, NULL, NULL, NULL, '0', 'تاريخ الفاتورة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingInvoice.Status', 'Status', 'Trading invoice Status Field ', NULL, NULL, NULL, NULL, NULL, '0', 'حالة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingInvoice.Amount', 'Amount', 'Trading Invoice Amount Field', NULL, NULL, NULL, NULL, NULL, '0', 'كمية');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingInvoice.Due Date', 'Due Date', 'Trading Invoice Due Date Field', NULL, NULL, NULL, NULL, NULL, '0', 'تاريخ الاستحقاق');
+
+********************************(23/03/2024 Translation(Trading-Receipt inserts field))**************************************
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingReceipt.Receipt No', 'Receipt No', 'Trading Receipt No field', NULL, NULL, NULL, NULL, NULL, '0', 'رقم الإيصال');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingReceipt.Receipt Date', 'Receipt Date', 'Trading Receipt Date Field', NULL, NULL, NULL, NULL, NULL, '0', 'تاريخ استلام');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingReceipt.Status', 'Status', 'Trading Receipt Status Field', NULL, NULL, NULL, NULL, NULL, '0', 'حالة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingReceipt.ModeOfPayment', 'Mode Of Payment', 'Trading Receipt Mode of Payment Field', NULL, NULL, NULL, NULL, NULL, '0', 'طريقة الدفع');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingReceipt.Receipt Amount', 'Receipt Amount', 'Trading Receipt Amount Field', NULL, NULL, NULL, NULL, NULL, '0', 'قيمة الوصل');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingReceipt.Invoice No', 'Invoice No', 'Trading Invoice No or Receipt Field', NULL, NULL, NULL, NULL, NULL, '0', 'رقم الفاتورة');
+
+********************************(23/03/2024 trading_Quotation(Trading-Quotation Creates field))**************************************(Gokila)
+ALTER TABLE `quote_items` ADD `description_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `description`; 
+ALTER TABLE `quote_items` ADD `unit_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `unit`; 
+ALTER TABLE `quote_items` ADD `remarks_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `remarks`;
+ALTER TABLE `quote_items` ADD `quantity_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `quantity`; 
+ALTER TABLE `quote_items` ADD `unit_price_arb` INT(100) NULL DEFAULT NULL AFTER `unit_price`; 
+ALTER TABLE `product` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `title`; 
+
+********************************(23/03/2024 trading_customer(Trading-client Creates field))**************************************(Gokila)
+ALTER TABLE `company` ADD `phone_arb` INT NULL DEFAULT NULL AFTER `phone`; 
+ALTER TABLE `company` ADD `email_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `email`; 
+ALTER TABLE `company` ADD `website_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `website`; 
+ALTER TABLE `contact` ADD `salutation_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `salutation`; 
+ALTER TABLE `contact` ADD `position_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `position`; 
+
+
+********************************(25/03/2024 trading_customer(Trading-client Creates field))**************************************(Gokila)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Name', 'Name', 'Contact Name Field', NULL, NULL, NULL, NULL, NULL, '0', 'اسم');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Title', 'Title', 'Trading contact Salutation field', NULL, NULL, NULL, NULL, NULL, '0', 'تحية');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Email', 'Email', 'Trading Contact Field', NULL, NULL, NULL, NULL, NULL, '0', 'بريد إلكتروني');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Phone', 'Phone(Direct)', 'Contact Phone Field', NULL, NULL, NULL, NULL, NULL, '0', 'الهاتف (مباشر)');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Mobile', 'Mobile', 'contact Mobile Field', NULL, NULL, NULL, NULL, NULL, '0', 'متحرك');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Position', 'Position', 'Contact Position Field', NULL, NULL, NULL, NULL, NULL, '0', 'موضع');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Department', 'Department', 'Contact Department Feild', NULL, NULL, NULL, NULL, NULL, '0', 'قسم');

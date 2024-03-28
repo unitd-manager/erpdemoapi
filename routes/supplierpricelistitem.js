@@ -19,6 +19,7 @@ app.use(fileUpload({
 app.get('/getPriceList', (req, res, next) => {
   db.query(`select spl.*
   ,sr.company_name AS customer_name
+  ,sr.company_name_arb AS customer_name_arb
             From supplier_price_list spl
             LEFT JOIN (supplier sr)   ON (sr.supplier_id   = spl.supplier_id) 
             where spl.supplier_price_list_id  !=''`,
@@ -45,6 +46,7 @@ app.get('/getPriceList', (req, res, next) => {
 app.post('/getPriceListById', (req, res, next) => {
   db.query(`select spl.*
   ,sr.company_name AS customer_name
+  ,sr.company_name_arb AS customer_name_arb
             From supplier_price_list spl
             LEFT JOIN (supplier sr)   ON (sr.supplier_id   = spl.supplier_id) 
             where spl.supplier_price_list_id = ${db.escape(req.body.supplier_price_list_id)}`,

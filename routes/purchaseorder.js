@@ -108,12 +108,14 @@ app.post('/getPurchaseOrders', (req, res, next) => {
 app.post('/getPurchaseOrderById', (req, res, next) => {
   db.query(`SELECT
   po.purchase_order_id 
-
   ,CONCAT('Purchase from',' ',s.company_name ) AS title
+  ,CONCAT('Purchase from',' ',s.company_name_arb ) AS title_arb
   ,po.status
+  ,po.status_arb
   ,po.supplier_id
   ,po.priority
   ,po.notes
+  ,po.notes_arb
   ,po.purchase_order_date
   ,po.creation_date
   ,po.modification_date
@@ -122,6 +124,8 @@ app.post('/getPurchaseOrderById', (req, res, next) => {
   ,po.follow_up_date
   ,po.delivery_terms
   ,po.payment_terms
+  ,po.delivery_terms_arb
+  ,po.payment_terms_arb
   ,po.supplier_reference_no
   ,po.our_reference_no
   ,po.shipping_address_flat
@@ -129,6 +133,7 @@ app.post('/getPurchaseOrderById', (req, res, next) => {
   ,po.shipping_address_country
   ,po.shipping_address_po_code
   ,po.payment_status
+  ,po.payment_status_arb
   ,po.supplier_inv_code
   ,po.gst_percentage
   ,po.po_code
@@ -192,21 +197,25 @@ app.post('/editTabPurchaseOrder', (req, res, next) => {
   db.query(`UPDATE purchase_order
              SET title=${db.escape(req.body.title)}
             ,notes=${db.escape(req.body.notes)}
+            ,notes_arb=${db.escape(req.body.notes_arb)}
             ,gst=${db.escape(req.body.gst)}
             ,po_code=${db.escape(req.body.po_code)}
             ,purchase_order_date=${db.escape(req.body.purchase_order_date)}
             ,follow_up_date=${db.escape(req.body.follow_up_date)}
             ,delivery_terms=${db.escape(req.body.delivery_terms)}
+            ,delivery_terms_arb=${db.escape(req.body.delivery_terms_arb)}
             ,payment_terms=${db.escape(req.body.payment_terms)}
+            ,payment_terms_arb=${db.escape(req.body.payment_terms_arb)}
             ,supplier_inv_code=${db.escape(req.body.supplier_inv_code)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,payment_status=${db.escape(req.body.payment_status)}
+            ,payment_status_arb=${db.escape(req.body.payment_status_arb)}
             ,modification_date=${db.escape(new Date())}
             ,creation_date=${db.escape(req.body.creation_date)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,created_by=${db.escape(req.body.created_by)}
             ,modified_by=${db.escape(req.body.modified_by)}
-
             ,supplier_id=${db.escape(req.body.supplier_id)}
             ,delivery_to=${db.escape(req.body.delivery_to)}
             ,delivery_date=${db.escape(req.body.delivery_date)}
@@ -379,13 +388,13 @@ app.post('/TabPurchaseOrderLineItemById', (req, res, next) => {
   ,po.purchase_order_id
   ,po.po_product_id
   ,p.title
+  ,p.title_arb
   ,po.item_title
   ,po.description
   ,po.creation_date
   ,po.modification_date
   ,po.created_by
   ,po.modified_by
-  
   ,po.amount
   ,po.selling_price
   ,po.cost_price
@@ -436,6 +445,7 @@ app.post('/editTabPurchaseOrderLineItem', (req, res, next) => {
             ,damage_qty=${db.escape(req.body.damage_qty)}
             ,qty_delivered=${db.escape(req.body.qty_delivered)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             WHERE po_product_id = ${db.escape(req.body.po_product_id)}`,
             (err, result) => {
               if (err) {
@@ -477,6 +487,7 @@ app.post('/insertPoProduct', (req, res, next) => {
   let data = {
     purchase_order_id:req.body.purchase_order_id
      ,item_title: req.body.item_title
+     ,item_title_arb: req.body.item_title_arb
      ,product_id:req.body.product_id
     , quantity: req.body.quantity
     , unit: req.body.unit
@@ -540,7 +551,7 @@ app.post('/insertPoProduct', (req, res, next) => {
     db.query(`SELECT 
     e.supplier_id
    ,e.company_name
-   
+   ,e.company_name_arb
     FROM supplier e 
     `,
     (err, result) => {
@@ -565,6 +576,7 @@ app.post('/insertPurchaseProduct', (req, res, next) => {
   let data = {category_id: req.body.category_id
     ,  sub_category_id : req.body. sub_category_id 
     , title: req.body.title
+    , title_arb: req.body.title_arb
     , product_code: req.body.product_code
     , description: req.body.description
     , qty_in_stock: req.body.qty_in_stock
@@ -822,7 +834,9 @@ app.post('/getProductsfromOtherSuppliers', (req, res, next) => {
   ,po.follow_up_date
   ,po.po_code
   ,po.purchase_order_id
-  ,m.company_name AS supplier_name
+  ,m.company_name AS supplier_name  
+  ,m.company_name_arb AS supplier_name_arb
+
 FROM purchase_order po
 LEFT JOIN po_product pop ON po.purchase_order_id = pop.purchase_order_id
 LEFT JOIN product p ON p.product_id = pop.product_id
@@ -867,6 +881,7 @@ app.post('/getProductsfromSupplier', (req, res, next) => {
   ,po.po_code
   ,po.purchase_order_id
   ,m.company_name AS supplier_name
+  ,m.company_name_arb AS supplier_name_arb
 FROM purchase_order po
 LEFT JOIN po_product pop ON po.purchase_order_id = pop.purchase_order_id
 LEFT JOIN product p ON p.product_id = pop.product_id

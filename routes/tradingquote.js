@@ -37,7 +37,7 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,c.company_id
     ,cont.contact_id
     ,o.opportunity_code
-    ,q.office_ref_no
+    ,o.office_ref_no
     ,c.company_name
     ,c.address_flat
     ,c.address_street
@@ -166,6 +166,25 @@ app.get("/getEnquiryCode", (req, res, next) => {
   );
 });
 
+app.get('/getTranslationforTradingQuote', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingQuote%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 
 app.post("/edit-Tradingquote", (req, res, next) => {
   db.query(
@@ -184,7 +203,7 @@ app.post("/edit-Tradingquote", (req, res, next) => {
               ,drawing_nos=${db.escape(req.body.drawing_nos)}
               ,ref_no_quote=${db.escape(req.body.ref_no_quote)}
               ,discount=${db.escape(req.body.discount)}
-              ,office_ref_no=${db.escape(req.body.office_ref_no)}
+           
               ,total_amount=${db.escape(req.body.total_amount)}
               ,opportunity_id=${db.escape(req.body.opportunity_id)}
               ,company_id=${db.escape(req.body.company_id)}
@@ -341,12 +360,15 @@ app.post("/insertQuoteItems", (req, res, next) => {
     actual_amount: req.body.actual_amount,
     supplier_amount: req.body.supplier_amount,
     quantity: req.body.quantity,
+    quantity_arb: req.body.quantity_arb,
     project_id: req.body.project_id,
     created_by: req.body.created_by,
     creation_date: req.body.creation_date,
     modification_date: null,
     unit: req.body.unit,
+    unit_arb: req.body.unit_arb,
     remarks: req.body.remarks,
+    remarks_arb: req.body.remarks_arb,
     part_no: req.body.part_no,
     nationality: req.body.nationality,
     ot_rate: req.body.ot_rate,
@@ -355,10 +377,12 @@ app.post("/insertQuoteItems", (req, res, next) => {
     erection: req.body.erection,
     dismantle: req.body.dismantle,
     unit_price: req.body.unit_price,
+    unit_price_arb: req.body.unit_price_arb,
     drawing_number: req.body.drawing_number,
     drawing_title: req.body.drawing_title,
     drawing_revision: req.body.drawing_revision,
     description: req.body.description,
+    description_arb: req.body.description_arb,
   };
   let sql = "INSERT INTO quote_items SET ?";
   let query = db.query(sql, data, (err, result) => {
