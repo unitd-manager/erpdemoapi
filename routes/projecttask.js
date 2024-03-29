@@ -38,7 +38,7 @@ app.get('/getProjectTask', (req, res, next) => {
   ,pt.media_id
   ,pt.description
   ,pt.description_arb
-  ,pt.job_order_id
+  ,pt.project_job_id
   ,pt.estimated_hours
   ,pt.estimated_hours_arb
   ,pt.description_arb
@@ -59,13 +59,12 @@ app.get('/getProjectTask', (req, res, next) => {
   ,e.first_name
   ,e.first_name_arb
   ,e.employee_id
-  ,jo.job_order_title
-  ,jo.job_order_title_arb
-  ,jo.job_order_code
+  
+
   FROM project_task pt
   LEFT JOIN project p ON p.project_id = pt.project_id
   LEFT JOIN employee e ON e.employee_id = pt.employee_id
-  LEFT JOIN job_order jo ON jo.job_order_id = pt.job_order_id
+  LEFT JOIN project_job jo ON p.project_id = jo.project_id
   Where pt.project_task_id !=''`,
   (err, result) => {
     if (err) {
