@@ -170,3 +170,4 @@ INSERT   INTO `translation`
 (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
 VALUES (NULL, 'mdJournal.Credit', 'Credit', 'ائتمان', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 
+ALTER TABLE `acc_head` ADD `title_arb` INT(11) NULL DEFAULT NULL; 
