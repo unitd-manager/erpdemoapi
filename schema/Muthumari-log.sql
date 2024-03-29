@@ -43,3 +43,69 @@ ALTER TABLE `product` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `titl
 ALTER TABLE `product` ADD `product_type_arb` VARCHAR(100) NULL DEFAULT NULL AFTER `product_type`; 
 ALTER TABLE `product` ADD `item_code_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `item_code`; 
 ALTER TABLE `product` ADD `unit_arb` VARCHAR(100) NULL DEFAULT NULL AFTER `unit`; 
+
+.......................... Category Module Inserted fields in translation(25/3/24) .....................................................
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdCategory.CategoryTitle', 'Category Title', 'عنوان الفئة', 'Category Title', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.Section', 'Section', 'قسم', 'Category Section', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.CategoryType', 'Category Type', 'نوع الفئة', 'Category Type', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.InternalLink', 'Internal Link', 'الرابط الداخلي', 'Category Internal Link', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.Published', 'Published', 'نشرت', 'Category Published', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.PublishedYes', 'PublishedYes', 'نعم', 'Category PublishedYes', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.PublishedNo', 'PublishedNo', 'لا', 'Category PublishedNo', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.PageTitle', 'Page Title', 'عنوان الصفحة', 'Category Page Title', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.PageDescription', 'Page Description', 'الصفحة الوصف', 'Category Page Description', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.PageKeywords', 'Page Keywords', 'الكلمات الرئيسية للصفحة', 'Category Page Keywords', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.SEOTitle', 'SEO Title', 'عنوان تحسين محركات البحث', 'Category SEO Title', '25-03-2024', NULL, NULL, NULL, NULL, '0')
+(NULL, 'mdCategory.Edit', 'Edit', 'يحرر', 'Category Edit', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.Order', 'Order', 'طلب', 'Category Order', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdCategory.ID', 'ID', 'بطاقة تعريف', 'Category ID', '25-03-2024', NULL, NULL, NULL, NULL, '0');
+
+
+.......................... SubCategory Module Inserted fields in translation(25/3/24) ....................................................
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdSubCategory.Title', 'Title', 'عنوان', 'SubCategory Title', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.Category', 'Category', 'فئة', 'SubCategory Category', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.SubCategoryType', 'SubCategory Type', 'نوع الفئة الفرعية', 'SubCategory Sub Category Type', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.ExternalLink', 'External Link', 'رابط خارجي', 'SubCategory External Link', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.InternalLink', 'Internal Link', 'الرابط الداخلي', 'SubCategory Internal Link', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.Published', 'Published', 'نشرت', 'SubCategory Published', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.PublishedYes', 'Yes', 'نعم', 'SubCategory PublishedYes', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.PublishedNo', 'No', 'لا', 'SubCategory PublishedNo', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.PageTitle', 'Page Title', 'عنوان الصفحة', 'SubCategory Page Title', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.PageDescription', 'Page Description', 'الصفحة الوصف', 'SubCategory Page Description', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.PageKeywords', 'Page Keywords', 'الكلمات الرئيسية للصفحة', 'SubCategory Page Keywords', '25-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdSubCategory.SEOTitle', 'SEO Title', 'عنوان تحسين محركات البحث', 'SubCategory SEO Title', '25-03-2024', NULL, NULL, NULL, NULL, '0')
+
+.......................... Category Module  Arabic Field creation(25/3/24) ....................................................
+ALTER TABLE `category` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `title`;
+ALTER TABLE `category` ADD `published_arb` INT(1) NULL DEFAULT NULL AFTER `published`; 
+ALTER TABLE `category` ADD `category_type_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `category_type`; 
+ALTER TABLE `category` ADD `meta_title_arb` TEXT  NULL DEFAULT NULL AFTER `meta_title`;
+ALTER TABLE `category` ADD `meta_keyword_arb` TEXT NULL DEFAULT NULL AFTER `meta_keyword`; 
+ALTER TABLE `category` ADD `internal_link_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `internal_link`; 
+ALTER TABLE `category` ADD `category_title_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `category_title`; 
+ALTER TABLE `category` ADD `seo_title_arb` TEXT  NULL DEFAULT NULL AFTER `seo_title`; 
+ALTER TABLE `category` ADD `meta_description_arb` TEXT  NULL DEFAULT NULL AFTER `meta_description`; 
+ALTER TABLE `category` ADD `created_by` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`, ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
+ALTER TABLE `category` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`; 
+ALTER TABLE `category` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`; 
+
+.......................... SubCategory Module  Arabic Field creation(25/3/24) ....................................................
+ALTER TABLE `sub_category` ADD `sub_category_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `sub_category_title`;
+ALTER TABLE `sub_category` ADD `published_arb` INT(1) NULL DEFAULT NULL AFTER `published`; 
+ALTER TABLE `sub_category` ADD `external_link_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `external_link`; 
+ALTER TABLE `sub_category` ADD `sub_category_type_arb` VARCHAR(50)  NULL DEFAULT NULL AFTER `sub_category_type`;
+ALTER TABLE `sub_category` ADD `internal_link_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `internal_link`; 
+ALTER TABLE `sub_category` ADD `meta_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `meta_title`; 
+ALTER TABLE `sub_category` ADD `meta_description_arb` TEXT NULL DEFAULT NULL AFTER `meta_description`; 
+ALTER TABLE `sub_category` ADD `meta_keyword_arb` TEXT  NULL DEFAULT NULL AFTER `meta_keyword`; 
+ALTER TABLE `sub_category` ADD `seo_title_arb` VARCHAR(255)  NULL DEFAULT NULL AFTER `seo_title`; 
+ALTER TABLE `sub_category` ADD `created_by` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`, ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
+ALTER TABLE `sub_category` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`; 
+ALTER TABLE `sub_category` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`; 
+
+
+
