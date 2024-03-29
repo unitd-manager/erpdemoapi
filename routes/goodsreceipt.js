@@ -36,6 +36,7 @@ app.get('/getGoodsReceipt', (req, res, next) => {
   ,s.company_name
   
   ,po.po_code
+  ,po.po_code_arb
   
   ,e.first_name
   ,e.employee_id
@@ -78,10 +79,12 @@ app.post('/getGoodsReceiptById', (req, res, next) => {
   ,gr.created_by
   ,gr.modified_by
   ,s.company_name
-  
+  ,s.company_name_arb
   ,po.po_code
+  ,po.po_code_arb
   
   ,e.first_name
+  
   ,e.employee_id
   FROM goods_receipt gr
   LEFT join supplier s on s.supplier_id = gr.supplier_id
@@ -111,8 +114,10 @@ app.post('/editGoodsReceipt', (req, res, next) => {
             ,supplier_id=${db.escape(req.body.supplier_id)}
             ,purchase_order_id=${db.escape(req.body.purchase_order_id)}
             ,employee_id=${db.escape(req.body.employee_id)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,status=${db.escape(req.body.status)}
             ,total_amount=${db.escape(req.body.total_amount)}
+            ,total_amount_arb=${db.escape(req.body.total_amount_arb)}
             ,creation_date=${db.escape(req.body.creation_date)}
             ,created_by=${db.escape(req.body.created_by)}
             ,modification_date=${db.escape(req.body.modification_date)}
@@ -252,14 +257,19 @@ app.post('/getGoodsReceiptItemsById', (req, res, next) => {
   ,goods_receipt_id
   ,purchase_order_id
   ,po_code
+  ,po_code_arb
   ,product_id
   ,item_title
+  ,item_title_arb
   ,unit
+  ,unit_arb
   ,ordered_quantity
   ,goods_received_date
   ,goods_received_qty
   ,unit_price
+  ,unit_price_arb
   ,total_cost
+  ,total_cost_arb
   ,goods_damaged_qty
   ,serial_no
   ,description
@@ -353,12 +363,18 @@ app.get('/getEmployeeName', (req, res, next) => {
   app.post('/getPurchaseOrderedByIdOLd', (req, res, next) => {
     db.query(`SELECT
     p.product_code
+    ,p.product_code_arb
     ,p.product_id
     ,p.unit
+    ,p.unit_arb
     ,p.title
+    ,p.title_arb
     ,po.unit
+    ,po.unit_arb
     ,po.item_title
+    ,po.item_title_arb
     ,po.quantity
+    ,po.quantity_arb
     ,po.po_product_id
     ,po.purchase_order_id
     ,gci.goods_received_date

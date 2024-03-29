@@ -102,7 +102,7 @@ app.post('/getPurchaseRequestById', (req, res, next) => {
 app.post('/editPurchaseRequest', (req, res, next) => {
   db.query(`UPDATE purchase_request 
             SET purchase_request_date=${db.escape(req.body.purchase_request_date)}
-            ,purchase_request_date_arb==${db.escape(req.body.purchase_request_date_arb)}
+            ,purchase_request_date_arb=${db.escape(req.body.purchase_request_date_arb)}
             ,purchase_delivery_date=${db.escape(req.body.purchase_delivery_date)}
             ,purchase_delivery_date_arb=${db.escape(req.body.purchase_delivery_date_arb)}
             ,department=${db.escape(req.body.department)}
@@ -499,7 +499,9 @@ app.post("/getCodeValue", (req, res, next) => {
        product_id:req.body.product_id,
        title:req.body.title,
        purchase_request_qty:req.body.purchase_request_qty,
+       purchase_request_qty_arb:req.body.purchase_request_qty_arb,
        unit:req.body.unit,
+       unit_arb:req.body.unit_arb,
        creation_date:req.body.creation_date,
        created_by:req.body.created_by,
        purchase_request_id:req.body.purchase_request_id

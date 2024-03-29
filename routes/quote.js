@@ -21,12 +21,17 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
     db.query(`SELECT
     q.purchase_quote_id 
     ,q.date_issued
+    ,q.date_issued_arb
     ,q.due_date
+    ,q.due_date_arb
     ,q.status
+    ,q.status_arb
     ,q.supplier_id
     ,p.purchase_request_id
     ,p.purchase_request_code
+    ,p.purchase_request_code_arb
     ,q.rq_code
+    ,q.rq_code_arb
     ,q.creation_date
     ,q.modification_date
      FROM purchase_quote q 
@@ -150,10 +155,13 @@ app.post('/getPurchaseQuoteById', (req, res, next) => {
     q.purchase_request_id,
     qr.product_id ,
     qr.total_cost,
+    
     qr.purchase_quote_items_id,
     qr.amount,
+    
     p.purchase_request_id,
     p.purchase_request_code,
+    p.purchase_request_code_arb,
     q.rq_code,
     q.rq_code_arb,
     q.creation_date,
@@ -257,10 +265,9 @@ app.post('/editPurchseQuote', (req, res, next) => {
               ,date_issued=${db.escape(req.body.date_issued)}
               ,due_date=${db.escape(req.body.due_date)}
               ,status=${db.escape(req.body.status)}
+              ,status_arb=${db.escape(req.body.status_arb)}
               ,supplier_id=${db.escape(req.body.supplier_id)}
               ,payment_method=${db.escape(req.body.payment_method)}
-              ,modified_by=${db.escape(req.body.modified_by)}
-
               ,creation_date=${db.escape(req.body.creation_date)}
               ,modification_date=${db.escape(
                 new Date().toISOString().slice(0, 19).replace('T', ' '),
