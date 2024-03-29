@@ -200,3 +200,15 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.View loan breakup', 'View loan breakup', 'عرض تفكك القرض', '', '', '', NULL, '', '0', NULL); 
 ALTER TABLE `purchase_invoice_items` ADD `item_title_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `item_title`; 
 
+********************************(28/03/2024 project task )**********************************
+
+ALTER TABLE `project_task` CHANGE `job_order_id` `project_job_id` INT(11) NULL DEFAULT NULL; 
+********************************(29/03/2024 translation)**********************************
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.Grand Total', 'Grand Total', 'المجموع الإجمالي', 'Grand Total arabic value for Purchase Order module ', '', '', NULL, '', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.View History', 'View History', 'عرض السجل', 'View History Arabic value for Purchase Order module ', '', '', NULL, '', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.History', 'History', 'تاريخ', 'History Arabic value for Purchase Order module ', '', '', NULL, '', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay CDAC', 'Pay CDAC', 'دفع CDAC', '', '', '', NULL, '', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay SINDA', 'Pay SINDA', 'ادفع سيندا', '', '', '', NULL, '', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay MBMF', 'Pay MBMF', 'دفع إم بي إم إف', '', '', '', NULL, '', '0', NULL); 
+

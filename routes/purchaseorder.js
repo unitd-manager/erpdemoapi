@@ -40,6 +40,7 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
   db.query(`SELECT 
   po.purchase_order_id 
   ,CONCAT('Purchase from',' ',s.company_name ) AS title
+  ,CONCAT('Purchase from',' ',s.company_name_arb ) AS title_arb
   ,po.status
   ,po.supplier_id
   ,po.priority
