@@ -65,6 +65,8 @@ app.post('/getChangeRequestById', (req, res, next) => {
  ,cr.created_by
  ,cr.modification_date
  ,cr.modified_by
+ ,cr.change_request_title_arb
+ ,cr.description_arb
  ,p.project_id
  ,p.title
  FROM change_request cr
@@ -110,10 +112,12 @@ app.post('/editChangeRequest', (req, res, next) => {
   db.query(`UPDATE change_request 
             SET project_id=${db.escape(req.body.project_id)}
             ,change_request_title=${db.escape(req.body.change_request_title)}
+            ,change_request_title_arb=${db.escape(req.body.change_request_title_arb)}
             ,submission_date=${db.escape(req.body.submission_date)}
             ,proposed_implementation_date=${db.escape(req.body.proposed_implementation_date)}
             ,status=${db.escape(req.body.status)}
             ,description=${db.escape(req.body.description)}
+            ,description_arb=${db.escape(req.body.description_arb)}
             ,creation_date=${db.escape(req.body.creation_date)}
             ,created_by=${db.escape(req.body.created_by)}
             ,modification_date=${db.escape(req.body.modification_date)}
@@ -141,10 +145,12 @@ app.post('/insertChangeRequest', (req, res, next) => {
   let data = {
       project_id	: req.body.project_id
     , change_request_title	: req.body.change_request_title
+    , change_request_title_arb	: req.body.change_request_title_arb
     , submission_date: req.body.submission_date
     , proposed_implementation_date: req.body.proposed_implementation_date
     , status	: req.body.status
     , description: req.body.description
+    , description_arb: req.body.description_arb
     , creation_date: req.body.creation_date
     , created_by:req.body.created_by
     , modification_date:req.body.modification_date
