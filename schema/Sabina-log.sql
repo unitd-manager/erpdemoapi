@@ -161,3 +161,5 @@ ALTER TABLE `employee` ADD `educational_qualitifcation2_arb` VARCHAR(255) NULL D
 ALTER TABLE `employee` ADD `degree2_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `degree2`; 
 ALTER TABLE `employee` ADD `educational_qualitifcation3_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `educational_qualitifcation3`; 
 ALTER TABLE `employee` ADD `degree3_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `degree3`; 
+ALTER TABLE `employee` ADD `address_area_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_area`; 
+ALTER TABLE `employee` ADD `address_street_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_street`; 
