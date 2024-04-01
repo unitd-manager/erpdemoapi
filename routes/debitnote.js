@@ -486,15 +486,21 @@ app.get('/getReceipts', (req, res, next) => {
   db.query(
     `select i.debit_note_id
   ,i.remarks
+  
   ,i.creation_date
   ,i.modification_date
   ,i.created_by
   ,i.modified_by
   ,i.debit_note_code  
+  ,i.debit_note_code_arb
   ,i.debit_note_status
+  ,i.debit_note_status_arb
   ,i.amount
+  ,i.amount_arb
   ,i.mode_of_payment
+  ,i.mode_of_payment_arb
   ,o.order_code
+  ,o.order_code_arb
    ,i.debit_note_date
    from debit_note i
   LEFT JOIN orders o ON o.order_id=i.order_id
@@ -2314,6 +2320,25 @@ app.get('/getInvoiveBestMonthSummary', (req, res, next) => {
             GROUP BY DATE_FORMAT(i.creation_date, '%m-%Y')
             ORDER BY total DESC, DATE_FORMAT(i.creation_date, '%m-%Y') DESC
             LIMIT 1`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.get('/getTranslationForDebitNote', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdDebitNote%'`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)

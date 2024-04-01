@@ -28,6 +28,9 @@ app.get('/getEquipmentIssue', (req, res, next) => {
   ,lr.creation_date
   ,lr.modification_date
   ,lr.modified_by
+  ,lr.reason_for_issue_arb
+  ,lr.authorized_by_arb
+  ,lr.notes_arb
   ,p.title AS proj_title
   ,p.project_code
   ,mr.equipment_request_code
@@ -86,6 +89,9 @@ app.post('/getEquipmentIssuesById', (req, res, next) => {
   ,lr.created_by
   ,lr.modification_date
   ,lr.modified_by
+  ,lr.reason_for_issue_arb
+  ,lr.authorized_by_arb
+  ,lr.notes_arb
   ,p.title AS proj_title
   ,p.project_code
   ,mr.equipment_request_code
@@ -136,6 +142,9 @@ app.post('/getEquipmentIssueById', (req, res, next) => {
   ,lr.created_by
   ,lr.modification_date
   ,lr.modified_by
+  ,lr.reason_for_issue_arb
+  ,lr.authorized_by_arb
+  ,lr.notes_arb
   ,p.title AS proj_title
   ,p.project_code
   ,mr.equipment_request_code
@@ -176,6 +185,9 @@ app.post('/editEquipmentIssue', (req, res, next) => {
             ,reason_for_issue=${db.escape(req.body.reason_for_issue)}
             ,notes=${db.escape(req.body.notes)}
             ,authorized_by=${db.escape(req.body.authorized_by)}
+            ,reason_for_issue_arb=${db.escape(req.body.reason_for_issue_arb)}
+            ,authorized_by_arb=${db.escape(req.body.authorized_by_arb)}
+            ,notes_arb=${db.escape(req.body.notes_arb)}
            
             WHERE equipment_issue_id = ${db.escape(req.body.equipment_issue_id)}`,
     (err, result) => {

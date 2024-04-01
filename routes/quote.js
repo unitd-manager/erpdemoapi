@@ -21,12 +21,17 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
     db.query(`SELECT
     q.purchase_quote_id 
     ,q.date_issued
+    ,q.date_issued_arb
     ,q.due_date
+    ,q.due_date_arb
     ,q.status
+    ,q.status_arb
     ,q.supplier_id
     ,p.purchase_request_id
     ,p.purchase_request_code
+    ,p.purchase_request_code_arb
     ,q.rq_code
+    ,q.rq_code_arb
     ,q.creation_date
     ,q.modification_date
      FROM purchase_quote q 
@@ -48,7 +53,74 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
     }
   );
 });
+// app.get('/getQuotationCounts', (req, res, next) => {
+//   db.query(
+//     `SELECT COUNT(*) AS quotation_count
+//   FROM quote
+//   WHERE MONTH(quote_date) = =${db.escape(month)}`,
+//   (err, result) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       return;
+//     } else {
+//           return res.status(200).send({
+//             data: result,
+//             msg:'Success'
+//           });
 
+//       }
+
+//   }
+// );
+// });
+
+// app.get('/getQuotationCounts', (req, res, next) => {
+//   const { month } = req.query; 
+//   db.query(
+//     `SELECT COUNT(*) AS quotation_count
+//   FROM quote
+//   WHERE MONTH(quote_date) = =${db.escape(month)}`,
+//   (err, result) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       return;
+//     } else {
+//           return res.status(200).send({
+//             data: result,
+//             msg:'Success'
+//           });
+
+//       }
+
+//   }
+// );
+// });
+app.get('/getQuotationCounts', (req, res, next) => {
+     const { month } = req.query;
+db.query(`
+
+  SELECT
+    DATE_FORMAT(quote_date, '%Y-%m-%d') AS quote_date,
+    COUNT(quote_id) AS quotation_count
+  FROM
+    quotations
+  WHERE
+    MONTH(quote_date) = ${db.escape(req.body.month)}
+  GROUP BY
+    quote_date
+  ORDER BY
+    quote_date ASC
+`, [targetMonth], (err, result) => {
+  if (err) {
+    console.error("Error executing query:", err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+  return res.status(200).json({
+    data: result,
+    msg: 'Success'
+  });
+});
+})
 app.get('/getPurchaseRequest', (req, res, next) => {
   db.query(`SELECT * 
    FROM purchase_request `,
@@ -83,10 +155,13 @@ app.post('/getPurchaseQuoteById', (req, res, next) => {
     q.purchase_request_id,
     qr.product_id ,
     qr.total_cost,
+    
     qr.purchase_quote_items_id,
     qr.amount,
+    
     p.purchase_request_id,
     p.purchase_request_code,
+    p.purchase_request_code_arb,
     q.rq_code,
     q.rq_code_arb,
     q.creation_date,
@@ -190,10 +265,9 @@ app.post('/editPurchseQuote', (req, res, next) => {
               ,date_issued=${db.escape(req.body.date_issued)}
               ,due_date=${db.escape(req.body.due_date)}
               ,status=${db.escape(req.body.status)}
+              ,status_arb=${db.escape(req.body.status_arb)}
               ,supplier_id=${db.escape(req.body.supplier_id)}
               ,payment_method=${db.escape(req.body.payment_method)}
-              ,modified_by=${db.escape(req.body.modified_by)}
-
               ,creation_date=${db.escape(req.body.creation_date)}
               ,modification_date=${db.escape(
                 new Date().toISOString().slice(0, 19).replace('T', ' '),

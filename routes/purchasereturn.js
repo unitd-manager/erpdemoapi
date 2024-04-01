@@ -215,8 +215,10 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.purchase_return_date
     ,q.purchase_invoice_id
    ,q.status
+   ,q.status_arb
     ,pi.purchase_invoice_date
     ,pi.purchase_invoice_code
+    ,pi.purchase_invoice_code_arb
     FROM purchase_return q  
     LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
     WHERE q.purchase_return_id != '' 
@@ -243,8 +245,10 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.purchase_return_date
     ,q.purchase_invoice_id
    ,q.status
+   ,q.status_arb
     ,pi.purchase_invoice_date
     ,pi.purchase_invoice_code
+    ,pi.purchase_invoice_code_arb
     FROM purchase_return q  
     LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
     WHERE q.purchase_return_id =  ${db.escape(req.body.purchase_return_id)}`,
@@ -291,6 +295,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     db.query(`UPDATE purchase_return 
               SET purchase_return_date=${db.escape(req.body.purchase_return_date)}
               ,status=${db.escape(req.body.status)}
+              ,status_arb=${db.escape(req.body.status_arb)}
               ,modification_date=${db.escape(req.body.modification_date)}
               ,modified_by=${db.escape(req.body.modified_by)}
               WHERE purchase_return_id =  ${db.escape(req.body.purchase_return_id)}`,
@@ -467,28 +472,30 @@ app.post('/getProjectquoteById', (req, res, next) => {
       }
     });
   });
+  app.get('/getTranslationForPurchaseReturn', (req, res, next) => {
+    db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdPurchaseReturn%'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
+  
+
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');
 });
 
-app.get('/getTranslationForPurchaseReturn', (req, res, next) => {
-  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdPurchaseReturn%'`,
-  (err, result) => {
-    if (err) {
-      console.log('error: ', err)
-      return res.status(400).send({
-        data: err,
-        msg: 'failed',
-      })
-    } else {
-      return res.status(200).send({
-        data: result,
-        msg: 'Success',
-})
-}
-  }
-);
-});
 
 module.exports = app;

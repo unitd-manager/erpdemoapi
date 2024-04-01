@@ -22,6 +22,7 @@ app.get('/getDocument', (req, res, next) => {
   d.document_id
   ,d.document_code
   ,d.document_title
+  ,d.document_title_arb
   ,d.project_id
   ,d.contact_id
   ,d.company_id
@@ -112,6 +113,7 @@ app.post('/getDocumentById', (req, res, next) => {
   d.document_id
   ,d.document_code
   ,d.document_title
+  ,d.document_title_arb
   ,d.project_id
   ,d.contact_id
   ,d.company_id
@@ -182,6 +184,7 @@ app.post('/editDocument', (req, res, next) => {
   db.query(`UPDATE document 
             SET project_id=${db.escape(req.body.project_id)}
             ,document_title=${db.escape(req.body.document_title)}
+            ,document_title_arb=${db.escape(req.body.document_title_arb)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,company_id=${db.escape(req.body.company_id)}
             ,quote_id=${db.escape(req.body.quote_id)}
@@ -213,6 +216,7 @@ app.post('/insertDocument', (req, res, next) => {
   let data = {
       document_code	: req.body.document_code
     , document_title	: req.body.document_title
+    , document_title_arb	: req.body.document_title_arb
     , project_id	: req.body.project_id
     , contact_id: req.body.contact_id
     , company_id: req.body.company_id

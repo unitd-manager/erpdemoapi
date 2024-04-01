@@ -24,6 +24,7 @@ app.get('/getjobinformationforList', (req, res, next) => {
  ,j.basic_pay
  ,e.emp_code
  ,e.first_name
+ ,e.first_name_arb
  ,e.employee_name
  ,e.nric_no
  ,e.spass_no
@@ -158,9 +159,12 @@ app.post('/EditjobinformationById', (req, res, next) => {
   db.query(`SELECT j.act_join_date
              ,j.job_information_id
             ,j.duty_responsibility
+            ,j.duty_responsibility_arb
             ,j.duration_of_employment
             ,j.place_of_work
+            ,j.place_of_work_arb
             ,j.work_hour_details
+            ,j.work_hour_details_arb
             ,j.rest_day_per_week
             ,j.paid_annual_leave_per_year
             ,j.paid_outpatient_sick_leave_per_year
@@ -203,9 +207,11 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.bank_code
             ,j.branch_code
             ,j.notice_period_for_termination
+            ,j.notice_period_for_termination_arb
             ,j.resignation_notice_date
             ,j.termination_date
             ,j.termination_reason
+            ,j.termination_reason_arb
             ,j.departure_date
             ,j.pay_cdac
             ,j.pay_eucf
@@ -255,9 +261,12 @@ app.post('/edit-jobinformation', (req, res, next) => {
     db.query(`UPDATE job_information
               SET act_join_date=${db.escape(req.body.act_join_date)}
               ,duty_responsibility=${db.escape(req.body.duty_responsibility)}
+              ,duty_responsibility_arb=${db.escape(req.body.duty_responsibility_arb)}
               ,duration_of_employment=${db.escape(req.body.duration_of_employment)}
               ,place_of_work=${db.escape(req.body.place_of_work)}
+              ,place_of_work_arb=${db.escape(req.body.place_of_work_arb)}
               ,work_hour_details=${db.escape(req.body.work_hour_details)}
+              ,work_hour_details_arb=${db.escape(req.body.work_hour_details_arb)}
               ,rest_day_per_week=${db.escape(req.body.rest_day_per_week)}
               ,paid_annual_leave_per_year=${db.escape(req.body.paid_annual_leave_per_year)}
               ,paid_outpatient_sick_leave_per_year=${db.escape(req.body.paid_outpatient_sick_leave_per_year)}
@@ -298,6 +307,8 @@ app.post('/edit-jobinformation', (req, res, next) => {
               ,bank_code=${db.escape(req.body.bank_code)}
               ,branch_code=${db.escape(req.body.branch_code)}
               ,notice_period_for_termination=${db.escape(req.body.notice_period_for_termination)}
+              ,notice_period_for_termination_arb=${db.escape(req.body.notice_period_for_termination_arb)}
+              ,termination_reason_arb=${db.escape(req.body.termination_reason_arb)}
               ,resignation_notice_date=${db.escape(req.body.resignation_notice_date)}
               ,termination_date=${db.escape(req.body.termination_date)}
               ,termination_reason=${db.escape(req.body.termination_reason)}
@@ -443,6 +454,7 @@ app.post('/edit-jobinformation', (req, res, next) => {
                 e.employee_id
                ,e.first_name
                ,e.employee_name
+               ,e.employee_name_arb
                ,e.nric_no
                ,e.fin_no
                ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count

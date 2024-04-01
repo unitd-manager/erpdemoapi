@@ -22,6 +22,7 @@ app.get('/getProducts', (req, res, next) => {
   ,p.category_id
   ,p.sub_category_id
   ,p.title
+  ,p.title_arb
   ,p.description,
   p.qty_in_stock
   ,p.price

@@ -434,15 +434,21 @@ app.get('/getCreditNote', (req, res, next) => {
   db.query(
     `select i.credit_note_id
   ,i.remarks
+  
   ,i.creation_date
   ,i.modification_date
   ,i.created_by
   ,i.modified_by
   ,i.credit_note_code  
+  ,i.credit_note_code_arb  
   ,i.credit_note_status
+  ,i.credit_note_status_arb
   ,i.amount
+  ,i.amount_arb
   ,i.mode_of_payment
+  ,i.mode_of_payment_arb
   ,o.order_code
+  ,o.order_code_arb
    ,i.credit_note_date
    from credit_note i
   LEFT JOIN orders o ON o.order_id=i.order_id
@@ -468,8 +474,10 @@ app.post('/getOrderCreditDebitNote', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
   ,o.order_code
+  ,o.order_code_arb
   ,o.creation_date
   ,o.order_status
+  ,o.order_status_arb
   ,i.invoice_source_id
   ,i.invoice_id
   FROM orders o
@@ -1920,8 +1928,11 @@ app.post('/insertcreditnote', (req, res, next) => {
 
   let data = {credit_note_code: req.body.credit_note_code,
               amount: req.body.amount,
+              amount_arb: req.body.amount_arb,
               mode_of_payment: req.body.mode_of_payment,
+              mode_of_payment_arb: req.body.mode_of_payment_arb,
               remarks: req.body.remarks,
+              remarks_arb: req.body.remarks_arb,
               credit_note_date: req.body.credit_note_date,
               published: req.body.published,
               flag: req.body.flag,
@@ -2289,9 +2300,30 @@ app.get('/getInvoiveBestMonthSummary', (req, res, next) => {
 );
 });
 
+app.get('/getTranslationForCreditNote', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdCreditNote%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');
 });
+
+
 
 module.exports = app;
