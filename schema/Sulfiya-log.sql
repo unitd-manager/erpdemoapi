@@ -203,6 +203,7 @@ ALTER TABLE `purchase_invoice_items` ADD `item_title_arb` VARCHAR(55) NULL DEFAU
 ********************************(28/03/2024 project task )**********************************
 
 ALTER TABLE `project_task` CHANGE `job_order_id` `project_job_id` INT(11) NULL DEFAULT NULL; 
+
 ********************************(29/03/2024 translation)**********************************
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.Grand Total', 'Grand Total', 'المجموع الإجمالي', 'Grand Total arabic value for Purchase Order module ', '', '', NULL, '', '0', NULL); 
@@ -211,4 +212,16 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay CDAC', 'Pay CDAC', 'دفع CDAC', '', '', '', NULL, '', '0', NULL); 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay SINDA', 'Pay SINDA', 'ادفع سيندا', '', '', '', NULL, '', '0', NULL); 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay MBMF', 'Pay MBMF', 'دفع إم بي إم إف', '', '', '', NULL, '', '0', NULL); 
+
+********************************(01/04/2024 Purchase Invoice-translation)**********************************
+ALTER TABLE `purchase_invoice_items` ADD `unit_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `unit`; 
+ALTER TABLE `purchase_invoice_items` ADD `ordered_quantity_arb` INT(11) NULL DEFAULT NULL AFTER `ordered_quantity`; 
+ALTER TABLE `purchase_invoice_items` ADD `cost_price_arb` INT(11) NULL DEFAULT NULL AFTER `cost_price`; 
+ALTER TABLE `purchase_invoice_items` ADD `total_cost_arb` INT(11) NULL DEFAULT NULL AFTER `total_cost`; 
+ALTER TABLE `po_product` ADD `cost_price_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `cost_price`; 
+ALTER TABLE `po_product` ADD `selling_price_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `selling_price`; 
+ALTER TABLE `po_product` ADD `gst_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `gst`; 
+ALTER TABLE `po_product` ADD `qty_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `qty`; 
+ALTER TABLE `po_product` ADD `damage_qty_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `damage_qty`; 
+ALTER TABLE `po_product` ADD `qty_delivered_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `qty_delivered`; 
 
