@@ -295,12 +295,13 @@ app.get('/getSupplierReceipts', (req, res, next) => {
   db.query(
     `select i.supplier_receipt_id
     ,i.remarks
+    ,i.receipt_status
     ,i.remarks_arb
     ,i.creation_date
     ,i.modification_date
     ,i.created_by
     ,i.modified_by
-    ,i.receipt_code  
+    ,i.supplier_receipt_code  
     ,o.payment_status
     ,i.amount
     ,i.mode_of_payment
@@ -328,6 +329,29 @@ app.get('/getSupplierReceipts', (req, res, next) => {
   );
 });
 
+app.post('/edit-SupplierReceipt', (req, res, next) => {
+  db.query(`UPDATE supplier_receipt 
+            SET mode_of_payment=${db.escape(req.body.mode_of_payment)}
+            ,date=${db.escape(req.body.date)}
+            ,remarks=${db.escape(req.body.remarks)}
+            ,amount=${db.escape(req.body.amount)}
+             WHERE supplier_receipt_id =${db.escape(req.body.supplier_receipt_id)}`,
+            (err, result) => {
+              if (err) {
+                console.log('error: ', err)
+                return res.status(400).send({
+                  data: err,
+                  msg: 'failed',
+                })
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: 'Success',
+          })
+        }
+            }
+          );
+        });
 
 app.post('/deleteSupplier', (req, res, next) => {
 

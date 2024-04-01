@@ -21,6 +21,7 @@ app.get('/getProjectEnquiry', (req, res, next) => {
   db.query(`SELECT 
             o.*
             ,c.company_name 
+            ,c.company_name_arb 
             ,c.company_size 
             ,c.source,c.industry 
             FROM project_enquiry o 
