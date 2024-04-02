@@ -278,10 +278,14 @@ app.post('/editPurchaseInvoiceItems', (req, res, next) => {
           ,item_title
           ,item_title_arb
           ,unit
+          ,unit_arb
           ,ordered_quantity
+          ,ordered_quantity_arb
           ,cost_price
+          ,cost_price_arb
           ,supplier_id
           ,total_cost
+          ,total_cost_arb
           ,description
           ,creation_date
           ,modification_date

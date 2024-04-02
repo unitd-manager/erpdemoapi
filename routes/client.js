@@ -287,12 +287,19 @@ app.post("/getContactLinkedByCompanyId", (req, res, next) => {
   ,c.first_name
   ,c.first_name_arb
   ,c.email
+  ,c.email_arb
   ,c.phone
+  ,c.phone_arb
   ,c.phone_direct
+  ,c.phone_direct_arb
   ,c.fax
+  ,c.fax_arb
   ,c.mobile
+  ,c.mobile_arb
   ,c.position
+  ,c.position_arb
   ,c.department 
+  ,c.department_arb
   ,c.salutation
   FROM contact c WHERE company_id=${db.escape(req.body.company_id)}`,
     (err, result) => {
@@ -349,13 +356,15 @@ app.post("/editContact", (req, res, next) => {
     `UPDATE contact
             SET 
             first_name=${db.escape(req.body.first_name)}
-            first_name_arb=${db.escape(req.body.first_name_arb)}
+            ,first_name_arb=${db.escape(req.body.first_name_arb)}
             ,email=${db.escape(req.body.email)}
             ,phone_direct=${db.escape(req.body.phone_direct)}
             ,phone=${db.escape(req.body.phone)}
             ,mobile=${db.escape(req.body.mobile)}
             ,fax=${db.escape(req.body.fax)}
             ,position=${db.escape(req.body.position)}
+            ,position_arb=${db.escape(req.body.position_arb)}
+            ,department_arb=${db.escape(req.body.department_arb)}
             ,department=${db.escape(req.body.department)}
             ,salutation=${db.escape(req.body.salutation)}
             WHERE contact_id = ${db.escape(req.body.contact_id)}`,
@@ -438,6 +447,7 @@ app.post("/insertContact", (req, res, next) => {
     phone: req.body.phone,
     phone_arb: req.body.phone_arb,
     fax: req.body.fax,
+    fax_arb: req.body.fax_arb,
     sort_order: req.body.sort_order,
     published: req.body.published,
     creation_date: req.body.creation_date,
@@ -449,6 +459,7 @@ app.post("/insertContact", (req, res, next) => {
     first_name_arb: req.body.first_name_arb,
     last_name: req.body.last_name,
     mobile: req.body.mobile,
+    mobile_arb: req.body.mobile_arb,
     religion: req.body.religion,
     relationship: req.body.relationship,
     known_as_name: req.body.known_as_name,
@@ -464,9 +475,11 @@ app.post("/insertContact", (req, res, next) => {
     member_type: req.body.member_type,
     address_flat: req.body.address_flat,
     phone_direct: req.body.phone_direct,
+    phone_direct_arb: req.body.phone_direct_arb,
     company_id: req.body.company_id,
     salutation: req.body.salutation,
     department: req.body.department,
+    department_arb: req.body.department_arb,
     created_by: req.body.created_by,
     modified_by: req.body.modified_by,
     published_test: req.body.published_test,
