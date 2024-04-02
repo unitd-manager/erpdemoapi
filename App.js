@@ -30,7 +30,7 @@ app.use(
 const project = require('./routes/project.js');
 const Arouter = require('./routes/attachment.js');
 const Auth = require('./routes/auth.js');
-//const tender = require('./routes/tender.js');
+const tender = require('./routes/tender.js');
 const employee = require('./routes/employee.js');
 const company = require('./routes/company.js');
 const commonApi = require('./routes/commonApi.js');
@@ -139,7 +139,7 @@ app.use('/product', product);
 app.use('/project', project);
 app.use('/attachment', Arouter);
 app.use('/api', Auth);
-//app.use('/tender', tender);
+app.use('/tender', tender);
 app.use('/employee', employee);
 app.use('/company', company);
 app.use('/commonApi', commonApi);

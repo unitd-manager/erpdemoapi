@@ -113,3 +113,26 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Mobile', 'Mobile', 'contact Mobile Field', NULL, NULL, NULL, NULL, NULL, '0', 'متحرك');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Position', 'Position', 'Contact Position Field', NULL, NULL, NULL, NULL, NULL, '0', 'موضع');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdTradingContact.Department', 'Department', 'Contact Department Feild', NULL, NULL, NULL, NULL, NULL, '0', 'قسم');
+
+
+ALTER TABLE `contact` ADD `email_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `email`; 
+ALTER TABLE `contact` ADD `phone_direct_arb` INT(100) NULL DEFAULT NULL AFTER `phone_direct`; 
+ALTER TABLE `contact` ADD `mobile_arb` INT(100) NULL DEFAULT NULL AFTER `mobile`; 
+ALTER TABLE `contact` ADD `phone_arb` INT(100) NULL DEFAULT NULL AFTER `phone`; 
+ALTER TABLE `opportunity` ADD `category_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `category`; 
+ALTER TABLE `company` ADD `supplier_type_arb` VARCHAR(255)  NULL AFTER `supplier_type`; 
+ALTER TABLE `company` ADD `industry_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `industry`; 
+ALTER TABLE `company` ADD `source_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `source`; 
+ALTER TABLE `company` ADD `company_size_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `company_size`; 
+ALTER TABLE `company` ADD `address_country_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_country`; 
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.phone','Main Phone', 'new company phone field', NULL, NULL, NULL, NULL, NULL, '0', 'هاتف');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Fax', 'Main Fax', 'client Fax field', NULL, NULL, NULL, NULL, NULL, '0', 'فاكس');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Address1', 'Address 1', 'client address1 Field', NULL, NULL, NULL, NULL, NULL, '0', 'العنوان 1');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Postal Code', 'Postal Code', 'Client Postal Code Field', NULL, NULL, NULL, NULL, NULL, '0', 'رمز بريدي');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Country', 'Country', 'client Country Field', NULL, NULL, NULL, NULL, NULL, '0', 'دولة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Company Source', 'Company Source', 'client Company Source Field', NULL, NULL, NULL, NULL, NULL, '0', 'مصدر الشركة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Supplier Type', 'Supplier Type', 'client Supplier Type Field', NULL, NULL, NULL, NULL, NULL, '0', 'نوع المورد');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Industry', 'Industry', 'Client Industry Field', NULL, NULL, NULL, NULL, NULL, '0', 'صناعة');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Company Size', 'Company Size', 'Client Company Size Field', NULL, NULL, NULL, NULL, NULL, '0', 'حجم الشركة');
+
