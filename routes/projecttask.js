@@ -59,8 +59,6 @@ app.get('/getProjectTask', (req, res, next) => {
   ,e.first_name
   ,e.first_name_arb
   ,e.employee_id
-  
-
   FROM project_task pt
   LEFT JOIN project p ON p.project_id = pt.project_id
   LEFT JOIN employee e ON e.employee_id = pt.employee_id
@@ -360,7 +358,7 @@ app.get("/getProjectTitle", (req, res, next) => {
               ,media_id=${db.escape(req.body.media_id)}
               ,description=${db.escape(req.body.description)}
               ,description_arb=${db.escape(req.body.description_arb)}
-              ,job_order_id=${db.escape(req.body.job_order_id)}
+              ,project_job_id=${db.escape(req.body.project_job_id)}
               ,estimated_hours=${db.escape(req.body.estimated_hours)}
               ,estimated_hours_arb=${db.escape(req.body.estimated_hours_arb)}
               ,actual_completed_date=${db.escape(req.body.actual_completed_date)}

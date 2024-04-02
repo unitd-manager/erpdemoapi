@@ -26,6 +26,7 @@ app.get('/getValueList', (req, res, next) => {
   ,v.value
   ,v.sort_order
   ,v.code
+  ,v.value_arb
   ,v.creation_date
   ,v.modification_date
   From valuelist v 
@@ -119,7 +120,8 @@ app.get('/getValueListDropdown', (req, res, next) => {
       { id: '66', name: 'Company Invoice'},
       { id: '67', name: 'UoM Status'},
       { id: '68', name: 'Category'},
-      { id: '69', name: 'Account Category'}
+      { id: '69', name: 'Account Category'},
+      { id: '70', name: 'Supplier Type'}
 
     ],
     msg: 'Success',
@@ -131,6 +133,7 @@ app.post('/getValueListById', (req, res, next) => {
     `Select v.key_text
   ,v.valuelist_id
   ,v.value
+  ,v.value_arb
   ,v.sort_order
   ,v.code
   ,v.creation_date
@@ -159,6 +162,7 @@ app.post('/editValueList', (req, res, next) => {
     `UPDATE valuelist 
   SET key_text=${db.escape(req.body.key_text)}
   ,value=${db.escape(req.body.value)}
+  ,value_arb=${db.escape(req.body.value_arb)}
   ,code=${db.escape(req.body.code)}
   ,modification_date=${db.escape(
     req.body.modification_date
@@ -206,6 +210,7 @@ app.post('/insertValueList', (req, res, next) => {
     valuelist_id: req.body.valuelist_id,
     key_text: req.body.key_text,
     value: req.body.value,
+    value_arb:req.body.value_arb,
     chi_value: req.body.chi_value,
     creation_date: req.body.creation_date,
     modification_date: null,
