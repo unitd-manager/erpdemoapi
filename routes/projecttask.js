@@ -27,7 +27,6 @@ app.get('/getProjectTask', (req, res, next) => {
   ,pt.company_id
   ,pt.employee_id
   ,pt.start_date
-  ,pt.start_date_arb
   ,pt.end_date
   ,pt.end_date_arb
   ,pt.completion
@@ -39,7 +38,7 @@ app.get('/getProjectTask', (req, res, next) => {
   ,pt.media_id
   ,pt.description
   ,pt.description_arb
-  ,pt.job_order_id
+  ,pt.project_job_id
   ,pt.estimated_hours
   ,pt.estimated_hours_arb
   ,pt.description_arb
@@ -60,13 +59,10 @@ app.get('/getProjectTask', (req, res, next) => {
   ,e.first_name
   ,e.first_name_arb
   ,e.employee_id
-  ,jo.job_order_title
-  ,jo.job_order_title_arb
-  ,jo.job_order_code
   FROM project_task pt
   LEFT JOIN project p ON p.project_id = pt.project_id
   LEFT JOIN employee e ON e.employee_id = pt.employee_id
-  LEFT JOIN job_order jo ON jo.job_order_id = pt.job_order_id
+  LEFT JOIN project_job jo ON p.project_id = jo.project_id
   Where pt.project_task_id !=''`,
   (err, result) => {
     if (err) {
@@ -92,7 +88,6 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,pt.company_id
     ,pt.employee_id
     ,pt.start_date
-    ,pt.start_date_arb
     ,pt.end_date
     ,pt.end_date_arb
     ,pt.completion
@@ -104,7 +99,7 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,pt.media_id
     ,pt.description
     ,pt.description_arb
-    ,pt.job_order_id
+    ,pt.project_job_id
     ,pt.estimated_hours
     ,pt.estimated_hours_arb
     ,pt.description_arb
@@ -120,18 +115,18 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,pt.created_by
     ,pt.modification_date
     ,pt.modified_by
+    ,p.project_id
     ,p.title
     ,p.title_arb
     ,e.first_name
     ,e.first_name_arb
     ,e.employee_id
-    ,jo.job_order_title
-    ,jo.job_order_title_arb
-    ,jo.job_order_code
+
+
     FROM project_task pt
     LEFT JOIN project p ON p.project_id = pt.project_id
     LEFT JOIN employee e ON e.employee_id = pt.employee_id
-    LEFT JOIN job_order jo ON jo.job_order_id = pt.job_order_id
+    LEFT JOIN project_job jo ON p.project_id = jo.project_id
     Where pt.project_task_id = ${db.escape(req.body.project_task_id)}`,
     (err, result) => {
       if (err) {
@@ -294,9 +289,16 @@ app.get("/getProjectTitle", (req, res, next) => {
   app.get("/getJobOrderTitle", (req, res, next) => {
     db.query(
       `SELECT
-      job_order_title
-      ,job_order_id
-     From job_order `,
+      pj.project_job_id ,
+      pj.project_id,
+      pj.job_code,
+      pj.job_title,
+      pj.job_title_arb,
+      pj.job_status,
+      pj.job_status_arb
+     From project_job pj
+     left join project p on p.project_id = pj.project_id
+     where pj.job_status!='Completed' AND pj.job_status!='Cancelled' `,
       (err, result) => {
         if (err) {
           console.log("error: ", err);
@@ -356,7 +358,7 @@ app.get("/getProjectTitle", (req, res, next) => {
               ,media_id=${db.escape(req.body.media_id)}
               ,description=${db.escape(req.body.description)}
               ,description_arb=${db.escape(req.body.description_arb)}
-              ,job_order_id=${db.escape(req.body.job_order_id)}
+              ,project_job_id=${db.escape(req.body.project_job_id)}
               ,estimated_hours=${db.escape(req.body.estimated_hours)}
               ,estimated_hours_arb=${db.escape(req.body.estimated_hours_arb)}
               ,actual_completed_date=${db.escape(req.body.actual_completed_date)}
@@ -401,7 +403,7 @@ app.post('/insertProjectTask', (req, res, next) => {
     , status: req.body.status
     , media_id: req.body.media_id
     , description:req.body.description
-    , job_order_id:req.body.job_order_id
+    , project_job_id:req.body.project_job_id
     , estimated_hours:req.body.estimated_hours
     , actual_completed_date:req.body.actual_completed_date
     , task_type:req.body.task_type

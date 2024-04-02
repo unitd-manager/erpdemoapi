@@ -26,7 +26,6 @@ app.get('/getjobinformationforList', (req, res, next) => {
  ,e.first_name
  ,e.first_name_arb
  ,e.employee_name
- ,e.employee_name_arb
  ,e.nric_no
  ,e.spass_no
  ,e.fin_no

@@ -48,4 +48,4 @@ VALUES
 ('mdDocument.Country', 'Country', 'دولة', NULL, NULL, NULL, NULL, NULL, NULL, '0'),
 ('mdDocument.Position', 'Position', 'موضع', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 
-ALTER TABLE `change_request` ADD `document_title_arb` VARCHAR(255) NULL DEFAULT NULL;
+ALTER TABLE `document` ADD `document_title_arb` VARCHAR(255) NULL DEFAULT NULL;

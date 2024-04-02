@@ -98,3 +98,108 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdMakeSupplier.Amount', 'Amount', 'كمية', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdMakeSupplier.PurchaseOrders', 'Purchase Orders', 'طلبات الشراء', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdMakeSupplier.Notes', 'Notes', 'ملحوظات', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(29/03/2024 Translation(Supplier field))**************************************(Gobi)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.Name', 'Name', 'اسم', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.ContactPerson', 'Contact Person', 'الشخص الذي يمكن الاتصال', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.SupplierName', 'Supplier Name', 'اسم المورد', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.Telephone', 'Telephone', 'هاتف', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+
+********************************(29/03/2024 Translation(SupplierPriceList field))**************************************(Gobi)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.CustomerName', 'Customer Name', 'اسم الزبون', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.EffectiveDate', 'Effective Date', 'تاريخ النفاذ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.SupplierListName', 'Supplier List Name', 'اسم قائمة الموردين', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+
+ALTER TABLE `goods_receipt_items` ADD `po_product_id` INT(10) NULL DEFAULT NULL AFTER `total_cost_arb`;
+ALTER TABLE `purchase_return` ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `status_arb`;
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'Purchase InvoiceCode Prefix', 'PurchaseInvoiceCodePrefix', 'PI', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'next Purchase InvoiceCode', 'nextPurchaseInvoiceCode', '1000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+
+********************************(31/03/2024 Translation(SupplierPriceList field))**************************************(Gobi)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.Name', 'Name', 'اسم', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.Price', 'Price', 'سعر', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.Unit', 'Unit', 'وحدة', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.Action', 'Action', 'فعل', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.ProductName', 'Product Name', 'اسم المنتج', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(31/03/2024 Translation(Supplier field))**************************************(Gobi)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.Telephone', 'Telephone', 'هاتف', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.PoDate', 'PO Date', 'تاريخ أمر الشراء', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.PoCode', 'PO CODE', 'رمز أمر الشراء', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.PoValue', 'PO value', 'قيمة أمر الشراء', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.Balance', 'Balance', 'توازن', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.PaymentStatus', 'Payment Status', 'حالة السداد', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.History', 'History', 'تاريخ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.ModeOfPayment', 'Mode of Payment', 'طريقة الدفع', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.Amount', 'Amount', 'كمية', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.Date', 'Date', 'تاريخ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplier.Cancel', 'Cancel', 'يلغي', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(31/03/2024 Translation(MakeSupplier field))**************************************(Gobi)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdMakeSupplier.Date', 'Date', 'تاريخ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdMakeSupplier.ReceiptCode', 'Receipt Code', 'رمز الاستلام', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+
+********************************(01/04/2024 Supplier order(MakeSupplier field))**************************************(Gobi)
+ALTER TABLE `supplier_order` ADD `so_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `so_code`;
+ALTER TABLE `supplier_order` ADD `flag_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `flag`;
+ALTER TABLE `supplier_order` ADD `creation_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`;
+ALTER TABLE `supplier_order` ADD `modification_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`;
+ALTER TABLE `supplier_order` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
+ALTER TABLE `supplier_order` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`;
+ALTER TABLE `supplier_order` ADD `date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `date`;
+
+********************************(01/04/2024 Supplier order History(Supplier field))**************************************(Gobi)
+ALTER TABLE `supplier_order_history` ADD `created_by` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`;
+ALTER TABLE `supplier_order_history` ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
+ALTER TABLE `supplier_order_history` ADD `creation_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`;
+ALTER TABLE `supplier_order_history` ADD `modification_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`;
+ALTER TABLE `supplier_order_history` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
+ALTER TABLE `supplier_order_history` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`;
+
+
+
+********************************(01/04/2024 Supplier Price list(Supplier field))**************************************(Gobi)
+ALTER TABLE `supplier_price_list` ADD `effective_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `effective_date`;
+ALTER TABLE `supplier_price_list` ADD `expiry_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `expiry_date`;
+ALTER TABLE `supplier_price_list` ADD `creation_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`;
+ALTER TABLE `supplier_price_list` ADD `modification_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`;
+
+********************************(01/04/2024 Supplier Price list Item(Supplier field))**************************************(Gobi)
+ALTER TABLE `supplier_price_list_item` ADD `creation_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`;
+ALTER TABLE `supplier_price_list_item` ADD `modification_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`;
+
+
+********************************(01/04/2024 Supplier Receipt(Supplier field))**************************************(Gobi)
+ALTER TABLE `supplier_receipt` ADD `supplier_receipt_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `supplier_receipt_code`;
+ALTER TABLE `supplier_receipt` ADD `date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `date`;
+ALTER TABLE `supplier_receipt` ADD `published_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `published`;
+ALTER TABLE `supplier_receipt` ADD `flag_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `flag`;
+ALTER TABLE `supplier_receipt` ADD `creation_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`;
+ALTER TABLE `supplier_receipt` ADD `modification_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`;
+ALTER TABLE `supplier_receipt` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
+ALTER TABLE `supplier_receipt` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`;
+ALTER TABLE `supplier_receipt` ADD `cheque_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `cheque_date`;
+ALTER TABLE `supplier_receipt` ADD `cheque_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `cheque_no`;
+ALTER TABLE `supplier_receipt` ADD `coi_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `coi_no`;
+ALTER TABLE `supplier_receipt` ADD `company_contact_salutation_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `company_contact_salutation`;
+ALTER TABLE `supplier_receipt` ADD `cust_email_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `cust_email`;
+ALTER TABLE `supplier_receipt` ADD `cust_address_po_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `cust_address_po_code`;
+ALTER TABLE `supplier_receipt` ADD `cust_address_country_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `cust_address_country_code`;
+ALTER TABLE `supplier_receipt` ADD `advance_payment_used_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `advance_payment_used`;
+
+
+********************************(01/04/2024 Supplier Receipt History(Supplier field))**************************************(Gobi)
+ALTER TABLE `supplier_receipt_history` ADD `published_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `published`;
+ALTER TABLE `supplier_receipt_history` ADD `flag_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `flag`;
+ALTER TABLE `supplier_receipt_history` ADD `creation_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`;
+ALTER TABLE `supplier_receipt_history` ADD `modification_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`;
+ALTER TABLE `supplier_receipt_history` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
+ALTER TABLE `supplier_receipt_history` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`;
+ALTER TABLE `supplier_receipt_history` ADD `amount_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `amount`;
+ALTER TABLE `supplier_receipt_history` ADD `purchase_order_date_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `purchase_order_date`;
+ALTER TABLE `supplier_receipt_history` ADD `invoice_paid_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `invoice_paid_status`;
+ALTER TABLE `supplier_receipt_history` ADD `receipt_type_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `receipt_type`;
+ALTER TABLE `supplier_receipt_history` ADD `gst_amount_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `gst_amount`;
