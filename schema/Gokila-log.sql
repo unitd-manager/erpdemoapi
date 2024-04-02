@@ -125,6 +125,7 @@ ALTER TABLE `company` ADD `industry_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `i
 ALTER TABLE `company` ADD `source_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `source`; 
 ALTER TABLE `company` ADD `company_size_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `company_size`; 
 ALTER TABLE `company` ADD `address_country_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_country`; 
+ALTER TABLE `valuelist` ADD `value_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `value`; 
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.phone','Main Phone', 'new company phone field', NULL, NULL, NULL, NULL, NULL, '0', 'هاتف');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`, `arb_value`) VALUES (NULL, 'mdClient.Fax', 'Main Fax', 'client Fax field', NULL, NULL, NULL, NULL, NULL, '0', 'فاكس');
