@@ -53,6 +53,7 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
   ,po.payment_status
   ,po.supplier_inv_code
   ,po.po_code
+  ,po.po_code_arb
   ,rq.purchase_quote_id
   ,rq.rq_code
   ,s.company_name
@@ -89,6 +90,7 @@ app.post('/getPurchaseOrders', (req, res, next) => {
   ,po.payment_status
   ,po.supplier_inv_code
   ,po.po_code
+  ,po.po_code_arb
   FROM purchase_order po 
   ORDER BY po.purchase_order_id ASC;`,
   (err, result) => {
@@ -138,6 +140,7 @@ app.post('/getPurchaseOrderById', (req, res, next) => {
   ,po.supplier_inv_code
   ,po.gst_percentage
   ,po.po_code
+  ,po.po_code_arb
   ,po.payment
   ,po.contact
   ,po.delivery_to
@@ -173,6 +176,7 @@ app.post('/testAPIendpoint', (req, res, next) => {
   ,po.gst
   ,po.gst_percentage
   ,po.po_code
+  ,po.po_code_arb
   ,po.purchase_order_id
   FROM po_product pp
   JOIN purchase_order po ON pp.purchase_order_id = po.purchase_order_id
@@ -201,6 +205,7 @@ app.post('/editTabPurchaseOrder', (req, res, next) => {
             ,notes_arb=${db.escape(req.body.notes_arb)}
             ,gst=${db.escape(req.body.gst)}
             ,po_code=${db.escape(req.body.po_code)}
+            ,po_code_arb=${db.escape(req.body.po_code_arb)}
             ,purchase_order_date=${db.escape(req.body.purchase_order_date)}
             ,follow_up_date=${db.escape(req.body.follow_up_date)}
             ,delivery_terms=${db.escape(req.body.delivery_terms)}
@@ -247,6 +252,7 @@ app.post('/editPurchaseOrder', (req, res, next) => {
   db.query(`UPDATE purchase_order
              SET gst=${db.escape(req.body.gst)}
             ,po_code=${db.escape(req.body.po_code)}
+            ,po_code_arb=${db.escape(req.body.po_code_arb)}
             ,purchase_order_date=${db.escape(req.body.purchase_order_date)}
             ,modification_date=${db.escape(new Date())}
             WHERE purchase_order_id = ${db.escape(req.body.purchase_order_id)}`,
@@ -268,6 +274,7 @@ app.post('/editPurchaseOrder', (req, res, next) => {
 app.post('/insertPurchaseOrder', (req, res, next) => {
 
   let data = {po_code:req.body.po_code
+    ,po_code_arb:req.body.po_code_arb
    , supplier_id: req.body.supplier_id
    , contact_id_supplier: req.body.contact_id_supplier
    , delivery_terms: req.body.delivery_terms
@@ -364,6 +371,7 @@ app.get('/TabPurchaseOrderLineItem', (req, res, next) => {
   ,po.qty_delivered
   ,po.qty
   ,(po.cost_price*po.quantity) AS po_value
+  ,(po.cost_price_arb*po.quantity_arb) AS po_value_arb
   FROM po_product po
   LEFT JOIN (product p) ON (po.product_id = p.product_id) 
   WHERE po.po_product_id = ${db.escape(req.body.po_product_id)} ORDER BY po.item_title ASC;`,
@@ -400,15 +408,19 @@ app.post('/TabPurchaseOrderLineItemById', (req, res, next) => {
   ,po.selling_price
   ,po.cost_price
   ,(po.qty-po.qty_delivered) AS qty_balance
+  ,(po.qty_arb-po.qty_delivered_arb) AS qty_balance_arb
   ,po.gst
   ,po.qty
   ,(po.cost_price*po.qty_delivered) AS actual_value 
+  ,(po.cost_price_arb*po.qty_delivered_arb) AS actual_value_arb
   ,po.price
   ,po.status
   ,po.damage_qty
   ,po.qty_delivered
   ,i.actual_stock AS stock
-  ,(po.cost_price*po.quantity) AS po_value FROM po_product po
+  ,(po.cost_price*po.quantity) AS po_value 
+  ,(po.cost_price_arb*po.quantity_arb) AS po_value_arb
+  FROM po_product po
   LEFT JOIN (product p) ON (po.product_id = p.product_id) 
   LEFT JOIN (inventory i) ON (i.inventory_id = p.product_id) 
   WHERE po.purchase_order_id = ${db.escape(req.body.purchase_order_id)}
@@ -579,6 +591,7 @@ app.post('/insertPurchaseProduct', (req, res, next) => {
     , title: req.body.title
     , title_arb: req.body.title_arb
     , product_code: req.body.product_code
+    , product_code_arb: req.body.product_code_arb
     , description: req.body.description
     , qty_in_stock: req.body.qty_in_stock
     , price: req.body.price
@@ -662,6 +675,7 @@ app.post('/insertPurchaseProductPagination', (req, res, next) => {
     ,  sub_category_id : req.body. sub_category_id 
     , title: req.body.title
     , product_code: req.body.product_code
+    , product_code_arb: req.body.product_code_arb
     , description: req.body.description
     , qty_in_stock: req.body.qty_in_stock
     , price: req.body.price
@@ -826,6 +840,7 @@ app.post('/getProductsfromOtherSuppliers', (req, res, next) => {
   ,pop.gst
   ,pop.qty_delivered
   ,(pop.qty - pop.qty_delivered) AS qty_balance
+  ,(pop.qty_arb - pop.qty_delivered_arb) AS qty_balance_arb
   ,pop.status
   ,pop.cost_price
   ,(pop.qty*pop.cost_price) AS total_price
@@ -834,6 +849,7 @@ app.post('/getProductsfromOtherSuppliers', (req, res, next) => {
   ,po.title
   ,po.follow_up_date
   ,po.po_code
+  ,po.po_code_arb 
   ,po.purchase_order_id
   ,m.company_name AS supplier_name  
   ,m.company_name_arb AS supplier_name_arb
@@ -872,6 +888,7 @@ app.post('/getProductsfromSupplier', (req, res, next) => {
   ,pop.gst
   ,pop.qty_delivered
   ,(pop.qty - pop.qty_delivered) AS qty_balance
+  ,(pop.qty_arb - pop.qty_delivered_arb) AS qty_balance_arb
   ,pop.status
   ,pop.cost_price
   ,(pop.qty*pop.cost_price) AS total_price
@@ -880,6 +897,7 @@ app.post('/getProductsfromSupplier', (req, res, next) => {
   ,po.title
   ,po.follow_up_date
   ,po.po_code
+  ,po.po_code_arb
   ,po.purchase_order_id
   ,m.company_name AS supplier_name
   ,m.company_name_arb AS supplier_name_arb
@@ -919,6 +937,7 @@ app.post('/getPurchaseOrderByPdf', (req, res, next) => {
     ,pop.creation_date
     ,pop.qty_delivered
     ,(pop.qty - pop.qty_delivered) AS qty_balance
+    ,(pop.qty_arb - pop.qty_delivered_arb) AS qty_balance_arb
     ,pop.status
     ,pop.cost_price
     ,(pop.qty*pop.cost_price) AS total_price
@@ -934,6 +953,7 @@ app.post('/getPurchaseOrderByPdf', (req, res, next) => {
     ,po.shipping_address_street
     ,po.shipping_address_country
     ,po.po_code
+    ,po.po_code_arb
     ,po.purchase_order_id
     ,m.company_name AS supplier_name
     ,c.company_name 
@@ -976,11 +996,13 @@ app.post('/getPurchaseOrderPriceByPdf', (req, res, next) => {
     ,pop.qty as po_QTY
     ,pop.qty_delivered
     ,(pop.qty - pop.qty_delivered) AS qty_balance
+    ,(pop.qty_arb - pop.qty_delivered_arb) AS qty_balance_arb
     ,pop.status
     ,pop.cost_price
     ,(pop.qty*pop.cost_price) AS total_price
     ,po.purchase_order_date
     ,po.po_code
+    ,po.po_code_arb
     ,po.purchase_order_id
     ,m.company_name AS supplier_name
     ,m.address_flat
@@ -1099,6 +1121,7 @@ app.post('/getProjectMaterialPurchaseByPdf', (req, res, next) => {
     ,po.po_date
     ,po.purchase_order_date
     ,po.po_code
+    ,po.po_code_arb
     ,po.contact
     ,cont.first_name
     ,po.mobile
@@ -1166,6 +1189,7 @@ ORDER BY pop.po_product_id ASC;
   ,po.supplier_inv_code
   ,po.gst_percentage
   ,po.po_code
+  ,po.po_code_arb
   ,po.payment
   ,po.contact
   ,po.delivery_to
@@ -1348,6 +1372,7 @@ app.get('/getPurchaseGstReport', (req, res, next) => {
     db.query(`select e.invoice_date,
     e.invoice_code,
     e.po_code,
+    e.po_code_arb
     e.po_date,
     e.mode_of_payment,
     e.gst,

@@ -244,3 +244,10 @@ ALTER TABLE `job_information` ADD `probation_end_date_arb` VARCHAR(55) NULL DEFA
  ALTER TABLE `employee` ADD `nric_no_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `nric_no`; 
  ALTER TABLE `job_information` ADD `basic_pay_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `basic_pay`; 
  ALTER TABLE `employee` ADD `citizen_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `citizen`; 
+
+********************************(03/04/2024 Purchase Invoice-translation)**********************************
+ALTER TABLE `purchase_invoice` ADD `status_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `status`; 
+ALTER TABLE `purchase_order` ADD `po_code_arb` VARCHAR(100) NULL DEFAULT NULL AFTER `po_code`; 
+ALTER TABLE `po_product` ADD `quantity_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `quantity`; 
+ALTER TABLE `product` ADD `product_code_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `product_code`; 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.Unit', 'Unit', 'وحدة', '', '', '', NULL, '', '0', NULL); 
