@@ -21,6 +21,7 @@ app.get('/getPurchaseInvoice', (req, res, next) => {
   db.query(`SELECT 
     pi.purchase_invoice_id 
    ,pi.purchase_invoice_code
+   ,pi.purchase_invoice_code_arb
    ,pi.purchase_invoice_date
    ,pi.due_date
    ,pi.purchase_order_id
@@ -86,6 +87,7 @@ app.post('/getPurchaseInvoiceById', (req, res, next) => {
   db.query(`SELECT 
   pi.purchase_invoice_id 
  ,pi.purchase_invoice_code
+ ,pi.purchase_invoice_code_arb
  ,pi.purchase_invoice_date
  ,pi.due_date
  ,pi.purchase_order_id
@@ -167,6 +169,7 @@ app.post('/editPurchaseInvoice', (req, res, next) => {
 app.post('/insertPurchaseInvoice', (req, res, next) => {
   let data = {
     purchase_invoice_code	: req.body.purchase_invoice_code
+    ,purchase_invoice_code_arb	: req.body.purchase_invoice_code_arb
     , purchase_invoice_date	: req.body.purchase_invoice_date
     , due_date	: req.body.due_date
     , purchase_order_id: req.body.purchase_order_id
