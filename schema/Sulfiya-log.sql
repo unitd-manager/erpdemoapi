@@ -225,3 +225,22 @@ ALTER TABLE `po_product` ADD `qty_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `qty`
 ALTER TABLE `po_product` ADD `damage_qty_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `damage_qty`; 
 ALTER TABLE `po_product` ADD `qty_delivered_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `qty_delivered`; 
 
+
+********************************(02/04/2024 Purchase Invoice-translation)**********************************
+
+ALTER TABLE `job_information` ADD `rest_day_per_week_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `rest_day_per_week`; 
+ALTER TABLE `job_information` ADD `paid_annual_leave_per_year_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `paid_annual_leave_per_year`; 
+ALTER TABLE `job_information` ADD `paid_outpatient_sick_leave_per_year_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `paid_outpatient_sick_leave_per_year`; 
+ALTER TABLE `job_information` ADD `other_type_of_leave_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `other_type_of_leave`; 
+ALTER TABLE `job_information` ADD `other_medical_benefits_arb` VARCHAR(200) NULL DEFAULT NULL AFTER `other_medical_benefits`; 
+ALTER TABLE `job_information` ADD `paid_hospitalisation_leave_per_year_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `paid_hospitalisation_leave_per_year`;
+ALTER TABLE `job_information` ADD `length_of_probation_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `length_of_probation`; 
+ALTER TABLE `job_information` ADD `probation_start_date_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `probation_start_date`; 
+ALTER TABLE `job_information` ADD `probation_end_date_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `probation_end_date`; 
+ ALTER TABLE `purchase_invoice` ADD `purchase_invoice_code_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `purchase_invoice_code`; 
+ ALTER TABLE `purchase_invoice` ADD `invoice_amount_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `invoice_amount`; 
+ ALTER TABLE `employee` ADD `passport_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `passport`; 
+ ALTER TABLE `employee` ADD `fin_no_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `fin_no`; 
+ ALTER TABLE `employee` ADD `nric_no_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `nric_no`; 
+ ALTER TABLE `job_information` ADD `basic_pay_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `basic_pay`; 
+ ALTER TABLE `employee` ADD `citizen_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `citizen`; 

@@ -374,6 +374,26 @@ app.post('/deleteSupplier', (req, res, next) => {
 );
 });
 
+app.post('/deleteReceipt', (req, res, next) => {
+
+  let data = {supplier_receipt_id : req.body.supplier_receipt_id  };
+  let sql = "DELETE FROM supplier_receipt WHERE ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 
 app.post('/insertGeo_country', (req, res, next) => {
 
