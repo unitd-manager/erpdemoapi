@@ -112,11 +112,6 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.SupplierListName', 'Supplier List Name', 'اسم قائمة الموردين', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 
 
-ALTER TABLE `goods_receipt_items` ADD `po_product_id` INT(10) NULL DEFAULT NULL AFTER `total_cost_arb`;
-ALTER TABLE `purchase_return` ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `status_arb`;
-INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'Purchase InvoiceCode Prefix', 'PurchaseInvoiceCodePrefix', 'PI', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
-INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'next Purchase InvoiceCode', 'nextPurchaseInvoiceCode', '1000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
-
 ********************************(31/03/2024 Translation(SupplierPriceList field))**************************************(Gobi)
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.Name', 'Name', 'اسم', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.Price', 'Price', 'سعر', NULL, NULL, NULL, NULL, NULL, NULL, '0');
@@ -203,3 +198,20 @@ ALTER TABLE `supplier_receipt_history` ADD `purchase_order_date_arb` VARCHAR(255
 ALTER TABLE `supplier_receipt_history` ADD `invoice_paid_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `invoice_paid_status`;
 ALTER TABLE `supplier_receipt_history` ADD `receipt_type_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `receipt_type`;
 ALTER TABLE `supplier_receipt_history` ADD `gst_amount_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `gst_amount`;
+
+
+********************************(02/04/2024 Goods receipt)**************************************(Gobi)
+ALTER TABLE `goods_receipt_items` ADD `po_product_id` INT(10) NULL DEFAULT NULL AFTER `total_cost_arb`;
+
+********************************(02/04/2024 Purchasereturn)**************************************(Gobi)
+ALTER TABLE `purchase_return` ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `status_arb`;
+
+********************************(02/04/2024 setting)**************************************(Gobi)
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'Purchase InvoiceCode Prefix', 'PurchaseInvoiceCodePrefix', 'PI', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'next Purchase InvoiceCode', 'nextPurchaseInvoiceCode', '1000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+
+
+ALTER TABLE `supplier_receipt` CHANGE `date` `date` VARCHAR(255) NULL DEFAULT NULL;
+
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.ExpiryDate', 'Expiry Date', 'تاريخ النفاذ', NULL, NULL, NULL, NULL, NULL, NULL, '0');

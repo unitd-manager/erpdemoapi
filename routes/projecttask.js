@@ -431,6 +431,41 @@ app.post('/insertProjectTask', (req, res, next) => {
 );
 });
 
+app.post('/insertProjectTimesheet', (req, res, next) => {
+  let data = {
+    project_timesheet_id 	: req.body.project_timesheet_id 
+    , timesheet_title	: req.body.timesheet_title
+    , date: req.body.date
+    , project_id: req.body.project_id
+    , employee_id	: req.body.employee_id
+    , status: req.body.status
+    , description: req.body.description
+    , hours: req.body.hours
+    , project_task_id:req.body.project_task_id
+    , project_milestone_id:req.body.project_milestone_id
+    , creation_date:req.body.creation_date
+    , modification_date:req.body.modification_date
+    , created_by:req.body.created_by
+    , modified_by:req.body.modified_by
+ };
+  let sql = "INSERT INTO project_timesheet SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/getEmployeeName', (req, res, next) => {
     db.query(`SELECT 
     e.employee_id

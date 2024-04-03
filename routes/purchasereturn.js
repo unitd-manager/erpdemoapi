@@ -218,7 +218,6 @@ app.post('/getProjectquoteById', (req, res, next) => {
    ,q.status_arb
     ,pi.purchase_invoice_date
     ,pi.purchase_invoice_code
-    ,pi.purchase_invoice_code_arb
     FROM purchase_return q  
     LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
     WHERE q.purchase_return_id != '' 
