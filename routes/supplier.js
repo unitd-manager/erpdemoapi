@@ -449,7 +449,8 @@ app.post('/getMakePayment', (req, res, next) => {
   db.query(`SELECT i.po_code,
   i.purchase_order_id,
   i.supplier_id,
-  i.payment_status
+  i.payment_status,
+  o.company_id
   ,(SELECT SUM(pop.cost_price*pop.quantity) AS prev_sum 
     FROM po_product pop
     WHERE pop.purchase_order_id =  i.purchase_order_id) as prev_inv_amount
@@ -479,11 +480,12 @@ AND (i.payment_status = 'Due' || i.payment_status = 'Partially Paid' || i.paymen
 );
 });
 
-app.post('/getMakePayment', (req, res, next) => {
+app.get('/getMakePayment', (req, res, next) => {
   db.query(`SELECT i.po_code,
   i.purchase_order_id,
   i.supplier_id,
-  i.payment_status
+  i.payment_status,
+  o.company_name
   ,(SELECT SUM(pop.cost_price*pop.quantity) AS prev_sum 
     FROM po_product pop
     WHERE pop.purchase_order_id =  i.purchase_order_id) as prev_inv_amount
