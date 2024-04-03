@@ -37,7 +37,7 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 'Available Quantity in Stock', 'الكمية المتوفرة في المخزون', 'Inventory Available Quantity in Stock', '20-03-2024', '20-03-2024', 
 NULL, NULL, NULL, '0'); 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdInventory.Stock', 'Stock', 'مخزون', 'Inventory Stock', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdInventory.AdjustStock', 'Adjust Stock', 'ضبط المخزون', 'Inventory Adjust Stock', NULL, NULL, NULL, NULL, NULL, '0'); 
-
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdInventory.Edit', 'Edit', 'يحرر', 'Inventory Edit', NULL, NULL, NULL, NULL, NULL, '0'); 
 
 
 .......................... Product Module Arabic New Fields(20/3/24) .....................................................
