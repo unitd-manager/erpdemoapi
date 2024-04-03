@@ -209,3 +209,9 @@ ALTER TABLE `purchase_return` ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL A
 ********************************(02/04/2024 setting)**************************************(Gobi)
 INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'Purchase InvoiceCode Prefix', 'PurchaseInvoiceCodePrefix', 'PI', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
 INSERT INTO `setting` (`setting_id`, `description`, `key_text`, `value`, `creation_date`, `modification_date`, `group_name`, `value_type`, `show_to_user`, `chi_value`, `used_for_admin`, `used_for_www`, `flag`, `site_id`) VALUES (NULL, 'next Purchase InvoiceCode', 'nextPurchaseInvoiceCode', '1000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+
+
+ALTER TABLE `supplier_receipt` CHANGE `date` `date` VARCHAR(255) NULL DEFAULT NULL;
+
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.ExpiryDate', 'Expiry Date', 'تاريخ النفاذ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
