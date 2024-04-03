@@ -203,6 +203,7 @@ ALTER TABLE `purchase_invoice_items` ADD `item_title_arb` VARCHAR(55) NULL DEFAU
 ********************************(28/03/2024 project task )**********************************
 
 ALTER TABLE `project_task` CHANGE `job_order_id` `project_job_id` INT(11) NULL DEFAULT NULL; 
+
 ********************************(29/03/2024 translation)**********************************
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.Grand Total', 'Grand Total', 'المجموع الإجمالي', 'Grand Total arabic value for Purchase Order module ', '', '', NULL, '', '0', NULL); 
@@ -212,3 +213,29 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay SINDA', 'Pay SINDA', 'ادفع سيندا', '', '', '', NULL, '', '0', NULL); 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Pay MBMF', 'Pay MBMF', 'دفع إم بي إم إف', '', '', '', NULL, '', '0', NULL); 
 
+********************************(01/04/2024 Purchase Invoice-translation)**********************************
+ALTER TABLE `purchase_invoice_items` ADD `unit_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `unit`; 
+ALTER TABLE `purchase_invoice_items` ADD `ordered_quantity_arb` INT(11) NULL DEFAULT NULL AFTER `ordered_quantity`; 
+ALTER TABLE `purchase_invoice_items` ADD `cost_price_arb` INT(11) NULL DEFAULT NULL AFTER `cost_price`; 
+ALTER TABLE `purchase_invoice_items` ADD `total_cost_arb` INT(11) NULL DEFAULT NULL AFTER `total_cost`; 
+ALTER TABLE `po_product` ADD `cost_price_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `cost_price`; 
+ALTER TABLE `po_product` ADD `selling_price_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `selling_price`; 
+ALTER TABLE `po_product` ADD `gst_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `gst`; 
+ALTER TABLE `po_product` ADD `qty_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `qty`; 
+ALTER TABLE `po_product` ADD `damage_qty_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `damage_qty`; 
+ALTER TABLE `po_product` ADD `qty_delivered_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `qty_delivered`; 
+
+
+********************************(02/04/2024 Purchase Invoice-translation)**********************************
+
+ALTER TABLE `job_information` ADD `rest_day_per_week_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `rest_day_per_week`; 
+ALTER TABLE `job_information` ADD `paid_annual_leave_per_year_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `paid_annual_leave_per_year`; 
+ALTER TABLE `job_information` ADD `paid_outpatient_sick_leave_per_year_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `paid_outpatient_sick_leave_per_year`; 
+ALTER TABLE `job_information` ADD `other_type_of_leave_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `other_type_of_leave`; 
+ALTER TABLE `job_information` ADD `other_medical_benefits_arb` VARCHAR(200) NULL DEFAULT NULL AFTER `other_medical_benefits`; 
+ALTER TABLE `job_information` ADD `paid_hospitalisation_leave_per_year_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `paid_hospitalisation_leave_per_year`;
+ALTER TABLE `job_information` ADD `length_of_probation_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `length_of_probation`; 
+ALTER TABLE `job_information` ADD `probation_start_date_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `probation_start_date`; 
+ALTER TABLE `job_information` ADD `probation_end_date_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `probation_end_date`; 
+ ALTER TABLE `purchase_invoice` ADD `purchase_invoice_code_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `purchase_invoice_code`; 
+ 

@@ -78,24 +78,37 @@ app.get('/getNewCompanies', (req, res, next) => {
 app.post('/insertCompany', (req, res, next) => {
 
   let data = {company_name: req.body.company_name,
+    company_name_arb: req.body.company_name_arb,
   email: req.body.email, 
+  email_arb: req.body.email_arb, 
   address_street: req.body.address_street, 
+  address_street_arb: req.body.address_street_arb, 
+  address_flat_arb: req.body.address_flat_arb, 
+  address_flat: req.body.address_flat, 
   address_town: req.body.address_town, 
   address_state: req.body.address_state,
     address_country: req.body.address_country,
-     address_flat: req.body.address_flat,
+    address_country_arb: req.body.address_country_arb,
+    address_po_code_arb: req.body.address_po_code_arb,
     address_po_code: req.body.address_po_code,
     phone: req.body.phone,
+    phone_arb: req.body.phone_arb,
     fax: req.body.fax, 
+    fax_arb: req.body.fax_arb, 
+    website: req.body.website,
     website: req.body.website,
     supplier_type: req.body.supplier_type, 
-    industry: req.body.industry, 
+    supplier_type_arb: req.body.supplier_type_arb,
+    industry: req.body.industry,
+    industry_arb: req.body.industry_arb, 
     company_size: req.body.company_size,
+    company_size_arb: req.body.company_size_arb,
     latitude: req.body.latitude,
     longitude: req.body.longitude,
     created_by: req.body.created_by,
     creation_date: req.body.creation_date,
-    source: req.body.source};
+    source: req.body.source,
+    source_arb: req.body.source_arb};
   let sql = "INSERT INTO company SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {

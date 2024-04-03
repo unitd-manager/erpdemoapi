@@ -17,46 +17,48 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
-// app.get('/getTenders', (req, res, next) => {
-//   db.query(`SELECT 
-//             o.*
-//             ,o.actual_closing
-//             ,o.opportunity_code_arb
-//             ,o.status_arb
-//             ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name 
-//             ,CONCAT_WS(' ', ref.first_name, ref.last_name) AS ref_contact_name 
-//             ,c.company_name 
-//             ,c.company_name_arb
-//             ,c.company_size 
-//             ,c.source,c.industry 
-//             ,e.team,p.project_code,ser.title AS service_title 
-//             ,CONCAT_WS(' ', s.first_name, s.last_name) AS project_manager_name 
-//             FROM opportunity o 
-//             LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id)  
-//             LEFT JOIN (contact ref)  ON (o.referrer_contact_id = ref.contact_id) 
-//             LEFT JOIN (company c)  ON (o.company_id  = c.company_id)  
-//             LEFT JOIN (employee e)   ON (o.employee_id = e.employee_id)  
-//             LEFT JOIN (service ser)  ON (o.service_id  = ser.service_id)  
-//             LEFT JOIN (staff s)  ON (o.project_manager_id  = s.staff_id)  
-//             LEFT JOIN (valuelist VL) ON (o.chance  = VL.value AND VL.key_text = 'opportunityChance')   
-//             LEFT JOIN (project p)   ON (p.project_id   = o.project_id) 
-//             ORDER BY o.opportunity_id DESC`,
-//     (err, result) => {
+app.get('/getTenders', (req, res, next) => {
+  db.query(`SELECT 
+            o.*
+            ,o.actual_closing
+            ,o.opportunity_code_arb
+            ,o.status_arb
+            ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name 
+            ,CONCAT_WS(' ', ref.first_name, ref.last_name) AS ref_contact_name 
+            ,c.company_name 
+            ,c.company_name_arb
+            ,c.company_size 
+            ,c.source,c.industry 
+            ,e.team,p.project_code,ser.title AS service_title 
+            ,CONCAT_WS(' ', s.first_name, s.last_name) AS project_manager_name 
+            FROM opportunity o 
+            LEFT JOIN (contact cont) ON (o.contact_id = cont.contact_id)  
+            LEFT JOIN (contact ref)  ON (o.referrer_contact_id = ref.contact_id) 
+            LEFT JOIN (company c)  ON (o.company_id  = c.company_id)  
+            LEFT JOIN (employee e)   ON (o.employee_id = e.employee_id)  
+            LEFT JOIN (service ser)  ON (o.service_id  = ser.service_id)  
+            LEFT JOIN (staff s)  ON (o.project_manager_id  = s.staff_id)  
+            LEFT JOIN (valuelist VL) ON (o.chance  = VL.value AND VL.key_text = 'opportunityChance')   
+            LEFT JOIN (project p)   ON (p.project_id   = o.project_id) 
+            ORDER BY o.opportunity_id DESC`,
+    (err, result) => {
      
-//       if (result.length == 0) {
-//         return res.status(400).send({
-//           msg: 'No result found'
-//         });
-//       } else {
-//             return res.status(200).send({
-//               data: result,
-//               msg:'Success'
-//             });
-//         }
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
  
-//     }
-//   );
-// });
+    }
+  );
+});
+
+
 app.get('/getEnquirySummary', (req, res, next) => {
   db.query(`SELECT 
     c.company_id,
@@ -589,8 +591,83 @@ app.post('/getQuoteLineItemsByOppId', (req, res, next) => {
 app.get("/getCategoryFromValueList", (req, res, next) => {
   db.query(
     `SELECT 
-      value,valuelist_id
+      value,value_arb,valuelist_id
       FROM valuelist WHERE key_text="Category"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;   
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getCompanySourceFromValueList", (req, res, next) => {
+  db.query(
+    `SELECT 
+      value,value_arb,valuelist_id
+      FROM valuelist WHERE key_text="Company Source"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;   
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+app.get("/getSupplierFromValueList", (req, res, next) => {
+  db.query(
+    `SELECT 
+      value,value_arb,valuelist_id
+      FROM valuelist WHERE key_text="Supplier Type"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;   
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getIndustryFromValueList", (req, res, next) => {
+  db.query(
+    `SELECT 
+      value,value_arb,valuelist_id
+      FROM valuelist WHERE key_text="Company Industry"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;   
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getCompanySizeFromValueList", (req, res, next) => {
+  db.query(
+    `SELECT 
+      value,value_arb,valuelist_id
+      FROM valuelist WHERE key_text="Company Size"`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -681,6 +758,7 @@ app.post('/insertTenders', (req, res, next) => {
    , company_id	: req.body.company_id
    ,opportunity_code:req.body.opportunity_code
    ,category: req.body.category
+   ,category_arb: req.body.category_arb
    ,status:req.body.status
    ,enquiry_date:new Date().toISOString().split('T')[0]
    ,creation_date: req.body.creation_date
