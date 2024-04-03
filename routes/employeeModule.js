@@ -186,18 +186,26 @@ ORDER BY a.employee_name ASC`,
 app.get('/getCurrentEmployee', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id AS employee_id_duplicate
   ,a.emp_code
+  ,a.emp_code_arb
   ,a.first_name
+  ,a.first_name_arb
   ,a.employee_name
   ,a.salutation
+  ,a.salutation_arb
   ,a.gender
+  ,a.gender_arb
   ,a.status
+  ,a.status_arb
   ,a.date_of_birth
   ,a.passport
   ,a.date_of_expiry
   ,a.work_permit_expiry_date
   ,a.marital_status
+  ,a.marital_status_arb
   ,a.nationality
+  ,a.nationality_arb
   ,a.citizen
+  ,a.citizen_arb
   ,a.race
   ,a.notes
   ,a.religion

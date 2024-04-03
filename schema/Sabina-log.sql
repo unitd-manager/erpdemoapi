@@ -163,3 +163,16 @@ ALTER TABLE `employee` ADD `educational_qualitifcation3_arb` VARCHAR(255) NULL D
 ALTER TABLE `employee` ADD `degree3_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `degree3`; 
 ALTER TABLE `employee` ADD `address_area_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_area`; 
 ALTER TABLE `employee` ADD `address_street_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_street`; 
+
+********************************(02/04/2024 Employee (Employee createField))**************************************(Sabina)
+ALTER TABLE `employee` ADD `address_po_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_po_code`; 
+ALTER TABLE `employee` ADD `address_country1_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_country1`; 
+ALTER TABLE `employee` ADD `mobile_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`; 
+ALTER TABLE `employee` ADD `phone_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`; 
+ALTER TABLE `employee` ADD `foreign_addrs_area_arb` TEXT NOT NULL AFTER `foreign_addrs_area`; 
+ALTER TABLE `employee` ADD `foreign_addrs_streetarb` TEXT NULL DEFAULT NULL AFTER `foreign_addrs_street`; 
+ALTER TABLE `employee` ADD `foreign_addrs_country_arb` TEXT NULL DEFAULT NULL AFTER `foreign_addrs_country`; 
+
+********************************(02/04/2024 Translation(Employee insertField))**************************************(Sabina)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Address', 'Address', 'عنوان', 'Employee Address field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Basic Pay', 'Basic Pay', 'الدفع الأساسي', 'Employee Basic Pay field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.From Date', 'From Date', 'من التاريخ', 'Employee From Date field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.To Date', 'To Date', 'ان يذهب في موعد', 'Employee To Date field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Course Title', 'Course Title', 'عنوان الدورة', 'Employee Course Title field', NULL, NULL, NULL, NULL, NULL, '0');
