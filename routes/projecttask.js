@@ -59,8 +59,6 @@ app.get('/getProjectTask', (req, res, next) => {
   ,e.first_name
   ,e.first_name_arb
   ,e.employee_id
-  
-
   FROM project_task pt
   LEFT JOIN project p ON p.project_id = pt.project_id
   LEFT JOIN employee e ON e.employee_id = pt.employee_id
@@ -360,7 +358,7 @@ app.get("/getProjectTitle", (req, res, next) => {
               ,media_id=${db.escape(req.body.media_id)}
               ,description=${db.escape(req.body.description)}
               ,description_arb=${db.escape(req.body.description_arb)}
-              ,job_order_id=${db.escape(req.body.job_order_id)}
+              ,project_job_id=${db.escape(req.body.project_job_id)}
               ,estimated_hours=${db.escape(req.body.estimated_hours)}
               ,estimated_hours_arb=${db.escape(req.body.estimated_hours_arb)}
               ,actual_completed_date=${db.escape(req.body.actual_completed_date)}
@@ -416,6 +414,41 @@ app.post('/insertProjectTask', (req, res, next) => {
     , modification_date:req.body.modification_date
  };
   let sql = "INSERT INTO project_task SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.post('/insertProjectTimesheet', (req, res, next) => {
+  let data = {
+    project_timesheet_id 	: req.body.project_timesheet_id 
+    , timesheet_title	: req.body.timesheet_title
+    , date: req.body.date
+    , project_id: req.body.project_id
+    , employee_id	: req.body.employee_id
+    , status: req.body.status
+    , description: req.body.description
+    , hours: req.body.hours
+    , project_task_id:req.body.project_task_id
+    , project_milestone_id:req.body.project_milestone_id
+    , creation_date:req.body.creation_date
+    , modification_date:req.body.modification_date
+    , created_by:req.body.created_by
+    , modified_by:req.body.modified_by
+ };
+  let sql = "INSERT INTO project_timesheet SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log('error: ', err)
