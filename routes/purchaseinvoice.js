@@ -31,6 +31,7 @@ app.get('/getPurchaseInvoice', (req, res, next) => {
    ,pi.mode_of_payment
    ,pi.terms_and_condition
    ,COALESCE(SUM(pit.total_cost), 0) as invoice_amount
+   ,COALESCE(SUM(pit.total_cost_arb), 0) as invoice_amount_arb
    ,pi.status
    ,pi.creation_date
    ,pi.created_by
@@ -98,6 +99,7 @@ app.post('/getPurchaseInvoiceById', (req, res, next) => {
  ,pi.terms_and_condition
  ,pi.terms_and_condition_arb
  ,COALESCE(SUM(pit.total_cost), 0) as invoice_amount
+ ,COALESCE(SUM(pit.total_cost_arb), 0) as invoice_amount_arb
  ,pi.status
  ,pi.creation_date
  ,pi.created_by
@@ -214,6 +216,7 @@ app.post('/editPurchaseInvoiceItems', (req, res, next) => {
             ,ordered_quantity=${db.escape(req.body.ordered_quantity)}
             ,supplier_id=${db.escape(req.body.supplier_id)}
             ,total_cost=${db.escape(req.body.total_cost)}
+            ,total_cost_arb=${db.escape(req.body.total_cost_arb)}
             ,description=${db.escape(req.body.description)}
             ,creation_date=${db.escape(req.body.creation_date)}
             ,created_by=${db.escape(req.body.created_by)}
@@ -248,6 +251,7 @@ app.post('/editPurchaseInvoiceItems', (req, res, next) => {
             , cost_price: req.body.cost_price
             , supplier_id: req.body.supplier_id
             , total_cost	: req.body.total_cost
+            , total_cost_arb	: req.body.total_cost_arb
             , description: req.body.description
             , creation_date: req.body.creation_date
             , created_by:req.body.created_by

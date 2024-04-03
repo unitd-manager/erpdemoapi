@@ -238,4 +238,9 @@ ALTER TABLE `job_information` ADD `length_of_probation_arb` VARCHAR(55) NULL DEF
 ALTER TABLE `job_information` ADD `probation_start_date_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `probation_start_date`; 
 ALTER TABLE `job_information` ADD `probation_end_date_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `probation_end_date`; 
  ALTER TABLE `purchase_invoice` ADD `purchase_invoice_code_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `purchase_invoice_code`; 
- 
+ ALTER TABLE `purchase_invoice` ADD `invoice_amount_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `invoice_amount`; 
+ ALTER TABLE `employee` ADD `passport_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `passport`; 
+ ALTER TABLE `employee` ADD `fin_no_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `fin_no`; 
+ ALTER TABLE `employee` ADD `nric_no_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `nric_no`; 
+ ALTER TABLE `job_information` ADD `basic_pay_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `basic_pay`; 
+ ALTER TABLE `employee` ADD `citizen_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `citizen`; 
