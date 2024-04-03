@@ -27,12 +27,16 @@ app.get('/getjobinformationforList', (req, res, next) => {
  ,e.first_name_arb
  ,e.employee_name
  ,e.nric_no
+ ,e.nric_no_arb
  ,e.spass_no
  ,e.fin_no
+ ,e.fin_no_arb
  ,e.date_of_birth
  ,e.citizen
+ ,e.citizen_arb
  ,j.status
  ,e.passport
+ ,e.passport_arb
  FROM job_information j
  LEFT JOIN (employee e) ON (e.employee_id = j.employee_id)
  WHERE j.job_information_id != ''`,
@@ -135,13 +139,16 @@ app.get('/getjobinformation', (req, res, next) => {
             ,e.email
             ,e.salary
             ,e.nric_no
+            ,e.nric_no_arb
             ,e.position
             ,e.date_of_expiry
             ,e.spass_no
             ,e.fin_no
+            ,e.fin_no_arb
             ,e.employee_work_type
             ,e.date_of_birth
             ,e.citizen
+            ,e.citizen_arb
             ,e.employee_id
             FROM job_information j
             LEFT JOIN (employee e) ON (e.employee_id = j.employee_id)
@@ -247,13 +254,16 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,e.email
             ,e.salary
             ,e.nric_no
+            ,e.nric_arb_
             ,e.position
             ,e.date_of_expiry
             ,e.spass_no
             ,e.fin_no
+            ,e.fin_no_arb
             ,e.employee_work_type
             ,e.date_of_birth
             ,e.citizen
+            ,e.citizen_arb
             FROM job_information j
             LEFT JOIN (employee e) ON (e.employee_id = j.employee_id)
             WHERE j.job_information_id=${db.escape(req.body.job_information_id)}
@@ -492,7 +502,9 @@ app.post('/edit-jobinformation', (req, res, next) => {
                ,e.employee_name
                ,e.employee_name_arb
                ,e.nric_no
+               ,e.nric_no_arb
                ,e.fin_no
+               ,e.fin_no_arb
                ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count
                 FROM employee e 
                 `,

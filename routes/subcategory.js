@@ -42,7 +42,8 @@ app.get('/getSubCategory', (req, res, next) => {
   ,sc.modified_by
   ,sc.modified_by_arb
   ,sc.published_test
-  ,sc.internal_link 
+  ,sc.internal_link
+  ,sc.internal_link_arb 
   ,sc.meta_title
   ,sc.meta_title_arb
   ,sc.meta_description
@@ -103,6 +104,7 @@ app.post('/getSubCategoryById', (req, res, next) => {
     ,sc.modified_by_arb
     ,sc.published_test
     ,sc.internal_link 
+    ,sc.internal_link_arb
     ,sc.meta_title
     ,sc.meta_title_arb
     ,sc.meta_description
