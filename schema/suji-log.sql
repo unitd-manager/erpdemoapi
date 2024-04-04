@@ -33,6 +33,16 @@ ALTER TABLE `goods_delivery` ADD `po_no_arb` INT(50) NULL DEFAULT NULL AFTER `po
 ALTER TABLE `goods_delivery` ADD `goods_delivery_status_arb` varchar(255) NULL DEFAULT NULL AFTER `goods_delivery_status`;
 ALTER TABLE `goods_delivery` ADD `goods_delivery_code_arb` varchar(255) NULL DEFAULT NULL AFTER `goods_delivery_code`;
 
+********************************(1/04/2024 goods_delivery_item(GoodsDelivery-inserts field))**************************************
+
+ALTER TABLE `goods_delivery_item` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `title`;
+ALTER TABLE `goods_delivery_item` ADD `description_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `description`;
+ALTER TABLE `goods_delivery_item` ADD `quantity_arb` INT(50) NULL DEFAULT NULL AFTER `quantity`;
+ALTER TABLE `goods_delivery_item` ADD `amount_arb` INT(50) NULL DEFAULT NULL AFTER `amount`;
+ALTER TABLE `goods_delivery_item` ADD `unit_price_arb` INT(50) NULL DEFAULT NULL AFTER `unit_price`;
+ALTER TABLE `goods_delivery_item` ADD `delivery_qty_arb` INT(50) NULL DEFAULT NULL AFTER `delivery_qty`;
+ALTER TABLE `goods_delivery_item` ADD `unit_arb` VARCHAR(50) NULL DEFAULT NULL AFTER `unit`;
+
 
 ********************************(20/03/2024 Translation(Sales Invoice-inserts field))**************************************
 
@@ -73,7 +83,20 @@ ALTER TABLE `invoice` ADD `invoice_due_date_arb` VARCHAR(50) NULL DEFAULT NULL A
 ALTER TABLE `invoice` ADD `invoice_terms_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `invoice_terms`,
 ALTER TABLE `invoice` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `title`;
 
+********************************(1/04/2024 invoice_credit_note_history(SalesInvoice createField))************************************
+
+ALTER TABLE `invoice_credit_note_history` ADD `item_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `item_title`;
+ALTER TABLE `invoice_credit_note_history` ADD `description_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `description`;
+
+********************************(1/04/2024 invoice_item(SalesInvoice createField))************************************
+ALTER TABLE `invoice_item` ADD `qty_arb` INT(50) NULL DEFAULT NULL AFTER `qty`;
+ALTER TABLE `invoice_item` ADD `item_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `item_title`;
+ALTER TABLE `invoice_item` ADD `description_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `description`;
+ALTER TABLE `invoice_item` ADD `remarks_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `remarks`;
+
+
 ********************************(20/03/2024 Translation(SalesReturn-inserts field))**************************************
+
 INSERT INTO `translation` 
 (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
 VALUES 
@@ -93,7 +116,11 @@ ALTER TABLE `sales_return` ADD `return_date_arb` varchar(255) NULL DEFAULT NULL 
 ALTER TABLE `sales_return` ADD `invoice_id_arb` INT(50) NULL DEFAULT NULL AFTER `invoice_id`,
 ALTER TABLE `sales_return` ADD `status_arb` varchar(50) NULL DEFAULT NULL AFTER `status`,
 ALTER TABLE `sales_return` ADD `order_id_arb` INT(50) NULL DEFAULT NULL AFTER `order_id`;
+********************************(1/04/2024 sales_return_history(SalesReturn createField))************************************
 
+ALTER TABLE `sales_return_history` ADD `qty_return_arb` INT(50) NULL DEFAULT NULL AFTER `qty_return`;
+ALTER TABLE `sales_return_history` ADD `price_arb` INT(50) NULL DEFAULT NULL AFTER `price`;
+ALTER TABLE `sales_return_history` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;
 
 ********************************(21/03/2024 Translation(Sales Receipt-inserts field))**************************************
 INSERT INTO `translation` 
@@ -146,7 +173,7 @@ ALTER TABLE `training` ADD `training_company_address_arb` VARCHAR(255) NULL DEFA
 ALTER TABLE `training` ADD `training_company_email_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `training_company_email`,
 ALTER TABLE `training` ADD `training_company_phone_arb` INT(50) NULL DEFAULT NULL AFTER `training_company_phone`;
 
-********************************(25/03/2024 Translation(Loan-inserts field))**************************************
+********************************(25/03/2024 Translation(Loan-inserts field))************************************
 
 INSERT INTO `translation` 
 (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 

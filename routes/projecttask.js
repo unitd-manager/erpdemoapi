@@ -145,6 +145,109 @@ app.post('/getProjectTaskById', (req, res, next) => {
   );
   });
 
+  app.post('/getTimeSheetProjectTaskById', (req, res, next) => {
+    db.query(`SELECT
+    pt.project_timesheet_id 
+    ,pt.timesheet_title
+    ,pt.date
+    ,pt.project_id
+    ,pt.employee_id
+    ,pt.status
+    ,pt.description
+    ,pt.hours
+    ,pt.project_task_id
+    ,pt.project_milestone_id
+    ,pt.creation_date
+    ,pt.modification_date
+    ,pt.created_by
+    ,pt.modified_by
+    ,e.first_name
+    ,e.first_name_arb
+    ,e.employee_id
+    FROM project_timesheet pt
+    LEFT JOIN project_task pa ON pt.project_task_id = pa.project_task_id
+    LEFT JOIN project p ON p.project_id = pt.project_id
+    LEFT JOIN employee e ON e.employee_id = pt.employee_id
+    Where pt.project_task_id = ${db.escape(req.body.project_task_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
+
+  app.delete('/deleteProjectTimesheet', (req, res, next) => {
+
+    let data = {project_timesheet_id : req.body.project_timesheet_id };
+    let sql = "DELETE FROM project_timesheet WHERE ?";
+    let query = db.query(sql, data, (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+}
+    }
+  );
+});
+
+  app.post('/getTimeSheetByTimesheetId', (req, res, next) => {
+    db.query(`SELECT
+    pt.project_timesheet_id 
+    ,pt.timesheet_title
+    ,pt.date
+    ,pt.project_id
+    ,pt.employee_id
+    ,pt.status
+    ,pt.description
+    ,pt.hours
+    ,pt.project_task_id
+    ,pt.project_milestone_id
+    ,pt.creation_date
+    ,pt.modification_date
+    ,pt.created_by
+    ,pt.modified_by
+    ,e.first_name
+    ,e.first_name_arb
+    ,e.employee_id
+    FROM project_timesheet pt
+    LEFT JOIN project_task pa ON pt.project_task_id = pa.project_task_id
+    LEFT JOIN project p ON p.project_id = pt.project_id
+    LEFT JOIN employee e ON e.employee_id = pt.employee_id
+    Where pt.project_timesheet_id = ${db.escape(req.body.project_timesheet_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+  })
+  }
+    }
+  );
+  });
+
   app.get('/getTranslationForProjectTask', (req, res, next) => {
     db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProjectTask%'`,
     (err, result) => {
@@ -392,6 +495,36 @@ app.get("/getProjectTitle", (req, res, next) => {
           });
 
 
+          app.post('/editProjectTimesheet', (req, res, next) => {
+            db.query(`UPDATE project_timesheet
+                      SET timesheet_title=${db.escape(req.body.timesheet_title)}
+                      ,date=${db.escape(req.body.date)}
+                      ,project_id=${db.escape(req.body.project_id)}
+                      ,employee_id=${db.escape(req.body.employee_id)}
+                      ,status=${db.escape(req.body.status)}
+                      ,description=${db.escape(req.body.description)}
+                      ,hours=${db.escape(req.body.hours)}
+                      ,project_task_id=${db.escape(req.body.project_task_id)}
+                      ,modification_date=${db.escape(req.body.modification_date)}
+                      ,modified_by=${db.escape(req.body.modified_by)}
+                      WHERE project_timesheet_id = ${db.escape(req.body.project_timesheet_id)}`,
+                      (err, result) => {
+                        if (err) {
+                          console.log('error: ', err)
+                          return res.status(400).send({
+                            data: err,
+                            msg: 'failed',
+                          })
+                        } else {
+                          return res.status(200).send({
+                            data: result,
+                            msg: 'Success',
+                    })
+                  }
+                      }
+                    );
+                  });
+
 app.post('/insertProjectTask', (req, res, next) => {
   let data = {
     project_id	: req.body.project_id
@@ -414,6 +547,41 @@ app.post('/insertProjectTask', (req, res, next) => {
     , modification_date:req.body.modification_date
  };
   let sql = "INSERT INTO project_task SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.post('/insertProjectTimesheet', (req, res, next) => {
+  let data = {
+    project_timesheet_id 	: req.body.project_timesheet_id 
+    , timesheet_title	: req.body.timesheet_title
+    , date: req.body.date
+    , project_id: req.body.project_id
+    , employee_id	: req.body.employee_id
+    , status: req.body.status
+    , description: req.body.description
+    , hours: req.body.hours
+    , project_task_id:req.body.project_task_id
+    , project_milestone_id:req.body.project_milestone_id
+    , creation_date:req.body.creation_date
+    , modification_date:req.body.modification_date
+    , created_by:req.body.created_by
+    , modified_by:req.body.modified_by
+ };
+  let sql = "INSERT INTO project_timesheet SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log('error: ', err)

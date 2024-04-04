@@ -27,12 +27,16 @@ app.get('/getjobinformationforList', (req, res, next) => {
  ,e.first_name_arb
  ,e.employee_name
  ,e.nric_no
+ ,e.nric_no_arb
  ,e.spass_no
  ,e.fin_no
+ ,e.fin_no_arb
  ,e.date_of_birth
  ,e.citizen
+ ,e.citizen_arb
  ,j.status
  ,e.passport
+ ,e.passport_arb
  FROM job_information j
  LEFT JOIN (employee e) ON (e.employee_id = j.employee_id)
  WHERE j.job_information_id != ''`,
@@ -64,12 +68,18 @@ app.get('/getjobinformation', (req, res, next) => {
             ,j.place_of_work
             ,j.work_hour_details
             ,j.rest_day_per_week
+            ,j.rest_day_per_week_arb
             ,j.paid_annual_leave_per_year
+            ,j.paid_annual_leave_per_year_arb
             ,j.paid_outpatient_sick_leave_per_year
+            ,j.paid_outpatient_sick_leave_per_year_arb
             ,j.paid_hospitalisation_leave_per_year
+            ,j.paid_hospitalisation_leave_per_year_arb
             ,j.paid_medical_examination_fee
             ,j.other_type_of_leave
+            ,j.other_type_of_leave_arb
             ,j.other_medical_benefits
+            ,j.other_medical_benefits_arb
             ,j.probationary
             ,j.emp_type
             ,j.designation
@@ -115,8 +125,11 @@ app.get('/getjobinformation', (req, res, next) => {
             ,j.pay_mbmf
             ,j.pay_sinda
             ,j.length_of_probation
+            ,j.length_of_probation_arb
             ,j.probation_start_date
+            ,j.probation_start_date_arb
             ,j.probation_end_date
+            ,j.probation_end_date_arb
             ,j.over_time_rate
             ,e.emp_code
            ,e.employee_name
@@ -126,13 +139,16 @@ app.get('/getjobinformation', (req, res, next) => {
             ,e.email
             ,e.salary
             ,e.nric_no
+            ,e.nric_no_arb
             ,e.position
             ,e.date_of_expiry
             ,e.spass_no
             ,e.fin_no
+            ,e.fin_no_arb
             ,e.employee_work_type
             ,e.date_of_birth
             ,e.citizen
+            ,e.citizen_arb
             ,e.employee_id
             FROM job_information j
             LEFT JOIN (employee e) ON (e.employee_id = j.employee_id)
@@ -166,12 +182,18 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.work_hour_details
             ,j.work_hour_details_arb
             ,j.rest_day_per_week
+            ,j.rest_day_per_week_arb
             ,j.paid_annual_leave_per_year
+            ,j.paid_annual_leave_per_year_arb
             ,j.paid_outpatient_sick_leave_per_year
+            ,j.paid_outpatient_sick_leave_per_year_arb
+            ,j.paid_hospitalisation_leave_per_year_arb
             ,j.paid_hospitalisation_leave_per_year
             ,j.paid_medical_examination_fee
             ,j.other_type_of_leave
+            ,j.other_type_of_leave_arb
             ,j.other_medical_benefits
+            ,j.other_medical_benefits_arb
             ,j.probationary
             ,j.emp_type
             ,j.designation
@@ -218,8 +240,11 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.pay_mbmf
             ,j.pay_sinda
             ,j.length_of_probation
+            ,j.length_of_probation_arb
             ,j.probation_start_date
+            ,j.probation_start_date_arb
             ,j.probation_end_date
+            ,j.probation_end_date_arb
             ,j.over_time_rate
             ,e.emp_code
             ,e.employee_name
@@ -229,13 +254,16 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,e.email
             ,e.salary
             ,e.nric_no
+            ,e.nric_arb_
             ,e.position
             ,e.date_of_expiry
             ,e.spass_no
             ,e.fin_no
+            ,e.fin_no_arb
             ,e.employee_work_type
             ,e.date_of_birth
             ,e.citizen
+            ,e.citizen_arb
             FROM job_information j
             LEFT JOIN (employee e) ON (e.employee_id = j.employee_id)
             WHERE j.job_information_id=${db.escape(req.body.job_information_id)}
@@ -268,11 +296,17 @@ app.post('/edit-jobinformation', (req, res, next) => {
               ,work_hour_details=${db.escape(req.body.work_hour_details)}
               ,work_hour_details_arb=${db.escape(req.body.work_hour_details_arb)}
               ,rest_day_per_week=${db.escape(req.body.rest_day_per_week)}
+              ,rest_day_per_week_arb=${db.escape(req.body.rest_day_per_week_arb)}
               ,paid_annual_leave_per_year=${db.escape(req.body.paid_annual_leave_per_year)}
+              ,paid_annual_leave_per_year_arb=${db.escape(req.body.paid_annual_leave_per_year_arb)}
               ,paid_outpatient_sick_leave_per_year=${db.escape(req.body.paid_outpatient_sick_leave_per_year)}
+              ,paid_outpatient_sick_leave_per_year_arb=${db.escape(req.body.paid_outpatient_sick_leave_per_year_arb)}
               ,paid_hospitalisation_leave_per_year=${db.escape(req.body.paid_hospitalisation_leave_per_year)}
+              ,paid_hospitalisation_leave_per_year_arb=${db.escape(req.body.paid_hospitalisation_leave_per_year_arb)}
               ,other_type_of_leave=${db.escape(req.body.other_type_of_leave)}
+              ,other_type_of_leave_arb=${db.escape(req.body.other_type_of_leave_arb)}
               ,other_medical_benefits=${db.escape(req.body.other_medical_benefits)}
+              ,other_medical_benefits_arb=${db.escape(req.body.other_medical_benefits_arb)}
               ,probationary=${db.escape(req.body.probationary)}
               ,emp_type=${db.escape(req.body.emp_type)}
               ,designation=${db.escape(req.body.designation)}
@@ -315,13 +349,16 @@ app.post('/edit-jobinformation', (req, res, next) => {
               ,departure_date=${db.escape(req.body.departure_date)}
               ,cpf_applicable=${db.escape(req.body.cpf_applicable)}
               ,probation_start_date=${db.escape(req.body.probation_start_date)}
+              ,probation_start_date_arb=${db.escape(req.body.probation_start_date_arb)}
               ,probation_end_date=${db.escape(req.body.probation_end_date)}
+              ,probation_end_date_arb=${db.escape(req.body.probation_end_date_arb)}
               ,pay_cdac=${db.escape(req.body.pay_cdac)}
               ,pay_sinda=${db.escape(req.body.pay_sinda)}
               ,pay_eucf=${db.escape(req.body.pay_eucf)}
               ,pay_mbmf=${db.escape(req.body.pay_mbmf)}
               ,paid_medical_examination_fee=${db.escape(req.body.paid_medical_examination_fee)}
               ,length_of_probation=${db.escape(req.body.length_of_probation)}
+              ,length_of_probation_arb=${db.escape(req.body.length_of_probation_arb)}
               ,over_time_rate=${db.escape(req.body.over_time_rate)}
               WHERE job_information_id  = ${db.escape(req.body.job_information_id )}`,
               (err, result) => {
@@ -392,20 +429,29 @@ app.post('/edit-jobinformation', (req, res, next) => {
                   work_hour_details: req.body.work_hour_details,
                   duty_responsibility: req.body.duty_responsibility,
                   rest_day_per_week: req.body.rest_day_per_week,
+                  rest_day_per_week_arb: req.body.rest_day_per_week_arb,
                   probation_start_date: req.body.probation_start_date,
+                  probation_start_date_arb: req.body.probation_start_date_arb,
                   probation_end_date: req.body.probation_end_date,
+                  probation_end_date_arb: req.body.probation_end_date_arb,
                   length_of_probation: req.body.length_of_probation,
+                  length_of_probation_arb: req.body.length_of_probation_arb,
                   notice_period_for_termination: req.body.notice_period_for_termination,
                   duration_of_employment: req.body.duration_of_employment,
                   place_of_work: req.body.place_of_work,
                   salary_payment_dates : req.body. salary_payment_dates ,
                   overtime_payment_dates: req.body.overtime_payment_dates,
                   paid_annual_leave_per_year: req.body.paid_annual_leave_per_year,
+                  paid_annual_leave_per_year_arb: req.body.paid_annual_leave_per_year_arb,
                   paid_outpatient_sick_leave_per_year: req.body.paid_outpatient_sick_leave_per_year,
+                  paid_outpatient_sick_leave_per_year_arb: req.body.paid_outpatient_sick_leave_per_year_arb,
                   paid_hospitalisation_leave_per_year: req.body.paid_hospitalisation_leave_per_year,
+                  paid_hospitalisation_leave_per_year_arb: req.body.paid_hospitalisation_leave_per_year_arb,
                   other_type_of_leave: req.body.other_type_of_leave,
+                  other_type_of_leave_arb: req.body.other_type_of_leave_arb,
                   paid_medical_examination_fee: '0',
                   other_medical_benefits: req.body.other_medical_benefits,
+                  other_medical_benefits_arb: req.body.other_medical_benefits_arb,
                   allowance4: req.body.allowance4,
                   allowance5: req.body.allowance5,
                   allowance6: req.body.allowance6,
@@ -456,7 +502,9 @@ app.post('/edit-jobinformation', (req, res, next) => {
                ,e.employee_name
                ,e.employee_name_arb
                ,e.nric_no
+               ,e.nric_no_arb
                ,e.fin_no
+               ,e.fin_no_arb
                ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count
                 FROM employee e 
                 `,
