@@ -81,6 +81,60 @@ app.get('/getProjectTask', (req, res, next) => {
 );
 });
 
+app.post("/getEmployeeByID", (req, res, next) => {
+  db.query(
+    `SELECT 
+                e.employee_id
+               ,e.first_name
+               ,p.title
+                           FROM employee e 
+                LEFT JOIN project_task t ON (t.employee_id = e.employee_id) 
+                LEFT JOIN project p ON (p.project_id = t.project_id) 
+                WHERE  p.project_id=${db.escape(req.body.project_id)}
+GROUP BY p.project_id,e.employee_id;`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
+
+app.post("/getProjectTitleById", (req, res, next) => {
+  db.query(
+    `SELECT
+  title,project_id
+   From project 
+   WHERE project_id=${db.escape(req.body.project_id)}
+  `,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
 app.post('/getProjectTaskById', (req, res, next) => {
     db.query(`SELECT
     pt.project_task_id
