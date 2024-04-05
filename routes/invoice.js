@@ -570,6 +570,28 @@ app.get('/getReceipts', (req, res, next) => {
   );
 });
 
+app.get('/getInvoice', (req, res, next) => {
+  db.query(
+    `select i.*
+    from invoice i
+  WHERE i.invoice_id != ''`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Staff has been removed successfully',
+        })
+     }
+   }
+  );
+});
+
 app.post('/editInvoice', (req, res, next) => {
   db.query(`UPDATE invoice 
             SET status = ${db.escape(req.body.status)}
