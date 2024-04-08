@@ -22,10 +22,14 @@ app.use(
 app.post("/getTradingquoteById", (req, res, next) => {
   db.query(
     `SELECT q.quote_date
+    ,q.quote_date_arb
     ,q.quote_id
     ,q.quote_code
+    ,q.quote_code_arb
     ,q.quote_status
+    ,q.quote_status_arb
     ,q.ref_no_quote
+    ,q.ref_no_quote_arb
     ,q.project_location
     ,q.project_reference
     ,q.payment_method
@@ -37,8 +41,11 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,c.company_id
     ,cont.contact_id
     ,o.opportunity_code
+    ,o.opportunity_code_arb
     ,o.office_ref_no
+    ,o.office_ref_no_arb
     ,c.company_name
+    ,c.company_name_arb
     ,c.address_flat
     ,c.address_street
     ,c.address_town
@@ -46,6 +53,7 @@ app.post("/getTradingquoteById", (req, res, next) => {
     ,c.address_po_code
     ,c.phone
     ,cont.first_name
+    ,cont.first_name_arb
     ,q.creation_date
     ,q.modification_date
     ,q.created_by
