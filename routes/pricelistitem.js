@@ -290,6 +290,30 @@ app.post('/deletePriceListItem', (req, res, next) => {
   });
 });
 
+app.get('/getUnitFromValuelist', (req, res, next) => {
+  db.query(
+    `SELECT 
+  value
+  ,value_arb
+  ,valuelist_id
+  FROM valuelist WHERE key_text='Unit'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err);
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
+
 app.get('/getTranslationForPriceList', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdPriceList%'`,
   (err, result) => {
