@@ -108,6 +108,7 @@ ALTER TABLE `sub_category` ADD `seo_title_arb` VARCHAR(255)  NULL DEFAULT NULL A
 ALTER TABLE `sub_category` ADD `created_by` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`, ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
 ALTER TABLE `sub_category` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`; 
 ALTER TABLE `sub_category` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`; 
+ALTER TABLE `section` ADD `section_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `section_title`; 
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
 VALUES 
@@ -143,11 +144,21 @@ VALUES
 (NULL, 'mdPriceList.ExpiryDate', 'Expiry Date', 'تاريخ الانتهاء', 'PriceList Expiry Date', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Status', 'Status', 'حالة', 'PriceList Status', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.ID', 'ID', 'بطاقة تعريف', 'PriceList ID', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
-(NULL, 'mdPriceList.Name ', 'Name', 'اسم', 'PriceList Name ', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdPriceList.Product Name ', 'Product Name', 'اسم المنتج', 'PriceList Product Name ', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Price', 'Price', 'سعر', 'PriceList Price', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Unit', 'Unit', 'وحدة', 'PriceList Unit', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Action', 'Action', 'فعل', 'PriceList Action', '30-03-2024', NULL, NULL, NULL, NULL, '0')
 
 
 
+
+ALTER TABLE `product` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `title`;
+ALTER TABLE `product` ADD `product_code_arb`  varchar(50)  NULL DEFAULT NULL AFTER `product_code`; 
+ALTER TABLE `product` ADD `description_arb` TEXT NULL DEFAULT NULL AFTER `description`; 
+ALTER TABLE `product` ADD `qty_in_stock_arb` decimal(10,2)  NULL DEFAULT NULL AFTER `qty_in_stock`;
+ALTER TABLE `product` ADD `price_arb` varchar(100) NULL DEFAULT NULL AFTER `price`; 
+ALTER TABLE `product` ADD `published_arb` int(1)  NULL DEFAULT NULL AFTER `published`; 
+ALTER TABLE `product` ADD `product_type_arb` varchar(100) NULL DEFAULT NULL AFTER `product_type`; 
+ALTER TABLE `product` ADD `modified_by_arb` varchar(255)  NULL DEFAULT NULL AFTER `modified_by`; 
+ALTER TABLE `product` ADD `created_by_arb` varchar(255)  NULL DEFAULT NULL AFTER `created_by`; 
 
