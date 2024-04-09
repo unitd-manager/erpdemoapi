@@ -36,6 +36,25 @@ app.get('/getTranslationforTradingSalesReturn', (req, res, next) => {
 );
 });
 
+app.get('/getTranslationforTradingProjitSalesReturn', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingSalesReturn%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/getFinances', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
@@ -246,6 +265,8 @@ app.post('/editSalesReturn', (req, res, next) => {
             ,modification_date = ${db.escape(req.body.modification_date)}
             ,modified_by = ${db.escape(req.body.modified_by)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
+
              WHERE sales_return_id =  ${db.escape(req.body.sales_return_id)}`,
     (err, result) => {
       if (err) {
@@ -1297,8 +1318,11 @@ app.post('/editInvoiceItem', (req, res, next) => {
             SET qty=${db.escape(req.body.qty)}
             ,unit_price=${db.escape(req.body.unit_price)}
             ,item_title=${db.escape(req.body.item_title)}
+            ,item_title_arb=${db.escape(req.body.item_title_arb)}
             ,model=${db.escape(req.body.model)}
+            ,model_arb=${db.escape(req.body.model_arb)}
             ,module=${db.escape(req.body.module)}
+            ,module_arb=${db.escape(req.body.module_arb)}
             ,invoice_id=${db.escape(req.body.invoice_id)}
             ,item_code=${db.escape(req.body.item_code)}
             ,vat=${db.escape(req.body.vat)}
@@ -1308,7 +1332,9 @@ app.post('/editInvoiceItem', (req, res, next) => {
             ,item_code_backup=${db.escape(req.body.item_code_backup)}
             ,unit=${db.escape(req.body.unit)}
             ,description=${db.escape(req.body.description)}
+            ,description_arb=${db.escape(req.body.description)}
             ,remarks=${db.escape(req.body.remarks)}
+            ,remarks_arb=${db.escape(req.body.remarks)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
             ,month=${db.escape(req.body.month)}
