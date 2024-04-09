@@ -570,6 +570,23 @@ app.get('/getReceipts', (req, res, next) => {
   );
 });
 
+app.get('/getProjectReceipts', (req, res, next) => {
+  db.query(
+    `select i.receipt_id
+  ,i.remarks
+  ,i.creation_date
+  ,i.modification_date
+  ,i.created_by
+  ,i.modified_by
+  ,i.receipt_code  
+  ,i.receipt_status
+  ,i.amount
+  ,i.mode_of_payment
+  ,o.order_code
+   ,i.receipt_date
+   from receipt i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+ WHERE i.receipt_id != '' ORDER BY i.receipt_id DESC`,
 app.get('/getInvoice', (req, res, next) => {
   db.query(
     `select i.*
