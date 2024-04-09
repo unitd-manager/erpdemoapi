@@ -178,4 +178,155 @@ app.post("/getCodeValue", (req, res, next) => {
   });
 });
 
+// Create a MySQL connection pool
+
+app.post('/getTranslationColumnFromTables', (req, res, next) => {
+  const tableNames = db.escape(req.body.tableNames);
+  // let result = tableNames.replace(/'/g, "");
+  // console.log('tableNames',tableNames)
+  db.query(`SELECT SUBSTRING(COLUMN_NAME, 1, LENGTH(COLUMN_NAME) - 4) AS COLUMN_NAME_TRUNCATED FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ${tableNames} AND COLUMN_NAME LIKE '%arb'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+
+app.post('/getTableTranslation', (req, res, next) => {
+  const columnNames = db.escape(req.body.columnNames);
+  const labourRequestId = db.escape(req.body.whereId);
+  const whereCondition = db.escape(req.body.whereCondition);
+  const tableNames = db.escape(req.body.tableNames);
+  let result = columnNames.replace(/'/g, "");
+  let resultTable = tableNames.replace(/'/g, "");
+  let resultWhereCondition = whereCondition.replace(/'/g, "");
+  // console.log('columnNames',columnNames)
+  // console.log('tableNames',tableNames)
+  // console.log('labourRequestId',labourRequestId)
+  // console.log('whereCondition',whereCondition)
+  const query = `
+    SELECT ${result}
+    FROM ${resultTable} 
+    WHERE ${resultWhereCondition} = ${labourRequestId}
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      return res.status(500).send({
+        data: err,
+        msg: 'Failed to retrieve labour translation data',
+      });
+    }
+
+    return res.status(200).send({
+      data: result,
+      msg: 'Success',
+    });
+  });
+});
+
+app.post('/getTableTranslationArbValue', (req, res, next) => {
+  const condition = db.escape(req.body.condition);
+  const labourRequestId = db.escape(req.body.whereId);
+  const whereCondition = db.escape(req.body.whereCondition);
+  const tableNames = db.escape(req.body.tableNames);
+  let result = condition.replace(/'/g, "");
+  let resultTable = tableNames.replace(/'/g, "");
+  let resultWhereCondition = whereCondition.replace(/'/g, "");
+  // console.log('labourRequestId',labourRequestId)
+  // console.log('whereCondition',whereCondition)
+  const query = `
+    SELECT ${result}
+    FROM ${resultTable} 
+    WHERE ${resultWhereCondition} = ${labourRequestId}
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      return res.status(500).send({
+        data: err,
+        msg: 'Failed to retrieve labour translation data',
+      });
+    }
+
+    return res.status(200).send({
+      data: result,
+      msg: 'Success',
+    });
+  });
+});
+
+app.post('/editRequestArb', (req, res, next) => {
+  const columnNames = db.escape(req.body.columnName);
+  let column = columnNames.replace(/'/g, "");
+  const value = db.escape(req.body.value);
+  const labourRequestId = db.escape(req.body.whereId);
+  const tableNames = db.escape(req.body.tableNames);
+  const whereCondition = db.escape(req.body.whereCondition);
+  let resultTable = tableNames.replace(/'/g, "");
+  let resultWhereCondition = whereCondition.replace(/'/g, "");
+  db.query(
+    `UPDATE ${resultTable}  
+     SET ${column}=${value}
+     WHERE ${resultWhereCondition} = ${labourRequestId}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err);
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
+
+app.post('/getTranslationGetApi', (req, res, next) => {
+  const tableNameUni = db.escape(req.body.tableNameUni);
+  const whereCondition = db.escape(req.body.whereCondition);
+  let resultTable = tableNameUni.replace(/'/g, "");
+  let result = whereCondition.replace(/'/g, "");
+  // console.log('resultTable',resultTable)
+  //  console.log('result',result)
+  const query = `
+    SELECT ${result}
+    FROM ${resultTable} 
+    WHERE ${result} !=''
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      return res.status(500).send({
+        data: err,
+        msg: 'Failed to retrieve labour translation data',
+      });
+    }
+
+    return res.status(200).send({
+      data: result,
+      msg: 'Success',
+    });
+  });
+});
+
+
 module.exports = app;
