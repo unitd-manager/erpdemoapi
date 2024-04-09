@@ -115,3 +115,65 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Name', 'Name', 'اسم', 'Employee Name field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Phone 1', 'Phone 1', 'الهاتف 1', 'Employee Phone 1 field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Phone 2', 'Phone 2', 'الهاتف 2', 'Employee Phone 2 field', NULL, NULL, NULL, NULL, NULL, '0');
 
+********************************(31/03/2024 Translation(Employee insertField))**************************************(Sabina)
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Yes', 'Yes', 'نعم', 'Employee Yes field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.No', 'No', 'لا', 'Employee No field', NULL, NULL, NULL, NULL, NULL, '0');
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Team', 'Team', 'فريق', 'Employee Team field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Pay', 'Pay', 'يدفع', 'Employee Pay field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Company', 'Company', 'شركة', 'Employee Company field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Experience', 'Experience', 'خبرة', 'Employee Experience field', NULL, NULL, NULL, NULL, NULL, '0');
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Project manager', 'Project manager', 'مدير المشروع', 'Employee Project manager field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Team Leader', 'Team Leader', 'رئيس الفريق', 'Employee Team Leader field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(01/04/2024 Translation(Employee insertField))**************************************(Sabina)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.SPR Year', 'SPR Year', 'سنة ص ص', 'Employee SPR Year field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Work Permit No', 'Work Permit No', 'رقم تصريح العمل', 'Employee Work Permit No field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.NRIC No', 'NRIC No', 'ن ص ج لا', 'Employee NRIC No field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(01/04/2024 Employee (Employee createField))**************************************(Sabina)
+ALTER TABLE `employee` ADD `employee_name_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `employee_name`; 
+ALTER TABLE `employee` ADD `salutation_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `salutation`; 
+ALTER TABLE `employee` ADD `gender_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`; 
+ALTER TABLE `employee` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`; 
+ALTER TABLE `employee` ADD `marital_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `marital_status`; 
+ALTER TABLE `employee` ADD `nationality_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `nationality`; 
+ALTER TABLE `employee` ADD `race_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `race`; 
+ALTER TABLE `employee` ADD `religion_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `religion`; 
+ALTER TABLE `employee` ADD `project_designation_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `project_designation`; 
+ALTER TABLE `employee` ADD `project_manager_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `project_manager`; 
+ALTER TABLE `employee` ADD `team_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `team`; 
+ALTER TABLE `employee` ADD `notes_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `notes`; 
+ALTER TABLE `employee` ADD `email_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `email`; 
+ALTER TABLE `employee` ADD `pass_word_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `pass_word`; 
+ALTER TABLE `employee` ADD `published_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `published`; 
+ALTER TABLE `employee` ADD `admin_staff_arb` TINYINT(1) NULL DEFAULT NULL AFTER `admin_staff`;
+ALTER TABLE `employee` ADD `pay` VARCHAR(255) NULL DEFAULT NULL AFTER `admin_staff_arb`, ADD `pay_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `pay`; 
+ALTER TABLE `employee` ADD `emp_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `emp_code`; 
+ALTER TABLE `employee` ADD `team_leader` TINYINT(4) NULL DEFAULT NULL AFTER `pay_arb`, ADD `team_leader_arb` TINYINT(4) NULL DEFAULT NULL AFTER `team_leader`; 
+ALTER TABLE `employee` ADD `first_name_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `first_name`; 
+
+********************************(01/04/2024 Employee (Employee createField))**************************************(Sabina)
+ALTER TABLE `employee` ADD `citizen_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `citizen`; 
+ALTER TABLE `employee` ADD `nric_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `nric_no`; 
+ALTER TABLE `employee` ADD `fin_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `fin_no`; 
+ALTER TABLE `employee` ADD `spr_year_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `spr_year`; 
+ALTER TABLE `employee` ADD `work_permit_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `work_permit`; 
+ALTER TABLE `employee` ADD `educational_qualitifcation1_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `educational_qualitifcation1`; 
+ALTER TABLE `employee` ADD `degree1_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `degree1`; 
+ALTER TABLE `employee` ADD `educational_qualitifcation2_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `educational_qualitifcation2`; 
+ALTER TABLE `employee` ADD `degree2_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `degree2`; 
+ALTER TABLE `employee` ADD `educational_qualitifcation3_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `educational_qualitifcation3`; 
+ALTER TABLE `employee` ADD `degree3_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `degree3`; 
+ALTER TABLE `employee` ADD `address_area_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_area`; 
+ALTER TABLE `employee` ADD `address_street_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_street`; 
+
+********************************(02/04/2024 Employee (Employee createField))**************************************(Sabina)
+ALTER TABLE `employee` ADD `address_po_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_po_code`; 
+ALTER TABLE `employee` ADD `address_country1_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `address_country1`; 
+ALTER TABLE `employee` ADD `mobile_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`; 
+ALTER TABLE `employee` ADD `phone_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`; 
+ALTER TABLE `employee` ADD `foreign_addrs_area_arb` TEXT NOT NULL AFTER `foreign_addrs_area`; 
+ALTER TABLE `employee` ADD `foreign_addrs_streetarb` TEXT NULL DEFAULT NULL AFTER `foreign_addrs_street`; 
+ALTER TABLE `employee` ADD `foreign_addrs_country_arb` TEXT NULL DEFAULT NULL AFTER `foreign_addrs_country`; 
+
+********************************(02/04/2024 Translation(Employee insertField))**************************************(Sabina)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Address', 'Address', 'عنوان', 'Employee Address field', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Basic Pay', 'Basic Pay', 'الدفع الأساسي', 'Employee Basic Pay field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.From Date', 'From Date', 'من التاريخ', 'Employee From Date field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.To Date', 'To Date', 'ان يذهب في موعد', 'Employee To Date field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Course Title', 'Course Title', 'عنوان الدورة', 'Employee Course Title field', NULL, NULL, NULL, NULL, NULL, '0');

@@ -1880,6 +1880,43 @@ app.post('/insertreceipt', (req, res, next) => {
   });
 });
 
+app.post('/insertprojectreceipt', (req, res, next) => {
+
+  let data = {project_receipt_code: req.body.project_receipt_code,
+              amount: req.body.amount,
+              mode_of_payment: req.body.mode_of_payment,
+              remarks: req.body.remarks,
+              project_receipt_date: req.body.project_receipt_date,
+              published: req.body.published,
+              flag: req.body.flag,
+              creation_date: req.body.creation_date,
+              modification_date: req.body.modification_date,
+              created_by: req.body.created_by,
+              modified_by: req.body.modified_by,
+              order_id: req.body.order_id,
+              project_receipt_status: req.body.project_receipt_status,
+              cheque_date: req.body.cheque_date,
+              bank_name: req.body.bank_name,
+              site_id: req.body.site_id,
+              cheque_no: req.body.cheque_no,
+               project_id: req.body.project_id,
+          };
+
+  let sql = "INSERT INTO project_receipt SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 
 app.delete('/deleteReceipt', (req, res, next) => {
 
