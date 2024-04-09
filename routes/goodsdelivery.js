@@ -23,14 +23,10 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
   db.query(
     ` SELECT 
     gd.goods_delivery_id
-    gd.goods_delivery_id_arb
     ,gd.delivery_no
-    ,gd.delivery_no_arb
     ,gd.goods_delivery_date
       ,gd.order_id
-      ,gd.order_id_arb
       ,gd.goods_delivery_code
-    ,gd.goods_delivery_code_arb
     ,o.order_code
     ,gd.goods_ref_no
     ,c.company_id
@@ -133,9 +129,7 @@ app.get("/getgoodsdelivery", (req, res, next) => {
     ,gd.delivery_no
     ,gd.goods_delivery_date
     ,gd.goods_delivery_code
-    ,gd.goods_delivery_code_arb
     ,gd.order_id
-    ,gd.order_id_arb
     ,o.order_code
     ,gd.goods_ref_no
     ,c.company_id
@@ -229,7 +223,6 @@ app.post("/getOrdersById", (req, res, next) => {
     ,oi.item_title
     ,oi.item_title_arb
     ,oi.qty
-    ,oi.qty_arb
     ,oi.unit_price
     ,oi.cost_price
     ,oi.unit
@@ -383,7 +376,6 @@ app.post("/insertgoodsdeliveryitem", (req, res, next) => {
     title: req.body.title,
     title: req.body.title_arb,
     unit: req.body.unit,
-    unit: req.body.unit_arb,
     unit_price: req.body.unit_price,
     amount: req.body.amount,
     quantity: req.body.quantity,

@@ -244,9 +244,7 @@ app.post('/getProjectById', (req, res, next) => {
   ,p.status_arb
   ,p.contact_id
   ,p.start_date
-  ,p.start_date_arb
   ,p.estimated_finish_date
-  ,p.estimated_finish_date_arb
   ,p.description
   ,p.description_arb
   ,p.project_manager_id
@@ -1132,9 +1130,7 @@ app.post('/edit-Project', (req, res, next) => {
             ,contact_id=${db.escape(req.body.contact_id)}
             ,company_id=${db.escape(req.body.company_id)}
             ,start_date=${db.escape(req.body.start_date)}
-            ,start_date_arb=${db.escape(req.body.start_date_arb)}
             ,estimated_finish_date=${db.escape(req.body.estimated_finish_date)}
-            ,estimated_finish_date_arb=${db.escape(req.body.estimated_finish_date_arb)}
             ,description=${db.escape(req.body.description)}
             ,description_arb=${db.escape(req.body.description_arb)}
             ,project_manager_id=${db.escape(req.body.project_manager_id)}

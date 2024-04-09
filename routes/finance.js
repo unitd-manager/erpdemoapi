@@ -58,13 +58,11 @@ app.get('/getTranslationforTradingProjitSalesReturn', (req, res, next) => {
 app.get('/getFinances', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_date_arb
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
   ,q.quote_id
   ,opt.office_ref_no
-  ,opt.office_ref_no_arb
   ,c.company_id
   ,c.company_name
   ,c.company_name_arb
@@ -75,14 +73,12 @@ app.get('/getFinances', (req, res, next) => {
   ,o.notes
   ,(select sum(it.total_cost)) as amount
   ,o.order_code
-  ,o.order_code_arb
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
   ,o.shipping_address2
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
-  ,q.quote_code_arb
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
@@ -405,7 +401,6 @@ app.post('/getFinancesById', (req, res, next) => {
   db.query(`SELECT 
   o.order_id,
   o.order_date,
-  o.order_date_arb,
   o.company_id,
   c.company_name,
   c.company_name_arb,
@@ -422,7 +417,6 @@ app.post('/getFinancesById', (req, res, next) => {
   o.shipping_first_name,
   o.shipping_address1,
   o.order_code,
-  o.order_code_arb,
   o.shipping_address2,
   o.shipping_address_country,
   o.shipping_address_po_code,
@@ -446,7 +440,6 @@ app.post('/getFinancesById', (req, res, next) => {
   c.address_street AS company_address_street,
   op.opportunity_id,
   op.office_ref_no,
-  op.office_ref_no_arb,
   c.address_town AS company_address_town,
   c.address_state AS company_address_state,
   gc3.name AS company_country_name,
@@ -565,7 +558,6 @@ app.post('/getOrdersByIds', (req, res, next) => {
   ,r.order_id
   ,o.order_code
   ,r.qty
-  ,r.qty_arb
   ,r.unit_price
   ,r.item_title
   ,r.item_title_arb
@@ -755,12 +747,10 @@ app.get('/getGst', (req, res, next) => {
 app.post('/getFinanceById', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_date_arb
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
   ,opt.office_ref_no
-  ,opt.office_ref_no_arb
   ,c.company_id
   ,c.company_name
   ,c.company_name_arb
@@ -773,7 +763,6 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.modified_by
   ,o.notes
   ,(select sum(it.total_cost)) as amount
-  ,o.order_code_arb
   ,o.order_code
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
@@ -781,7 +770,6 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
-  ,q.quote_code_arb
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
