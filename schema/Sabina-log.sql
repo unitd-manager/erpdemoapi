@@ -128,7 +128,7 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Work Permit No', 'Work Permit No', 'رقم تصريح العمل', 'Employee Work Permit No field', NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.NRIC No', 'NRIC No', 'ن ص ج لا', 'Employee NRIC No field', NULL, NULL, NULL, NULL, NULL, '0');
 
-********************************(31/03/2024 Employee (Employee createField))**************************************(Sabina)
+********************************(01/04/2024 Employee (Employee createField))**************************************(Sabina)
 ALTER TABLE `employee` ADD `employee_name_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `employee_name`; 
 ALTER TABLE `employee` ADD `salutation_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `salutation`; 
 ALTER TABLE `employee` ADD `gender_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`; 
@@ -144,6 +144,7 @@ ALTER TABLE `employee` ADD `notes_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `not
 ALTER TABLE `employee` ADD `email_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `email`; 
 ALTER TABLE `employee` ADD `pass_word_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `pass_word`; 
 ALTER TABLE `employee` ADD `published_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `published`; 
+ALTER TABLE `employee` ADD `admin_staff_arb` TINYINT(1) NULL DEFAULT NULL AFTER `admin_staff`;
 ALTER TABLE `employee` ADD `pay` VARCHAR(255) NULL DEFAULT NULL AFTER `admin_staff_arb`, ADD `pay_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `pay`; 
 ALTER TABLE `employee` ADD `emp_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `emp_code`; 
 ALTER TABLE `employee` ADD `team_leader` TINYINT(4) NULL DEFAULT NULL AFTER `pay_arb`, ADD `team_leader_arb` TINYINT(4) NULL DEFAULT NULL AFTER `team_leader`; 

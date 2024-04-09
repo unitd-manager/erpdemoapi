@@ -570,6 +570,40 @@ app.get('/getReceipts', (req, res, next) => {
   );
 });
 
+app.get('/getProjectReceipts', (req, res, next) => {
+  db.query(
+    `select i.receipt_id
+  ,i.remarks
+  ,i.creation_date
+  ,i.modification_date
+  ,i.created_by
+  ,i.modified_by
+  ,i.receipt_code  
+  ,i.receipt_status
+  ,i.amount
+  ,i.mode_of_payment
+  ,o.order_code
+   ,i.receipt_date
+   from receipt i
+  LEFT JOIN orders o ON o.order_id=i.order_id
+ WHERE i.receipt_id != '' ORDER BY i.receipt_id DESC`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Staff has been removed successfully',
+        })
+     }
+   }
+  );
+});
+
 app.post('/editInvoice', (req, res, next) => {
   db.query(`UPDATE invoice 
             SET status = ${db.escape(req.body.status)}
