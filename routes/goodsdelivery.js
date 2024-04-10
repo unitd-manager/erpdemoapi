@@ -21,34 +21,46 @@ app.use(
 
 app.post("/getgoodsdeliveryById", (req, res, next) => {
   db.query(
-    ` SELECT gd.goods_delivery_id
+    ` SELECT 
+    gd.goods_delivery_id
     ,gd.delivery_no
     ,gd.goods_delivery_date
-    ,gd.order_id
-    ,gd.goods_delivery_code
+      ,gd.order_id
+      ,gd.goods_delivery_code
     ,o.order_code
     ,gd.goods_ref_no
     ,c.company_id
     ,c.company_name
+    ,c.company_name_arb
     ,c.address_flat
+    ,c.address_flat_arb
     ,c.address_street
+    ,c.address_street_arb
     ,c.address_town
+    ,c.address_town_arb
     ,c.address_country
+    ,c.address_country_arb
     ,c.address_po_code
     ,c.phone
     ,cont.first_name
+    ,cont.first_name_arb
     ,gd.goods_delivery_status
+    ,gd.goods_delivery_status_arb
     ,gd.po_no
     ,opt.office_ref_no
     ,gd.sales_man
+    ,gd.sales_man_arb
     ,gd.department
+    ,gd.department_arb
     ,gd.creation_date
     ,gd.modification_date
     ,gd.created_by
     ,gd.modified_by
     ,gi.goods_delivery_item_id  
     ,gi.title
+    ,gi.title_arb
     ,gi.description  
+    ,gi.description_arb  
        FROM goods_delivery gd  
        LEFT JOIN (orders o) ON (o.order_id=gd.order_id)  
        LEFT JOIN quote q ON (o.quote_id = q.quote_id )
@@ -112,7 +124,8 @@ app.get('/checkDeliveryItems', (req, res, next) => {
 
 app.get("/getgoodsdelivery", (req, res, next) => {
   db.query(
-    `  SELECT gd.goods_delivery_id
+    `  SELECT 
+    gd.goods_delivery_id
     ,gd.delivery_no
     ,gd.goods_delivery_date
     ,gd.goods_delivery_code
@@ -121,10 +134,13 @@ app.get("/getgoodsdelivery", (req, res, next) => {
     ,gd.goods_ref_no
     ,c.company_id
     ,c.company_name
+    ,c.company_name_arb
     ,opt.office_ref_no
     ,gd.goods_delivery_status
-    ,gd.po_no
+    ,gd.goods_delivery_status_arb
+    ,gd.po_no 
     ,gd.sales_man
+    ,gd.sales_man_arb
     ,gd.department
     ,gd.creation_date
     ,gd.modification_date
@@ -203,11 +219,14 @@ app.post("/getOrdersById", (req, res, next) => {
     ` SELECT o.order_id
     ,oi.order_item_id
     ,oi.description
+    ,oi.description_arb
     ,oi.item_title
+    ,oi.item_title_arb
     ,oi.qty
     ,oi.unit_price
     ,oi.cost_price
     ,oi.unit
+    ,oi.unit_arb
     ,oi.quote_id
     ,oi.quote_items_id
      
@@ -305,9 +324,13 @@ app.post("/edit-goodsdelivery", (req, res, next) => {
               ,company_id=${db.escape(req.body.company_id)}
               ,contact_id=${db.escape(req.body.contact_id)}
               ,goods_delivery_status=${db.escape(req.body.goods_delivery_status)}
+              ,goods_delivery_status_arb=${db.escape(req.body.goods_delivery_status_arb)}
+
               ,po_no=${db.escape(req.body.po_no)}
               ,sales_man=${db.escape(req.body.sales_man)}
+              ,sales_man_arb=${db.escape(req.body.sales_man_arb)}
               ,department=${db.escape(req.body.department)}
+              ,department_arb=${db.escape(req.body.department_arb)}
               ,modification_date=${db.escape(req.body.modification_date)}
               ,created_by=${db.escape(req.body.created_by)}
               ,modified_by=${db.escape(req.body.modified_by)}              
@@ -351,11 +374,13 @@ app.post("/edit-goodsdeliveryitem", (req, res, next) => {
 app.post("/insertgoodsdeliveryitem", (req, res, next) => {
   let data = {
     title: req.body.title,
+    title: req.body.title_arb,
     unit: req.body.unit,
     unit_price: req.body.unit_price,
     amount: req.body.amount,
     quantity: req.body.quantity,
     description: req.body.description,
+    description: req.body.description_arb,
     goods_delivery_id: req.body.goods_delivery_id,
     order_id: req.body.order_id,
     order_item_id: req.body.order_item_id,
