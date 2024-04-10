@@ -587,6 +587,23 @@ app.get('/getProjectReceipts', (req, res, next) => {
    from receipt i
   LEFT JOIN orders o ON o.order_id=i.order_id
  WHERE i.receipt_id != '' ORDER BY i.receipt_id DESC`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Data retrieved successfully',
+        })
+      }
+    }
+  );
+});
+
 app.get('/getInvoice', (req, res, next) => {
   db.query(
     `select i.*
@@ -602,10 +619,10 @@ app.get('/getInvoice', (req, res, next) => {
       } else {
         return res.status(200).send({
           data: result,
-          msg: 'Staff has been removed successfully',
+          msg: 'Data retrieved successfully',
         })
-     }
-   }
+      }
+    }
   );
 });
 
