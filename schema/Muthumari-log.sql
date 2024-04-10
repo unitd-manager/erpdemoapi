@@ -108,6 +108,7 @@ ALTER TABLE `sub_category` ADD `seo_title_arb` VARCHAR(255)  NULL DEFAULT NULL A
 ALTER TABLE `sub_category` ADD `created_by` VARCHAR(255) NULL DEFAULT NULL AFTER `creation_date`, ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`;
 ALTER TABLE `sub_category` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`; 
 ALTER TABLE `sub_category` ADD `modified_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `modified_by`; 
+ALTER TABLE `section` ADD `section_title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `section_title`; 
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
 VALUES 
@@ -143,11 +144,244 @@ VALUES
 (NULL, 'mdPriceList.ExpiryDate', 'Expiry Date', 'تاريخ الانتهاء', 'PriceList Expiry Date', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Status', 'Status', 'حالة', 'PriceList Status', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.ID', 'ID', 'بطاقة تعريف', 'PriceList ID', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
-(NULL, 'mdPriceList.Name ', 'Name', 'اسم', 'PriceList Name ', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdPriceList.Product Name ', 'Product Name', 'اسم المنتج', 'PriceList Product Name ', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Price', 'Price', 'سعر', 'PriceList Price', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Unit', 'Unit', 'وحدة', 'PriceList Unit', '30-03-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdPriceList.Action', 'Action', 'فعل', 'PriceList Action', '30-03-2024', NULL, NULL, NULL, NULL, '0')
 
 
 
+.......................8/4/23(Created fields in product module)......................................................
+ALTER TABLE `product` ADD `title_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `title`;
+ALTER TABLE `product` ADD `product_code_arb`  varchar(50)  NULL DEFAULT NULL AFTER `product_code`; 
+ALTER TABLE `product` ADD `description_arb` TEXT NULL DEFAULT NULL AFTER `description`; 
+ALTER TABLE `product` ADD `qty_in_stock_arb` decimal(10,2)  NULL DEFAULT NULL AFTER `qty_in_stock`;
+ALTER TABLE `product` ADD `price_arb` varchar(100) NULL DEFAULT NULL AFTER `price`; 
+ALTER TABLE `product` ADD `published_arb` int(1)  NULL DEFAULT NULL AFTER `published`; 
+ALTER TABLE `product` ADD `product_type_arb` varchar(100) NULL DEFAULT NULL AFTER `product_type`; 
+ALTER TABLE `product` ADD `modified_by_arb` varchar(255)  NULL DEFAULT NULL AFTER `modified_by`; 
+ALTER TABLE `product` ADD `created_by_arb` varchar(255)  NULL DEFAULT NULL AFTER `created_by`; 
 
+
+.................................8/4/23(Truncate the table in erpclient url).........................................
+TRUNCATE TABLE `erpclient`.`document`; 
+TRUNCATE TABLE `erpclient`.`dormitory`; 
+TRUNCATE TABLE `erpclient`.`empleave`; 
+TRUNCATE TABLE `erpclient`.`employee`; 
+TRUNCATE TABLE `erpclient`.`employee_category`; 
+TRUNCATE TABLE `erpclient`.`employee_timesheet`; 
+TRUNCATE TABLE `erpclient`.`employee_timesheet_finance`; 
+TRUNCATE TABLE `erpclient`.`enquiry`; 
+TRUNCATE TABLE `erpclient`.`equipment_issue`; 
+TRUNCATE TABLE `erpclient`.`equipment_request`; 
+TRUNCATE TABLE `erpclient`.`equipment_request_item`; 
+TRUNCATE TABLE `erpclient`.`expense`; 
+TRUNCATE TABLE `erpclient`.`expense_group`; 
+TRUNCATE TABLE `erpclient`.`expense_sub_group`; 
+TRUNCATE TABLE `erpclient`.`geo_country`; 
+TRUNCATE TABLE `erpclient`.`goods_delivery`; 
+TRUNCATE TABLE `erpclient`.`goods_delivery_item`; 
+TRUNCATE TABLE `erpclient`.`goods_receipt`; 
+TRUNCATE TABLE `erpclient`.`goods_receipt_items`; 
+TRUNCATE TABLE `erpclient`.`income_group`; 
+TRUNCATE TABLE `erpclient`.`income_sub_group`; 
+TRUNCATE TABLE `erpclient`.`interest`; 
+TRUNCATE TABLE `erpclient`.`interest_contact`; 
+TRUNCATE TABLE `erpclient`.`inventory`; 
+TRUNCATE TABLE `erpclient`.`Inventory_history`; 
+TRUNCATE TABLE `erpclient`.`invoice`; 
+TRUNCATE TABLE `erpclient`.`invoice_credit_note_history`; 
+TRUNCATE TABLE `erpclient`.`invoice_item`; 
+TRUNCATE TABLE `erpclient`.`invoice_receipt_history`; 
+TRUNCATE TABLE `erpclient`.`job_information`; 
+TRUNCATE TABLE `erpclient`.`job_order`; 
+TRUNCATE TABLE `erpclient`.`journal`; 
+TRUNCATE TABLE `erpclient`.`journal_master`; 
+TRUNCATE TABLE `erpclient`.`labour_request`; 
+TRUNCATE TABLE `erpclient`.`leave_policy`; 
+TRUNCATE TABLE `erpclient`.`leave_policy_employee_type`; 
+TRUNCATE TABLE `erpclient`.`loan`; 
+TRUNCATE TABLE `erpclient`.`loan_repayment_history`; 
+TRUNCATE TABLE `erpclient`.`materials_request_line_items`; 
+TRUNCATE TABLE `erpclient`.`materials_returned`; 
+TRUNCATE TABLE `erpclient`.`material_issue`; 
+TRUNCATE TABLE `erpclient`.`material_needed`; 
+TRUNCATE TABLE `erpclient`.`material_request`; 
+TRUNCATE TABLE `erpclient`.`material_request_item`; 
+TRUNCATE TABLE `erpclient`.`media`; 
+TRUNCATE TABLE `erpclient`.`mod_acc_other_action`; 
+TRUNCATE TABLE `erpclient`.`mod_acc_room`; 
+TRUNCATE TABLE `erpclient`.`mod_acc_room_user_group`; 
+TRUNCATE TABLE `erpclient`.`mod_acc_user_group_other_action`; 
+TRUNCATE TABLE `erpclient`.`opportunity_costing_summary`; 
+TRUNCATE TABLE `erpclient`.`opportunity_costing_summary_history`; 
+TRUNCATE TABLE `erpclient`.`opportunity_employee`; 
+TRUNCATE TABLE `erpclient`.`opportunity_project_history`; 
+TRUNCATE TABLE `erpclient`.`opportunity_staff`; 
+TRUNCATE TABLE `erpclient`.`orders`; 
+TRUNCATE TABLE `erpclient`.`order_item`; 
+TRUNCATE TABLE `erpclient`.`other_comp_emp`; 
+TRUNCATE TABLE `erpclient`.`payment`; 
+TRUNCATE TABLE `erpclient`.`payroll_management`; 
+TRUNCATE TABLE `erpclient`.`planning_bom`; 
+TRUNCATE TABLE `erpclient`.`planning_cpanel`; 
+TRUNCATE TABLE `erpclient`.`po_product`; 
+TRUNCATE TABLE `erpclient`.`price_list`; 
+TRUNCATE TABLE `erpclient`.`price_list_item`; 
+TRUNCATE TABLE `erpclient`.`Print_Label`; 
+TRUNCATE TABLE `erpclient`.`productproduct_company`; 
+TRUNCATE TABLE `erpclient`.`product_pagination`; 
+TRUNCATE TABLE `erpclient`.`product_price`; 
+TRUNCATE TABLE `erpclient`.`product_price_history`; 
+TRUNCATE TABLE `erpclient`.`project`; 
+TRUNCATE TABLE `erpclient`.`project_claim`; 
+TRUNCATE TABLE `erpclient`.`project_employee`; 
+TRUNCATE TABLE `erpclient`.`project_enquiry`; 
+TRUNCATE TABLE `erpclient`.`project_job`; 
+TRUNCATE TABLE `erpclient`.`project_job_items`; 
+TRUNCATE TABLE `erpclient`.`project_materials`; 
+TRUNCATE TABLE `erpclient`.`project_planning`; 
+TRUNCATE TABLE `erpclient`.`project_quote`; 
+TRUNCATE TABLE `erpclient`.`project_quote_items`; 
+TRUNCATE TABLE `erpclient`.`project_service`; 
+TRUNCATE TABLE `erpclient`.`project_staff`; 
+TRUNCATE TABLE `erpclient`.`project_task`; 
+TRUNCATE TABLE `erpclient`.`proposal`; 
+TRUNCATE TABLE `erpclient`.`proposal_employee`; 
+TRUNCATE TABLE `erpclient`.`purchase_invoice`; 
+TRUNCATE TABLE `erpclient`.`purchase_invoice_items`; 
+TRUNCATE TABLE `erpclient`.`purchase_order`; 
+TRUNCATE TABLE `erpclient`.`purchase_quote`; 
+TRUNCATE TABLE `erpclient`.`purchase_quote_items`; 
+TRUNCATE TABLE `erpclient`.`purchase_request`; 
+TRUNCATE TABLE `erpclient`.`purchase_request_items`; 
+TRUNCATE TABLE `erpclient`.`purchase_return`; 
+TRUNCATE TABLE `erpclient`.`purchase_return_items`; 
+TRUNCATE TABLE `erpclient`.`quote`; 
+TRUNCATE TABLE `erpclient`.`quote_category`; 
+TRUNCATE TABLE `erpclient`.`quote_columns`; 
+TRUNCATE TABLE `erpclient`.`quote_items`; 
+TRUNCATE TABLE `erpclient`.`quote_items_log`; 
+TRUNCATE TABLE `erpclient`.`quote_log`; 
+TRUNCATE TABLE `erpclient`.`receipt`; 
+TRUNCATE TABLE `erpclient`.`renewals`; 
+TRUNCATE TABLE `erpclient`.`sales_return`; 
+TRUNCATE TABLE `erpclient`.`sales_return_history`; 
+TRUNCATE TABLE `erpclient`.`schedule`; 
+TRUNCATE TABLE `erpclient`.`section`; 
+TRUNCATE TABLE `erpclient`.`service`; 
+TRUNCATE TABLE `erpclient`.`setting`; 
+TRUNCATE TABLE `erpclient`.`site`; 
+TRUNCATE TABLE `erpclient`.`smart_attendance`; 
+TRUNCATE TABLE `erpclient`.`stock_history`; 
+TRUNCATE TABLE `erpclient`.`stock_transfer`; 
+TRUNCATE TABLE `erpclient`.`stock_transfer_history`; 
+TRUNCATE TABLE `erpclient`.`sub_category`; 
+TRUNCATE TABLE `erpclient`.`sub_con`; 
+TRUNCATE TABLE `erpclient`.`sub_con_payments`; 
+TRUNCATE TABLE `erpclient`.`sub_con_payments_history`; 
+TRUNCATE TABLE `erpclient`.`sub_con_work_order`; 
+TRUNCATE TABLE `erpclient`.`supplier`; 
+TRUNCATE TABLE `erpclient`.`supplier_order`; 
+TRUNCATE TABLE `erpclient`.`supplier_order_history`; 
+TRUNCATE TABLE `erpclient`.`supplier_price_list`; 
+TRUNCATE TABLE `erpclient`.`supplier_price_list_item`; 
+TRUNCATE TABLE `erpclient`.`supplier_receipt`; 
+TRUNCATE TABLE `erpclient`.`supplier_receipt_history`; 
+TRUNCATE TABLE `erpclient`.`support`; 
+TRUNCATE TABLE `erpclient`.`task`; 
+TRUNCATE TABLE `erpclient`.`task_history`; 
+TRUNCATE TABLE `erpclient`.`task_staff`; 
+TRUNCATE TABLE `erpclient`.`template`; 
+TRUNCATE TABLE `erpclient`.`third_party_cost`; 
+TRUNCATE TABLE `erpclient`.`timesheet`; 
+TRUNCATE TABLE `erpclient`.`training`; 
+TRUNCATE TABLE `erpclient`.`training_staff`; 
+TRUNCATE TABLE `erpclient`.`translation`; 
+TRUNCATE TABLE `erpclient`.`user_group`; 
+TRUNCATE TABLE `erpclient`.`valuelist`; 
+TRUNCATE TABLE `erpclient`.`vehicle`; 
+TRUNCATE TABLE `erpclient`.`vehicle_fuel`; 
+TRUNCATE TABLE `erpclient`.`vehicle_insurance`; 
+TRUNCATE TABLE `erpclient`.`vehicle_service`; 
+TRUNCATE TABLE `erpclient`.`work_order_line_items`; 
+
+..................................New table-project_invoive(9/4/24)..............................
+CREATE TABLE `project_invoice` (
+  `project_invoice_id` int(11) NOT NULL,
+  `project_invoice_id_arb` int(50) DEFAULT NULL,
+  `project_invoice_code` varchar(50) DEFAULT NULL,
+  `project_invoice_code_arb` varchar(50) DEFAULT NULL,
+  `project_invoice_amount` decimal(10,2) DEFAULT NULL,
+  `project_invoice_amount_arb` decimal(50,0) DEFAULT NULL,
+  `project_invoice_date` varchar(255) DEFAULT NULL,
+  `project_invoice_date_arb` varchar(255) DEFAULT NULL,
+  `mode_of_payment` varchar(50) DEFAULT NULL,
+  `mode_of_payment_arb` varchar(50) DEFAULT NULL,
+  `status` varchar(25) DEFAULT NULL,
+  `status_arb` varchar(50) DEFAULT NULL,
+  `staff_id` int(11) DEFAULT NULL,
+  `staff_id_arb` int(50) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `flag` int(1) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `purchase_order_id` int(11) DEFAULT NULL,
+  `purchase_order_id_arb` int(50) DEFAULT NULL,
+  `project_invoice_type` varchar(200) DEFAULT NULL,
+  `project_invoice_type_arb` varchar(50) DEFAULT NULL,
+  `project_invoice_due_date` varchar(255) DEFAULT NULL,
+  `project_invoice_due_date_arb` varchar(50) DEFAULT NULL,
+  `project_invoice_terms` text DEFAULT NULL,
+  `project_invoice_terms_arb` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `cst` int(1) DEFAULT NULL,
+  `vat` int(1) DEFAULT NULL,
+  `cst_value` decimal(10,2) DEFAULT NULL,
+  `vat_value` decimal(10,2) DEFAULT NULL,
+  `frieght` int(11) DEFAULT NULL,
+  `p_f` int(11) DEFAULT NULL,
+  `discount` varchar(100) DEFAULT NULL,
+  `project_invoice_code_vat` int(50) DEFAULT NULL,
+  `project_invoice_used` int(1) DEFAULT NULL,
+  `project_invoice_code_vat_quote` int(50) DEFAULT NULL,
+  `site_id` int(11) DEFAULT NULL,
+  `manual_project_invoice_seq` int(1) DEFAULT NULL,
+  `apply_general_vat` int(1) DEFAULT NULL,
+  `selling_company` varchar(50) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `project_invoice_paid_date` date DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  `project_invoice_sent_out` tinyint(1) DEFAULT NULL,
+  `gst_percentage` tinyint(4) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `title_arb` varchar(255) DEFAULT NULL,
+  `rate_text` varchar(255) DEFAULT NULL,
+  `qty_text` varchar(255) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `reference_no` varchar(50) DEFAULT NULL,
+  `CBF_Ref_No` varchar(50) DEFAULT NULL,
+  `project_invoice_code_user` varchar(255) DEFAULT NULL,
+  `project_invoice_sent_out_date` date DEFAULT NULL,
+  `payment_terms` text DEFAULT NULL,
+  `po_number` varchar(255) DEFAULT NULL,
+  `project_location` varchar(255) DEFAULT NULL,
+  `project_reference` varchar(255) DEFAULT NULL,
+  `quote_code` varchar(50) DEFAULT NULL,
+  `project_invoice_manual_code` varchar(150) DEFAULT NULL,
+  `so_ref_no` varchar(100) DEFAULT NULL,
+  `code` varchar(100) DEFAULT NULL,
+  `site_code` varchar(100) DEFAULT NULL,
+  `attention` varchar(100) DEFAULT NULL,
+  `reference` text DEFAULT NULL,
+  `gst_value` float DEFAULT NULL,
+  `Clearance_status` varchar(255) DEFAULT NULL,
+  `qr_code` varchar(255) DEFAULT NULL,
+  `unique_id` varchar(255) DEFAULT NULL,
+  `xml_hash` varchar(255) DEFAULT NULL,
+  `source_type` varchar(255) DEFAULT NULL,
+  `project_invoice_source_id` int(11) DEFAULT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
