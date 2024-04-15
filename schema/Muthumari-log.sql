@@ -385,3 +385,23 @@ CREATE TABLE `project_invoice` (
   `order_id` int(11) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+..................Product module Inserted translation field(10/4/24).................
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdProduct.Edit', 'Edit', 'يحرر', 'Product Edit', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.ItemCode', 'Item Code', 'رمز الصنف', 'Product Item Code', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.ProductName', 'Product Name', 'اسم المنتج', 'Product Name', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.ProductType', 'Product Type', 'نوع المنتج', 'Product Type', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.Price', 'Price', 'سعر', 'Product Price', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.Unit', 'Unit', 'وحدة', 'Product Unit', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.Quantity in Stock ', 'Quantity in Stock ', 'الكميه في المخزن', 'Product Quantity in Stock ', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.ModifiedBy', 'Modified By', 'تم التعديل بواسطة', 'Product ModifiedBy', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.Category', 'Category', 'فئة', 'Product Category', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.ShortDescription ', 'Short Description ', 'وصف قصير', 'Product Short Description ', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.Published', 'Published', 'نشرت', 'Product Published', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.PublishedYes', 'Yes', 'نعم', 'Product PublishedYes', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.PublishedNo', 'No', 'لا', 'Product PublishedNo', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProduct.Description', 'Description', 'وصف', 'Product Description', '10-04-2024', NULL, NULL, NULL, NULL, '0')
+
