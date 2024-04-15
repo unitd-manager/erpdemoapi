@@ -95,32 +95,32 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
 //   }
 // );
 // });
-app.get('/getQuotationCounts', (req, res, next) => {
-     const { month } = req.query;
-db.query(`
+// app.get('/getQuotationCounts', (req, res, next) => {
+//      const { month } = req.query;
+// db.query(`
 
-  SELECT
-    DATE_FORMAT(quote_date, '%Y-%m-%d') AS quote_date,
-    COUNT(quote_id) AS quotation_count
-  FROM
-    quotations
-  WHERE
-    MONTH(quote_date) = ${db.escape(req.body.month)}
-  GROUP BY
-    quote_date
-  ORDER BY
-    quote_date ASC
-`, [targetMonth], (err, result) => {
-  if (err) {
-    console.error("Error executing query:", err);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
-  return res.status(200).json({
-    data: result,
-    msg: 'Success'
-  });
-});
-})
+//   SELECT
+//     DATE_FORMAT(quote_date, '%Y-%m-%d') AS quote_date,
+//     COUNT(quote_id) AS quotation_count
+//   FROM
+//     quotations
+//   WHERE
+//     MONTH(quote_date) = ${db.escape(req.body.month)}
+//   GROUP BY
+//     quote_date
+//   ORDER BY
+//     quote_date ASC
+// `, [targetMonth], (err, result) => {
+//   if (err) {
+//     console.error("Error executing query:", err);
+//     return res.status(500).json({ error: 'Internal Server Error' });
+//   }
+//   return res.status(200).json({
+//     data: result,
+//     msg: 'Success'
+//   });
+// });
+// })
 app.get('/getPurchaseRequest', (req, res, next) => {
   db.query(`SELECT * 
    FROM purchase_request `,

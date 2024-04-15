@@ -36,16 +36,33 @@ app.get('/getTranslationforTradingSalesReturn', (req, res, next) => {
 );
 });
 
+app.get('/getTranslationforTradingProjitSalesReturn', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingSalesReturn%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/getFinances', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_date_arb
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
   ,q.quote_id
   ,opt.office_ref_no
-  ,opt.office_ref_no_arb
   ,c.company_id
   ,c.company_name
   ,c.company_name_arb
@@ -56,14 +73,12 @@ app.get('/getFinances', (req, res, next) => {
   ,o.notes
   ,(select sum(it.total_cost)) as amount
   ,o.order_code
-  ,o.order_code_arb
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
   ,o.shipping_address2
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
-  ,q.quote_code_arb
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
@@ -246,6 +261,8 @@ app.post('/editSalesReturn', (req, res, next) => {
             ,modification_date = ${db.escape(req.body.modification_date)}
             ,modified_by = ${db.escape(req.body.modified_by)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
+
              WHERE sales_return_id =  ${db.escape(req.body.sales_return_id)}`,
     (err, result) => {
       if (err) {
@@ -384,7 +401,6 @@ app.post('/getFinancesById', (req, res, next) => {
   db.query(`SELECT 
   o.order_id,
   o.order_date,
-  o.order_date_arb,
   o.company_id,
   c.company_name,
   c.company_name_arb,
@@ -401,7 +417,6 @@ app.post('/getFinancesById', (req, res, next) => {
   o.shipping_first_name,
   o.shipping_address1,
   o.order_code,
-  o.order_code_arb,
   o.shipping_address2,
   o.shipping_address_country,
   o.shipping_address_po_code,
@@ -425,7 +440,6 @@ app.post('/getFinancesById', (req, res, next) => {
   c.address_street AS company_address_street,
   op.opportunity_id,
   op.office_ref_no,
-  op.office_ref_no_arb,
   c.address_town AS company_address_town,
   c.address_state AS company_address_state,
   gc3.name AS company_country_name,
@@ -544,7 +558,6 @@ app.post('/getOrdersByIds', (req, res, next) => {
   ,r.order_id
   ,o.order_code
   ,r.qty
-  ,r.qty_arb
   ,r.unit_price
   ,r.item_title
   ,r.item_title_arb
@@ -734,12 +747,10 @@ app.get('/getGst', (req, res, next) => {
 app.post('/getFinanceById', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_date_arb
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
   ,opt.office_ref_no
-  ,opt.office_ref_no_arb
   ,c.company_id
   ,c.company_name
   ,c.company_name_arb
@@ -752,7 +763,6 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.modified_by
   ,o.notes
   ,(select sum(it.total_cost)) as amount
-  ,o.order_code_arb
   ,o.order_code
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
@@ -760,7 +770,6 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
-  ,q.quote_code_arb
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
@@ -1297,8 +1306,11 @@ app.post('/editInvoiceItem', (req, res, next) => {
             SET qty=${db.escape(req.body.qty)}
             ,unit_price=${db.escape(req.body.unit_price)}
             ,item_title=${db.escape(req.body.item_title)}
+            ,item_title_arb=${db.escape(req.body.item_title_arb)}
             ,model=${db.escape(req.body.model)}
+            ,model_arb=${db.escape(req.body.model_arb)}
             ,module=${db.escape(req.body.module)}
+            ,module_arb=${db.escape(req.body.module_arb)}
             ,invoice_id=${db.escape(req.body.invoice_id)}
             ,item_code=${db.escape(req.body.item_code)}
             ,vat=${db.escape(req.body.vat)}
@@ -1308,7 +1320,9 @@ app.post('/editInvoiceItem', (req, res, next) => {
             ,item_code_backup=${db.escape(req.body.item_code_backup)}
             ,unit=${db.escape(req.body.unit)}
             ,description=${db.escape(req.body.description)}
+            ,description_arb=${db.escape(req.body.description)}
             ,remarks=${db.escape(req.body.remarks)}
+            ,remarks_arb=${db.escape(req.body.remarks)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
             ,month=${db.escape(req.body.month)}
