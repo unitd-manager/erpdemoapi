@@ -607,10 +607,14 @@ app.post('/insertProduct', (req, res, next) => {
   let data = {category_id: req.body.category_id
     ,  sub_category_id : req.body.sub_category_id 
     , title: req.body.title
+    , title_arb: req.body.title_arb
     , product_code: req.body.product_code
     , description: req.body.description
+    , description_arb: req.body.description_arb
     , qty_in_stock: req.body.qty
+    , qty_in_stock_arb: req.body.qty_arb
     , price: req.body.price
+    , price_arb: req.body.price_arb
     , published:1
     , member_only: req.body.member_only
     , creation_date: req.body.creation_date
@@ -631,6 +635,7 @@ app.post('/insertProduct', (req, res, next) => {
     , item_code: req.body.item_code
     , modified_by: req.body.modified_by
     , created_by: req.body.created_by
+    , created_by_arb: req.body.created_by_arb
     , part_number: req.body.part_number
     , price_from_supplier: req.body.price_from_supplier
     , model: req.body.model
@@ -1377,6 +1382,25 @@ app.get('/getUnitFromValueList', (req, res, next) => {
       }
     }
   );
+});
+
+app.get('/getTranslationForProduct', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProduct%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
 });
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
