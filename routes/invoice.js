@@ -578,7 +578,6 @@ app.get('/getReceipts', (req, res, next) => {
   db.query(
     `select i.receipt_id
   ,i.remarks
-  ,i.remarks_arb
   ,i.creation_date
   ,i.modification_date
   ,i.created_by
@@ -1060,11 +1059,7 @@ app.post('/getInvoiceByItemId', (req, res, next) => {
 });
 app.post('/getInvoiceByOrderItemId', (req, res, next) => {
   db.query(`select 
-  i.invoice_id,
-<<<<<<< HEAD
-=======
-  i.invoice_id_arb
->>>>>>> deba6c0d9b718ddf75640259c9cdcb8db8eb35fd
+  i.invoice_id
   ,i.item_title
   ,i.item_title_arb
   ,o.invoice_code
@@ -1075,12 +1070,9 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
   ,i.qty
   ,i.qty_arb
   ,i.invoice_qty
-  ,i.invoice_qty_arb
   ,i.unit_price
   ,i.invoice_item_id
-  ,i.invoice_item_id_arb
   ,i.unit
-  ,i.unit_arb
   ,i.created_by
   ,i.creation_date
   ,i.modified_by
@@ -1322,17 +1314,11 @@ app.get('/getCustomerDropdown', (req, res, next) => {
 app.post('/getSalesOrderDropdown', (req, res, next) => {
   db.query(`SELECT 
   o.order_id
-  o.order_id_arb
   ,o.order_code
-<<<<<<< HEAD
-=======
   ,o.order_code_arb
->>>>>>> deba6c0d9b718ddf75640259c9cdcb8db8eb35fd
-
   FROM orders o
-  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id 
-  WHERE
-  o.order_id != '' 
+  LEFT JOIN invoice i ON i.invoice_source_id = o.order_id 
+  WHERE o.order_id != '' 
   AND i.invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
@@ -1352,13 +1338,12 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   db.query(`SELECT 
   g.goods_delivery_id,
   g.goods_delivery_id_arb,
-  g.goods_delivery_code
+  g.goods_delivery_code,
   g.goods_delivery_code_arb
   FROM goods_delivery g
-  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id
-  WHERE
-  g.goods_delivery_id != '' 
-  AND i.invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
+  LEFT JOIN invoice i ON i.invoice_source_id = g.goods_delivery_id
+  WHERE g.goods_delivery_id != '' 
+  AND i.invoice_source_id IS NULL AND g.company_id= ${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({

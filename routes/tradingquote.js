@@ -153,12 +153,14 @@ app.get("/getEnquiryCode", (req, res, next) => {
     `SELECT 
   o.opportunity_code,
   o.company_id,
-  o.opportunity_id 
-  from opportunity o   
+  o.opportunity_id, 
+  c.company_name
+  from opportunity o  
+  LEFT JOIN (company c) on o.company_id = c.company_id
   LEFT JOIN (quote q) ON o.opportunity_id = q.opportunity_id
   WHERE
   o.opportunity_id != '' 
-  AND q.opportunity_id IS NULL`,
+  `,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
