@@ -381,7 +381,7 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
   const quoteId = req.params.quoteId;
 
   // Construct and execute the SQL query to delete old order items by quote_id
-  const sql = "DELETE FROM order_item WHERE quote_id = ?";
+  const sql = "DELETE FROM project_order_item WHERE project_quote_id = ?";
   db.query(sql, [quoteId], (err, result) => {
     if (err) {
       console.error('Error deleting order items:', err);
@@ -397,7 +397,26 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
   });
 });
 
-
+app.post('/getQuoteLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+            qt.* 
+            FROM project_quote_items qt 
+             WHERE qt.project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      }else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');

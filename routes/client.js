@@ -299,7 +299,6 @@ app.post("/getContactLinkedByCompanyId", (req, res, next) => {
   ,c.position
   ,c.position_arb
   ,c.department 
-  ,c.department_arb
   ,c.salutation
   FROM contact c WHERE company_id=${db.escape(req.body.company_id)}`,
     (err, result) => {
