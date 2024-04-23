@@ -396,6 +396,105 @@ app.post('/deleteMaterialRequestItem', (req, res, next) => {
   });
 });
 
+app.post("/getMaterialrequestItemsById", (req, res, next) => {
+  db.query(
+    `SELECT 
+    m.material_request_item_id ,
+    m.supplier_id,
+    m.product_id,
+    m.material_request_id,
+    m.type,
+    m.brand,
+    m.unit,
+    m.quantity,
+    m.unit_price,
+    m.amount,
+    m.status,
+    m.remarks,
+    m.creation_date,
+    m.modification_date,
+    m.created_by,
+    m.modified_by,
+    p.title,
+    p.description,
+    s.company_name
+    FROM material_request_item m
+    LEFT JOIN product p ON p.product_id=m.product_id
+    LEFT JOIN supplier s ON s.supplier_id=m.supplier_id
+    WHERE m.material_request_id =${db.escape(req.body.material_request_id)}`,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get('/getSettingsForCompany', (req, res, next) => {
+  db.query(`SELECT * FROM setting WHERE key_text LIKE 'cp%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.post("/getMaterialtequestDataById", (req, res, next) => {
+  db.query(
+    `SELECT
+    m.material_request_id
+   ,m.project_id
+   ,m.material_request_date
+   ,m.material_request_date_arb
+   ,m.material_request_code
+   ,m.material_request_code_arb
+   ,c.company_name
+   ,c.company_name_arb
+   ,c.address_flat
+   ,c.address_street
+   ,c.address_town
+   ,c.address_country
+   ,c.address_po_code
+   ,c.phone
+   ,cont.first_name
+   ,cont.first_name_arb
+   FROM material_request m
+   LEFT JOIN (project p) ON (p.project_id=m.project_id)
+   LEFT JOIN (company c) ON (c.company_id=p.company_id)
+   LEFT JOIN (contact cont) ON (cont.contact_id = p.contact_id) 
+   WHERE m.material_request_id =${db.escape(req.body.material_request_id)}  ORDER BY m.material_request_id DESC`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result[0],
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
 
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
