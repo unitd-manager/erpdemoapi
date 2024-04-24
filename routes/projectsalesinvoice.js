@@ -16,10 +16,10 @@ app.use(cors());
 app.use(fileUpload({
   createParentPath: true
 }));
-app.get('/getTranslationforTradingSalesInvoice', (req, res, next) => {
+app.get('/getTranslationforProjectSalesInvoice', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text,t.arb_value 
   FROM translation t 
-  WHERE key_text LIKE 'mdTradingSalesInvoice%'`,
+  WHERE key_text LIKE 'mdProjectSalesInvoice%'`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -60,13 +60,13 @@ app.post('/insertInvoice', (req, res, next) => {
 
   let data = {
     invoice_code: req.body.invoice_code
-    , invoice_source_id: req.body.invoice_source_id
+    , project_invoice_source_id: req.body.project_invoice_source_id
     , company_id: req.body.company_id
     , source_type: req.body.source_type
     , status: 'Due'
     , creation_date: req.body.creation_date   
     , created_by: req.body.created_by
-    ,invoice_date: new Date()
+    ,project_invoice_date: new Date()
  };
   let sql = "INSERT INTO invoice SET ?";
   let query = db.query(sql, data,(err, result) => {
@@ -90,14 +90,14 @@ app.get('/getReturnsStats', (req, res, next) => {
     s.status,
     c.company_id,
     c.company_name,
-    i.invoice_id,
+    i.project_invoice_id,
     i.invoice_code,
     o.order_id,
     o.order_code
 FROM company c
 LEFT JOIN orders o ON c.company_id = o.company_id
 LEFT JOIN invoice i ON o.order_id = i.order_id
-INNER JOIN sales_return s ON i.invoice_id = s.invoice_id
+INNER JOIN sales_return s ON i.project_invoice_id = s.project_invoice_id
 WHERE c.company_id !=''`,
     (err, result) => {
 
@@ -144,7 +144,7 @@ ORDER BY o.order_id`,
   );
 });
 // app.post('/editInvoiceItems', (req, res, next) => {
-//   db.query(`UPDATE invoice_item 
+//   db.query(`UPDATE project_invoice_item 
 //             SET item_title = ${db.escape(req.body.item_title)}
 //              ,unit=${db.escape(req.body.unit)}
 //             ,unit_price=${db.escape(req.body.unit_price)}
@@ -174,7 +174,7 @@ app.get('/getTradingInvoiceSummary', (req, res, next) => {
     (SELECT SUM(q.total_amount)) AS quoteAmount,
     o.order_id,
     o.order_code,
-    i.invoice_id,
+    i.project_invoice_id,
     i.invoice_code,
     i.status,
     (SELECT SUM(it.total_cost)) AS invoiceAmount,
@@ -187,12 +187,12 @@ FROM company c
 LEFT JOIN orders o ON c.company_id = o.company_id
 LEFT JOIN goods_delivery g ON o.order_id = g.order_id
 LEFT JOIN invoice i ON o.order_id = i.order_id
-LEFT JOIN invoice_item it ON i.invoice_id = it.invoice_id
+LEFT JOIN project_invoice_item it ON i.project_invoice_id = it.project_invoice_id
 LEFT JOIN receipt r ON o.order_id = r.order_id
 LEFT JOIN quote q ON o.quote_id = q.quote_id
 WHERE o.order_id IS NOT NULL 
 AND i.status != ''
-GROUP BY i.invoice_id`,
+GROUP BY i.project_invoice_id`,
     (err, result) => {
 
       if (err) {
@@ -244,14 +244,14 @@ app.post('/getReturnStats', (req, res, next) => {
     s.status AS sales_return_status,
     c.company_id,
     c.company_name,
-    i.invoice_id,
+    i.project_invoice_id,
     i.invoice_code,
     o.order_id,
     o.order_code
 FROM company c
 LEFT JOIN orders o ON c.company_id = o.company_id
 LEFT JOIN invoice i ON o.order_id = i.order_id
-INNER JOIN sales_return s ON i.invoice_id = s.invoice_id
+INNER JOIN sales_return s ON i.project_invoice_id = s.project_invoice_id
 WHERE c.company_id = ${db.escape(req.body.company_id)}`,
     (err, result) => {
       if (err) {
@@ -317,7 +317,7 @@ app.get('/getMainInvoice', (req, res, next) => {
     ,ca.address_state   AS comp_mul_address_state_arb
     ,ca.address_country AS comp_mul_address_country
     ,ca.address_country AS comp_mul_address_country_arb
-    ,DATEDIFF(Now() ,i.invoice_due_date) AS age
+    ,DATEDIFF(Now() ,i.project_invoice_due_date) AS age
     ,(IF(ISNULL((SELECT FORMAT(SUM(invoice_amount), 0) FROM invoice 
     WHERE project_id = i.project_id AND invoice_code < i.invoice_code AND status != LOWER('Cancelled'))), 0, (SELECT FORMAT(SUM(invoice_amount), 0)
     FROM invoice
@@ -329,7 +329,7 @@ app.get('/getMainInvoice', (req, res, next) => {
     LEFT JOIN (company c)     	ON (p.company_id = c.company_id)
     LEFT JOIN (company_address ca)ON (cont.company_address_id = ca.company_address_id)
      LEFT JOIN branch b ON(p.branch_id = b.branch_id)
-     WHERE i.invoice_id != '' ORDER BY i.invoice_code DESC`,
+     WHERE i.project_invoice_id != '' ORDER BY i.invoice_code DESC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -352,14 +352,14 @@ app.post('/getInvoiceForReceiptOld', (req, res, next) => {
     SELECT
       i.invoice_code,
       i.status,
-      i.invoice_id,
+      i.project_invoice_id,
       SUM(ii.total_cost) AS invoice_amount
     FROM
       invoice i
-      LEFT JOIN invoice_item ii ON ii.invoice_id = i.invoice_id
+      LEFT JOIN project_invoice_item ii ON ii.project_invoice_id = i.project_invoice_id
       LEFT JOIN orders b ON b.order_id = i.order_id
     WHERE b.order_id = ${db.escape(req.body.order_id)} AND i.status != 'Paid' AND ii.total_cost !=''
-   GROUP BY i.invoice_id `,
+   GROUP BY i.project_invoice_id `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -381,15 +381,15 @@ app.post('/getInvoiceForReceipt', (req, res, next) => {
     SELECT
       i.invoice_code,
       i.status,
-      i.invoice_id,
-      i.invoice_source_id,
+      i.project_invoice_id,
+      i.project_invoice_source_id,
       SUM(ii.total_cost) AS invoice_amount
     FROM
       invoice i
-      LEFT JOIN invoice_item ii ON ii.invoice_id = i.invoice_id
-      LEFT JOIN orders b ON b.order_id = i.invoice_source_id
+      LEFT JOIN project_invoice_item ii ON ii.project_invoice_id = i.project_invoice_id
+      LEFT JOIN orders b ON b.order_id = i.project_invoice_source_id
     WHERE b.order_id = ${db.escape(req.body.order_id)} AND i.status != 'Paid' AND ii.total_cost !=''
-   GROUP BY i.invoice_id `,
+   GROUP BY i.project_invoice_id `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -413,7 +413,7 @@ app.get('/checkQuoteItems', (req, res, next) => {
     order_item_id ,
     order_item_id_arb 
 
-     FROM invoice_item`,
+     FROM project_invoice_item`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -435,7 +435,7 @@ app.get('/checkGoodsItems', (req, res, next) => {
   db.query(
     `SELECT goods_delivery_item_id,
     goods_delivery_item_id_arb
-     FROM invoice_item`,
+     FROM project_invoice_item`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -606,12 +606,12 @@ app.get('/getReceipts', (req, res, next) => {
 app.post('/editInvoice', (req, res, next) => {
   db.query(`UPDATE invoice 
             SET status = ${db.escape(req.body.status)}
-             ,invoice_date=${db.escape(req.body.invoice_date)}
-             ,invoice_due_date=${db.escape(req.body.invoice_due_date)}
-            ,invoice_terms=${db.escape(req.body.invoice_terms)}
-            ,invoice_terms_arb=${db.escape(req.body.invoice_terms_arb)}
+             ,project_invoice_date=${db.escape(req.body.project_invoice_date)}
+             ,project_invoice_due_date=${db.escape(req.body.project_invoice_due_date)}
+            ,project_invoice_terms=${db.escape(req.body.project_invoice_terms)}
+            ,project_invoice_terms_arb=${db.escape(req.body.project_invoice_terms_arb)}
 
-           WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
+           WHERE project_invoice_id =  ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -627,12 +627,12 @@ app.post('/editInvoice', (req, res, next) => {
 });
 
 app.get('/getInvoiceSummary', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code 
   ,ir.amount as received
   ,(select(i.invoice_amount-ir.amount)) as balance
-  ,i.invoice_due_date
-  ,i.invoice_date
+  ,i.project_invoice_due_date
+  ,i.project_invoice_date
   ,i.invoice_amount
   ,i.selling_company
   ,i.start_date
@@ -644,13 +644,13 @@ app.get('/getInvoiceSummary', (req, res, next) => {
   ,i.so_ref_no
   ,i.code
   ,i.reference
-   ,i.invoice_terms
+   ,i.project_invoice_terms
    ,i.attention
    ,i.status
  from invoice i
-  LEFT JOIN invoice_receipt_history ir ON ir.invoice_id=i.invoice_id
-WHERE i.invoice_id !='' AND i.status != LOWER('Cancelled')
-ORDER BY i.invoice_date DESC`,
+  LEFT JOIN invoice_receipt_history ir ON ir.project_invoice_id=i.project_invoice_id
+WHERE i.project_invoice_id !='' AND i.status != LOWER('Cancelled')
+ORDER BY i.project_invoice_date DESC`,
     (err, result) => {
 
       if (err) {
@@ -670,14 +670,14 @@ ORDER BY i.invoice_date DESC`,
 });
 
 app.post('/getReturnItemsById', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.item_title
   ,i.qty
   ,i.unit_price
   ,i.total_cost
- from invoice_item i
-  LEFT JOIN invoice iv  ON iv.invoice_id=i.invoice_id
-WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+ from project_invoice_item i
+  LEFT JOIN invoice iv  ON iv.project_invoice_id=i.project_invoice_id
+WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
           (err, result) => {
        
       if (result.length === 0) {
@@ -697,7 +697,7 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
 
 app.post('/', (req, res, next) => {
   db.query(
-    `= ${db.escape(req.body.invoice_id)}`,
+    `= ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
       if (err) {
         return res.status(500).send({
@@ -715,8 +715,8 @@ app.post('/', (req, res, next) => {
 });
 app.post('/getInvoiceOrderedQty', (req, res, next) => {
   db.query(`SELECT qty, invoice_qty
-  FROM invoice_item 
-  WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
+  FROM project_invoice_item 
+  WHERE project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -736,10 +736,10 @@ app.post('/getInvoiceOrderedQty', (req, res, next) => {
 
 app.get('/getInvoice', (req, res, next) => {
   db.query(`SELECT
-  i.invoice_id,
+  i.project_invoice_id,
   i.invoice_code,
-  i.invoice_due_date,
-  i.invoice_date,
+  i.project_invoice_due_date,
+  i.project_invoice_date,
   i.invoice_amount,
   i.selling_company,
   i.start_date,
@@ -751,19 +751,19 @@ app.get('/getInvoice', (req, res, next) => {
   i.so_ref_no,
   i.code,
   i.reference,
-  i.invoice_terms,
+  i.project_invoice_terms,
   i.attention,
   i.status
 FROM
   invoice i
 LEFT JOIN
-  sales_return sr ON i.invoice_id = sr.invoice_id
+  sales_return sr ON i.project_invoice_id = sr.project_invoice_id
 WHERE
-  i.invoice_id != '' AND
+  i.project_invoice_id != '' AND
   i.status != LOWER('Paid') AND
-  sr.invoice_id IS NULL
+  sr.project_invoice_id IS NULL
 ORDER BY
-  i.invoice_date DESC`,
+  i.project_invoice_date DESC`,
     (err, result) => {
 
       if (err) {
@@ -786,15 +786,15 @@ app.get('/getInvoiceItemsByItemsId/:invoiceItemId', (req, res, next) => {
   db.query(
     `SELECT it.item_title,
       it.invoice_item_id,
-      i.invoice_id,
+      i.project_invoice_id,
       it.description,
       it.total_cost,
       it.unit,
       it.qty,
       it.unit_price,
       it.remarks
-    FROM invoice_item it
-    LEFT JOIN invoice i ON (i.invoice_id = it.invoice_id)
+    FROM project_invoice_item it
+    LEFT JOIN invoice i ON (i.project_invoice_id = it.project_invoice_id)
     WHERE it.invoice_item_id = ${db.escape(invoiceItemId)}`,
     (err, result) => {
       if (err) {
@@ -822,7 +822,7 @@ app.get('/getInvoiceItemsByItemsId/:invoiceItemId', (req, res, next) => {
 app.post('/getInvoiceItemsById', (req, res, next) => {
   db.query(`SELECT it.item_title,
   it.invoice_item_id,
-i.invoice_id,
+i.project_invoice_id,
 it.description,
 it.description_arb,
 
@@ -834,12 +834,12 @@ it.unit_price,
 it.remarks,
 it.remarks_arb,
 
-i.invoice_id,
+i.project_invoice_id,
 o.order_id
-FROM invoice_item it
-LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
-LEFT JOIN (orders o) ON (o.order_id=i.invoice_source_id)
-WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+FROM project_invoice_item it
+LEFT JOIN (invoice i) ON (i.project_invoice_id=it.project_invoice_id)
+LEFT JOIN (orders o) ON (o.order_id=i.project_invoice_source_id)
+WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
           (err, result) => {
        
       if (err) {
@@ -860,7 +860,7 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
 app.post('/getReturnInvoiceItemsById', (req, res, next) => {
   db.query(`SELECT it.sales_return_history_id ,
   it.return_date,
-i.invoice_id,
+i.project_invoice_id,
 it.invoice_item_id,
 it.price,
 it.notes,
@@ -872,9 +872,9 @@ iv.item_title,
 iv.item_title_arb
 
 FROM sales_return_history it
-LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
-LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
-WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+LEFT JOIN (sales_return i) ON (i.project_invoice_id=it.project_invoice_id)
+LEFT JOIN (project_invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
+WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
           (err, result) => {
        
       if (result.length === 0) {
@@ -895,15 +895,15 @@ WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
 app.post('/getInvoiceItemsByItemId', (req, res, next) => {
   db.query(`SELECT it.item_title,
   it.invoice_item_id,
-i.invoice_id,
+i.project_invoice_id,
 it.description,
 it.total_cost,
 it.unit,
 it.qty,
 it.unit_price,
 it.remarks
-FROM invoice_item it
-LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
+FROM project_invoice_item it
+LEFT JOIN (invoice i) ON (i.project_invoice_id=it.project_invoice_id)
 WHERE i.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
           (err, result) => {
        
@@ -929,7 +929,7 @@ app.post('/getSalesReturnId', (req, res, next) => {
   ,o.created_by
   ,o.modified_by
   ,o.modification_date
-  ,o.invoice_id
+  ,o.project_invoice_id
   ,i.invoice_code
   ,i.status AS invoice_status
   ,i.status AS invoice_status_arb
@@ -939,8 +939,8 @@ app.post('/getSalesReturnId', (req, res, next) => {
   ,i.invoice_code
   ,(select sum(total_cost)) as InvoiceAmount
   from sales_return o
-  LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
-  LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
+  LEFT JOIN invoice i ON i.project_invoice_id = o.project_invoice_id
+  LEFT JOIN project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
    WHERE o.sales_return_id = ${db.escape(req.body.sales_return_id)}`,
           (err, result) => {
        
@@ -960,15 +960,15 @@ app.post('/getSalesReturnId', (req, res, next) => {
 });
 
 app.post('/getInvoiceByInvoiceItemId', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.item_title
   ,i.item_title_arb
   ,o.invoice_code
   ,i.description
   ,i.description_arb
   ,i.total_cost
-   from invoice_item i
-   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
+   from project_invoice_item i
+   LEFT JOIN invoice o ON o.project_invoice_id=i.project_invoice_id
  WHERE i.invoice_item_id= ${db.escape(req.body.invoice_item_id)}`,
     (err, result) => {
 
@@ -989,16 +989,16 @@ app.post('/getInvoiceByInvoiceItemId', (req, res, next) => {
   );
 });
 app.post('/getInvoiceByItemsId', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.item_title
   ,o.invoice_code
   ,i.description
   ,i.total_cost
   ,i.qty
   ,i.unit_price
-   from invoice_item i
-   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
- WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+   from project_invoice_item i
+   LEFT JOIN invoice o ON o.project_invoice_id=i.project_invoice_id
+ WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
 
       if (err) {
@@ -1018,7 +1018,7 @@ app.post('/getInvoiceByItemsId', (req, res, next) => {
   );
 });
 app.post('/getInvoiceByItemId', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.item_title
   ,i.item_title_arb
   ,o.invoice_code
@@ -1028,9 +1028,9 @@ app.post('/getInvoiceByItemId', (req, res, next) => {
   ,i.qty
   ,i.unit_price
   ,i.invoice_item_id
-   from invoice_item i
-   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
- WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+   from project_invoice_item i
+   LEFT JOIN invoice o ON o.project_invoice_id=i.project_invoice_id
+ WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
 
       if (err) {
@@ -1051,7 +1051,7 @@ app.post('/getInvoiceByItemId', (req, res, next) => {
 });
 app.post('/getInvoiceByOrderItemId', (req, res, next) => {
   db.query(`select 
-  i.invoice_id,
+  i.project_invoice_id,
   i.invoice_id_arb
   ,i.item_title
   ,i.item_title_arb
@@ -1073,9 +1073,9 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
   ,i.creation_date
   ,i.modified_by
   ,i.modification_date
-   from invoice_item i
-   LEFT JOIN invoice o ON o.invoice_id=i.invoice_id
- WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+   from project_invoice_item i
+   LEFT JOIN invoice o ON o.project_invoice_id=i.project_invoice_id
+ WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
 
       if (err) {
@@ -1098,7 +1098,7 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
 
 app.post('/getInvoiceByIdold', (req, res, next) => {
   db.query(`select 
-  i.invoice_id
+  i.project_invoice_id
   ,i.invoice_id_arb
   ,i.invoice_code  
   ,i.invoice_code_arb
@@ -1112,7 +1112,7 @@ app.post('/getInvoiceByIdold', (req, res, next) => {
   ,i.modified_by
   ,i.status
   ,i.status_arb
-  ,i.invoice_date
+  ,i.project_invoice_date
   ,i.invoice_date_arb
    ,i.invoice_amount
    ,i.invoice_amount_arb
@@ -1131,8 +1131,8 @@ app.post('/getInvoiceByIdold', (req, res, next) => {
     ,i.code_arb
     ,i.reference
     ,i.reference_arb
-     ,i.invoice_terms
-     ,i.invoice_terms_arb
+     ,i.project_invoice_terms
+     ,i.project_invoice_terms_arb
      ,i.attention
      ,i.attention_arb
      ,i.site_code
@@ -1152,8 +1152,8 @@ app.post('/getInvoiceByIdold', (req, res, next) => {
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
   LEFT JOIN goods_delivery g ON g.goods_delivery_id=i.goods_delivery_id
- LEFT JOIN invoice_item it ON it.invoice_id=i.invoice_id
- WHERE i.invoice_id = ${db.escape(req.body.invoice_id)} `,
+ LEFT JOIN project_invoice_item it ON it.project_invoice_id=i.project_invoice_id
+ WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)} `,
     (err, result) => {
 
       if (err) {
@@ -1175,38 +1175,38 @@ app.post('/getInvoiceByIdold', (req, res, next) => {
 
 app.post('/getInvoiceById', (req, res, next) => {
   db.query(`SELECT
-    i.invoice_id,
-    i.invoice_source_id,
-    i.source_type,
-    i.invoice_code,
-    i.invoice_due_date,
-    co.company_name,
-    i.status,
-    i.invoice_date,
-    i.invoice_amount,
-    i.invoice_due_date,
-    i.created_by,
-    i.creation_date,
-    i.modified_by,
-    i.modification_date,
-    i.invoice_terms,
-    i.company_id,
-    o.order_id,
-    o.order_code,
-    g.goods_delivery_id,
-    g.goods_delivery_code,
-    SUM(it.total_cost) AS InvoiceAmount
-  FROM
-    invoice i
-  LEFT JOIN
-    orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
-  LEFT JOIN
-    goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
-  LEFT JOIN
-    invoice_item it ON it.invoice_id = i.invoice_id
-  LEFT JOIN
-    company co ON co.company_id = i.company_id
-  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+  i.project_invoice_id,
+  i.project_invoice_source_id,
+  i.source_type,
+  i.project_invoice_code,
+  i.project_invoice_due_date,
+  co.company_name,
+  i.status,
+  i.project_invoice_date,
+  i.project_invoice_amount,
+  i.project_invoice_due_date,
+  i.created_by,
+  i.creation_date,
+  i.modified_by,
+  i.modification_date,
+  i.project_invoice_terms,
+  i.company_id,
+  o.order_id,
+  o.order_code,
+  g.goods_delivery_id,
+  g.goods_delivery_code,
+  SUM(it.total_cost) AS InvoiceAmount
+FROM
+  project_invoice i
+LEFT JOIN
+  orders o ON o.order_id = i.project_invoice_source_id AND i.source_type = 'Sales_Order'
+LEFT JOIN
+  goods_delivery g ON g.goods_delivery_id = i.project_invoice_source_id AND i.source_type = 'Goods_Delivery'
+LEFT JOIN
+  project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
+LEFT JOIN
+  company co ON co.company_id = i.company_id
+WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -1231,21 +1231,21 @@ app.post('/getInvoiceById', (req, res, next) => {
 
 app.post('/getInvoiceByInvoiceIdId', (req, res, next) => {
   db.query(`SELECT
-    i.invoice_id,
-    i.invoice_source_id,
+    i.project_invoice_id,
+    i.project_invoice_source_id,
     i.source_type,
     i.invoice_code,
-    i.invoice_due_date,
+    i.project_invoice_due_date,
     co.company_name,
     i.status,
-    i.invoice_date,
+    i.project_invoice_date,
     i.invoice_amount,
-    i.invoice_due_date,
+    i.project_invoice_due_date,
     i.created_by,
     i.creation_date,
     i.modified_bys,
     i.modification_date,
-    i.invoice_terms,
+    i.project_invoice_terms,
     o.company_id,
     o.order_id,
     o.order_code,
@@ -1255,14 +1255,14 @@ app.post('/getInvoiceByInvoiceIdId', (req, res, next) => {
   FROM
     invoice i
   LEFT JOIN
-    orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
+    orders o ON o.order_id = i.project_invoice_source_id AND i.source_type = 'Sales_Order'
   LEFT JOIN
-    goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
+    goods_delivery g ON g.goods_delivery_id = i.project_invoice_source_id AND i.source_type = 'Goods_Delivery'
   LEFT JOIN
-    invoice_item it ON it.invoice_id = i.invoice_id
+    project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
   LEFT JOIN
     company co ON co.company_id = o.company_id
-  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+  WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -1309,10 +1309,10 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
   ,o.order_code_arb
 
   FROM orders o
-  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id 
+  LEFT JOIN (invoice i) ON i.project_invoice_source_id = o.order_id 
   WHERE
   o.order_id != '' 
-  AND i.invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
+  AND i.project_invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -1334,10 +1334,10 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   g.goods_delivery_code
   g.goods_delivery_code_arb
   FROM goods_delivery g
-  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id
+  LEFT JOIN (invoice i) ON i.project_invoice_source_id = g.goods_delivery_id
   WHERE
   g.goods_delivery_id != '' 
-  AND i.invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
+  AND i.project_invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -1351,42 +1351,42 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
     }
   });
 });
-app.get('/getInvoices', (req, res, next) => {
+app.get('/getProjectInvoices', (req, res, next) => {
   db.query(`SELECT
-  i.invoice_id,
-  i.invoice_source_id,
+  i.project_invoice_id,
+  i.project_invoice_source_id,
   i.source_type,
-  i.invoice_code,
+  i.project_invoice_code,
   co.company_name,
   i.status,
-  i.invoice_date,
-  i.invoice_due_date,
-  i.invoice_amount,
+  i.project_invoice_date,
+  i.project_invoice_due_date,
+  i.project_invoice_amount,
   i.created_by,
   i.creation_date,
   i.modified_by,
   i.modification_date,
-  i.invoice_terms,
+  i.project_invoice_terms,
   o.order_id,
   o.order_code AS source_code,
   g.goods_delivery_id,
   g.goods_delivery_code AS source_code,
   SUM(it.total_cost) AS InvoiceAmount
 FROM
-  invoice i
+  project_invoice i
 LEFT JOIN
-  orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
+  orders o ON o.order_id = i.project_invoice_source_id AND i.source_type = 'Sales_Order'
 LEFT JOIN
-  goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
+  goods_delivery g ON g.goods_delivery_id = i.project_invoice_source_id AND i.source_type = 'Goods_Delivery'
 LEFT JOIN
-  invoice_item it ON it.invoice_id = i.invoice_id
+  project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
 LEFT JOIN
   company co ON co.company_id = o.company_id
 WHERE
-  i.invoice_id != ''
+  i.project_invoice_id != ''
 GROUP BY
-  i.invoice_id
-  ORDER BY i.invoice_id DESC;`,
+  i.project_invoice_id
+  ORDER BY i.project_invoice_id DESC;`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1408,7 +1408,7 @@ GROUP BY
 app.get('/checkReceiptItemshide', (req, res, next) => {
   db.query(
     `SELECT pricelist_id
-    FROM invoice_item `,
+    FROM project_invoice_item `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1430,7 +1430,7 @@ app.post('/checkPricelistIdInInvoiceItemsold', (req, res, next) => {
 
   db.query(
     `SELECT COUNT(*) AS count
-      FROM invoice_item
+      FROM project_invoice_item
       WHERE quote_id = ${db.escape(pricelistIdToCheck)}`,
     (err, result) => {
       if (err) {
@@ -1455,7 +1455,7 @@ app.post('/checkPricelistIdInInvoiceItems', (req, res, next) => {
 
   db.query(
     `SELECT COUNT(*) AS count
-      FROM invoice_item
+      FROM project_invoice_item
       WHERE quote_id = ${db.escape(QuoteIdToCheck)}`,
     (err, result) => {
       if (err) {
@@ -1477,7 +1477,7 @@ app.post('/checkPricelistIdInInvoiceItems', (req, res, next) => {
 
 app.post('/hideEditIconByIdquote', (req, res, next) => {
   db.query(` SELECT it.quote_id
-  FROM invoice_item it`,
+  FROM project_invoice_item it`,
     (err, result) => {
      
       if (err) {
@@ -1496,10 +1496,10 @@ app.post('/hideEditIconByIdquote', (req, res, next) => {
 });
 
 app.post('/getInvoicesById', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code  
   ,i.status
-  ,i.invoice_date
+  ,i.project_invoice_date
    ,i.invoice_amount
    ,i.gst_value
    ,i.discount
@@ -1510,13 +1510,13 @@ app.post('/getInvoicesById', (req, res, next) => {
     ,i.so_ref_no
     ,i.code
     ,i.reference
-     ,i.invoice_terms
+     ,i.project_invoice_terms
      ,i.attention
      ,i.site_code
      ,i.payment_terms
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
- WHERE i.invoice_id= ${db.escape(req.body.invoice_id)} AND i.status != LOWER('Cancelled')`,
+ WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)} AND i.status != LOWER('Cancelled')`,
     (err, result) => {
 
       if (err) {
@@ -1537,10 +1537,10 @@ app.post('/getInvoicesById', (req, res, next) => {
 });
 
 app.post('/getProjectInvoiceById', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code  
   ,i.status
-  ,i.invoice_date
+  ,i.project_invoice_date
    ,i.invoice_amount
    ,i.gst_value
    ,i.discount
@@ -1551,7 +1551,7 @@ app.post('/getProjectInvoiceById', (req, res, next) => {
     ,i.so_ref_no
     ,i.code
     ,i.reference
-     ,i.invoice_terms
+     ,i.project_invoice_terms
      ,i.attention
      ,i.site_code
      ,i.payment_terms
@@ -1614,10 +1614,10 @@ app.get("/getOrdersByCompanyId/:companyId", (req, res) => {
 
 
 app.post('/getProjectInvoicePdf', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code  
   ,i.status
-  ,i.invoice_date
+  ,i.project_invoice_date
    ,i.invoice_amount
    ,i.gst_value
    ,i.discount
@@ -1628,18 +1628,18 @@ app.post('/getProjectInvoicePdf', (req, res, next) => {
     ,i.so_ref_no
     ,i.code
     ,i.reference
-     ,i.invoice_terms
+     ,i.project_invoice_terms
      ,i.attention
      ,i.site_code
      ,i.payment_terms
      ,it.item_title
      ,it.description
      ,it.total_cost
-     from invoice_item it
+     from project_invoice_item it
     
-    LEFT JOIN invoice i ON it.invoice_id=i.invoice_id
+    LEFT JOIN invoice i ON it.project_invoice_id=i.project_invoice_id
     LEFT JOIN orders o ON o.order_id=i.order_id
-    WHERE i.invoice_id=${db.escape(req.body.invoice_id)} AND i.status != LOWER('Cancelled')
+    WHERE i.project_invoice_id=${db.escape(req.body.project_invoice_id)} AND i.status != LOWER('Cancelled')
     `,
     (err, result) => {
 
@@ -1697,22 +1697,22 @@ app.post('/getReceiptCancel', (req, res, next) => {
 app.post('/editInvoices', (req, res, next) => {
   db.query(`UPDATE invoice 
             SET 
-            invoice_date = ${db.escape(req.body.invoice_date)}
-             ,invoice_terms = ${db.escape(req.body.invoice_terms)}
-             ,invoice_terms_arb = ${db.escape(req.body.invoice_terms_arb)}
+            project_invoice_date = ${db.escape(req.body.project_invoice_date)}
+             ,project_invoice_terms = ${db.escape(req.body.project_invoice_terms)}
+             ,project_invoice_terms_arb = ${db.escape(req.body.project_invoice_terms_arb)}
              ,source_type = ${db.escape(req.body.source_type)}
              ,source_type_arb = ${db.escape(req.body.source_type_arb)}
-             ,invoice_source_id =  ${db.escape(req.body.invoice_source_id)}
-             ,invoice_source_id_arb =  ${db.escape(req.body.invoice_source_id_arb)}
-             ,invoice_due_date =  ${db.escape(req.body.invoice_due_date)}
+             ,project_invoice_source_id =  ${db.escape(req.body.project_invoice_source_id)}
+             ,project_invoice_source_id_arb =  ${db.escape(req.body.project_invoice_source_id_arb)}
+             ,project_invoice_due_date =  ${db.escape(req.body.project_invoice_due_date)}
              ,modified_by = ${db.escape(req.body.modified_by)}
              ,modification_date = ${db.escape(req.body.modification_date)}
     ,invoice_amount = (
         SELECT SUM(total_cost) 
-        FROM invoice_item 
-        WHERE invoice_id = ${db.escape(req.body.invoice_id)}
+        FROM project_invoice_item 
+        WHERE project_invoice_id = ${db.escape(req.body.project_invoice_id)}
     )
-WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
+WHERE project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -1749,10 +1749,10 @@ app.get('/getTranslationforTradingInvoice', (req, res, next) => {
 );
 });
 app.post('/getInvoiceCancel', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code  
   ,i.status
-  ,i.invoice_date
+  ,i.project_invoice_date
    ,i.invoice_amount
    ,i.gst_value
    ,i.discount
@@ -1763,7 +1763,7 @@ app.post('/getInvoiceCancel', (req, res, next) => {
     ,i.so_ref_no
     ,i.code
     ,i.reference
-     ,i.invoice_terms
+     ,i.project_invoice_terms
      ,i.attention
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
@@ -1788,10 +1788,10 @@ app.post('/getInvoiceCancel', (req, res, next) => {
 });
 
 app.post('/getProjectInvoiceCancel', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code  
   ,i.status
-  ,i.invoice_date
+  ,i.project_invoice_date
    ,i.invoice_amount
    ,i.gst_value
    ,i.discount
@@ -1802,7 +1802,7 @@ app.post('/getProjectInvoiceCancel', (req, res, next) => {
     ,i.so_ref_no
     ,i.code
     ,i.reference
-     ,i.invoice_terms
+     ,i.project_invoice_terms
      ,i.attention
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
@@ -1828,10 +1828,10 @@ app.post('/getProjectInvoiceCancel', (req, res, next) => {
 
 
 app.post('/getInvoiceByInvoiceId', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code  
   ,i.status
-  ,i.invoice_date
+  ,i.project_invoice_date
   ,i.invoice_amount
   ,i.gst_percentage
    ,i.invoice_amount 
@@ -1847,7 +1847,7 @@ app.post('/getInvoiceByInvoiceId', (req, res, next) => {
     ,i.code
     ,i.site_code
     ,i.reference
-     ,i.invoice_terms
+     ,i.project_invoice_terms
      ,i.attention
      ,c.company_name AS company_name
      ,o.cust_address1
@@ -1859,7 +1859,7 @@ app.post('/getInvoiceByInvoiceId', (req, res, next) => {
   LEFT JOIN orders o ON o.order_id=i.order_id
   LEFT JOIN company c ON (o.company_id = c.company_id) 
   LEFT JOIN project p ON (p.project_id = i.project_id) 
- WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+ WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
 
       if (err) {
@@ -1912,10 +1912,10 @@ app.post('/getReceiptData', (req, res, next) => {
    ,i.receipt_date
    ,i.order_id
    ,o.order_code
-   ,iv.invoice_id
+   ,iv.project_invoice_id
    from receipt i
   LEFT JOIN orders o ON o.order_id=i.order_id
-  LEFT JOIN invoice iv ON o.order_id=iv.invoice_source_id
+  LEFT JOIN invoice iv ON o.order_id=iv.project_invoice_source_id
  WHERE i.receipt_id= ${db.escape(req.body.receipt_id)}
  GROUP BY i.receipt_id`,
     (err, result) => {
@@ -1948,11 +1948,11 @@ app.post('/getReceiptInvoiceData', (req, res, next) => {
    ,i.receipt_date
    ,i.order_id
    ,o.order_code
-   ,iv.invoice_id
+   ,iv.project_invoice_id
    ,iv.invoice_code
    from receipt i
   LEFT JOIN orders o ON o.order_id=i.order_id
-  LEFT JOIN invoice iv ON o.order_id=iv.invoice_source_id
+  LEFT JOIN invoice iv ON o.order_id=iv.project_invoice_source_id
  WHERE i.receipt_id=${db.escape(req.body.receipt_id)}
  GROUP BY i.receipt_id`,
     (err, result) => {
@@ -1987,7 +1987,7 @@ app.post('/getReceiptByIds', (req, res, next) => {
   ,r.modified_by 
   FROM receipt r  
   LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
-   LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
+   LEFT JOIN invoice i ON (i.project_invoice_id = ih.project_invoice_id) 
  LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
     (err, result) => {
 
@@ -2011,7 +2011,7 @@ app.post('/getReceiptByIds', (req, res, next) => {
 app.post('/editInvoiceStatus', (req, res, next) => {
   db.query(`UPDATE invoice 
             SET status = 'Paid'
-             WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
+             WHERE project_invoice_id =  ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -2029,7 +2029,7 @@ app.post('/editInvoiceStatus', (req, res, next) => {
 app.post('/editInvoicePartialStatus', (req, res, next) => {
   db.query(`UPDATE invoice 
             SET status = 'Partial Payment'
-             WHERE invoice_id =  ${db.escape(req.body.invoice_id)}`,
+             WHERE project_invoice_id =  ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -2060,7 +2060,7 @@ app.post('/getProjectReceiptById', (req, res, next) => {
   ,r.modified_by 
   FROM receipt r  
   LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
-   LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
+   LEFT JOIN invoice i ON (i.project_invoice_id = ih.project_invoice_id) 
  LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE r.order_id = ${db.escape(req.body.order_id)}`,
     (err, result) => {
 
@@ -2099,9 +2099,9 @@ app.post('/getProjectReceiptById', (req, res, next) => {
     r.modified_by
 FROM receipt r
 LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id)
-LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id)
+LEFT JOIN invoice i ON (i.project_invoice_id = ih.project_invoice_id)
 LEFT JOIN orders o ON (o.order_id = i.order_id)
-WHERE r.order_id =  ${db.escape(req.body.order_id)} AND i.invoice_id IS NULL AND r.receipt_status <> 'cancelled';
+WHERE r.order_id =  ${db.escape(req.body.order_id)} AND i.project_invoice_id IS NULL AND r.receipt_status <> 'cancelled';
 `,
     (err, result) => {
 
@@ -2145,7 +2145,7 @@ WHERE r.order_id =  ${db.escape(req.body.order_id)} AND i.invoice_id IS NULL AND
   , o.cust_company_name
   FROM receipt r  
   LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
-   LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
+   LEFT JOIN invoice i ON (i.project_invoice_id = ih.project_invoice_id) 
  LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE r.receipt_id =${db.escape(req.body.receipt_id)}`,
     (err, result) => {
 
@@ -2201,8 +2201,8 @@ app.post('/getInvoiceItemByInvoiceId', (req, res, next) => {
    ,i.unit_price
    ,i.total_cost
    ,(i.qty*unit_price) AS amount
-   from invoice_item i
-  WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+   from project_invoice_item i
+  WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
 
       if (err) {
@@ -2238,7 +2238,7 @@ app.post('/getReceiptById', (req, res, next) => {
   ,r.modified_by 
   FROM receipt r  
   LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
-   LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
+   LEFT JOIN invoice i ON (i.project_invoice_id = ih.project_invoice_id) 
  LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE r.order_id =${db.escape(req.body.order_id)}`,
     (err, result) => {
 
@@ -2263,12 +2263,12 @@ app.post('/getReceiptById', (req, res, next) => {
 app.post('/getInvoiceReceiptById', (req, res, next) => {
   db.query(`SELECT i.invoice_code 
   ,i.status
-  ,i.invoice_id
+  ,i.project_invoice_id
   ,i.invoice_amount
   ,(SELECT SUM(invHist.amount) AS prev_sum 
   FROM invoice_receipt_history invHist 
   LEFT JOIN receipt r ON (r.receipt_id = invHist.receipt_id) 
-  WHERE invHist.invoice_id = i.invoice_id AND i.status != 'Cancelled' AND r.receipt_status!='cancelled') as prev_amount 
+  WHERE invHist.project_invoice_id = i.project_invoice_id AND i.status != 'Cancelled' AND r.receipt_status!='cancelled') as prev_amount 
   FROM invoice i
   LEFT JOIN orders o ON (o.order_id = i.order_id) 
   WHERE o.order_id = ${db.escape(req.body.order_id)} AND (i.status='due' OR i.status='Partial Payment')`,
@@ -2296,7 +2296,7 @@ app.post('/getInvoiceReceiptById', (req, res, next) => {
 
 app.post('/getInvoiceItemById', (req, res, next) => {
   db.query(`SELECT item_title,
-invoice_id,
+project_invoice_id,
 description,
 qty_returned,
 unit,
@@ -2305,8 +2305,8 @@ unit_price,
 amount,
 total_cost,
 remarks
-FROM invoice_item
-WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
+FROM project_invoice_item
+WHERE project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
           (err, result) => {
        
       if (result.length == 0) {
@@ -2326,10 +2326,10 @@ WHERE invoice_id = ${db.escape(req.body.invoice_id)}`,
 
 
 app.post('/getInvoiceLineItemsById', (req, res, next) => {
-  db.query(`select i.invoice_id
+  db.query(`select i.project_invoice_id
   ,i.invoice_code  
   ,i.status
-  ,i.invoice_date
+  ,i.project_invoice_date
    ,i.invoice_amount
    ,i.gst_value
    ,i.discount
@@ -2342,7 +2342,7 @@ app.post('/getInvoiceLineItemsById', (req, res, next) => {
     ,i.code
     ,i.site_code
     ,i.reference
-     ,i.invoice_terms
+     ,i.project_invoice_terms
      ,i.attention
      ,c.company_name AS company_name
      ,o.cust_address1
@@ -2354,11 +2354,11 @@ app.post('/getInvoiceLineItemsById', (req, res, next) => {
   ,it.description
   ,it.amount
    from invoice i
-    LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
+    LEFT JOIN project_invoice_item it ON (it.project_invoice_id = i.project_invoice_id) 
   LEFT JOIN orders o ON o.order_id=i.order_id
   LEFT JOIN company c ON (o.company_id = c.company_id) 
   LEFT JOIN project p ON (p.project_id = i.project_id) 
- WHERE i.invoice_id= ${db.escape(req.body.invoice_id)}`,
+ WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)}`,
           (err, result) => {
        
       if (result.length == 0) {
@@ -2380,10 +2380,10 @@ app.post('/insertInvoiceold', (req, res, next) => {
 
   let data = {
     invoice_code: req.body.invoice_code
-    ,  invoice_id: req.body.invoice_id
+    ,  project_invoice_id: req.body.project_invoice_id
     , order_id: req.body.order_id
     , invoice_amount: req.body.invoice_amount
-    , invoice_date: new Date().toISOString().split('T')[0]
+    , project_invoice_date: new Date().toISOString().split('T')[0]
     , mode_of_payment: req.body.mode_of_payment
     , status: 'Due'
     , creation_date: req.body.creation_date
@@ -2391,8 +2391,8 @@ app.post('/insertInvoiceold', (req, res, next) => {
     , flag: req.body.flag
     , created_by: req.body.created_by
     , invoice_type: req.body.invoice_type
-    , invoice_due_date: req.body.invoice_due_date
-    , invoice_terms: req.body.invoice_terms
+    , project_invoice_due_date: req.body.project_invoice_due_date
+    , project_invoice_terms: req.body.project_invoice_terms
     , notes: req.body.notes
     , cst: req.body.cst
     , vat: req.body.vat
@@ -2459,7 +2459,7 @@ app.post('/insertSalesReturn', (req, res, next) => {
     , return_date: req.body.return_date
     , creation_date: req.body.creation_date
     , modification_date: req.body.modification_date
-    , invoice_id: req.body.invoice_id
+    , project_invoice_id: req.body.project_invoice_id
     ,order_id: req.body.order_id
     ,status: req.body.status
     ,created_by: req.body.created_by
@@ -2486,7 +2486,7 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
     return_date: req.body.return_date,
     creation_date: req.body.creation_date,
     modification_date: req.body.modification_date,
-    invoice_id: req.body.invoice_id,
+    project_invoice_id: req.body.project_invoice_id,
     order_id: req.body.order_id,
     status: req.body.status,
     status: req.body.status_arb,
@@ -2499,9 +2499,9 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
     qty_return: req.body.qty_return,
   };
 
-  // Update the invoice_item table to subtract the returned quantity
+  // Update the project_invoice_item table to subtract the returned quantity
   let updateInvoiceItemSql = `
-    UPDATE invoice_item 
+    UPDATE project_invoice_item 
     SET qty = qty - ${req.body.qty_return},
     total_cost = (qty) * ${req.body.price},
     invoice_qty= ${req.body.qty_return},
@@ -2521,13 +2521,13 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
       });
     }
 
-    // Update invoice_item
+    // Update project_invoice_item
     db.query(updateInvoiceItemSql, function (error, result) {
       if (error) {
         return db.rollback(function () {
           return res.status(400).send({
             data: error,
-            msg: 'Failed to update invoice_item',
+            msg: 'Failed to update project_invoice_item',
           });
         });
       }
@@ -2585,7 +2585,7 @@ app.delete('/deleteInvoice', (req, res, next) => {
 app.delete('/deleteInvoiceItem', (req, res, next) => {
 
   let data = {invoice_item_id: req.body.invoice_item_id};
-  let sql = "DELETE FROM invoice_item WHERE ?";
+  let sql = "DELETE FROM project_invoice_item WHERE ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
      return res.status(400).send({
@@ -2651,10 +2651,10 @@ app.post('/insertInvoiceItem', (req, res, next) => {
        qty: req.body.qty_arb,
        invoice_qty: req.body.invoice_qty,
        invoice_qty: req.body.invoice_qty_arb
-       ,invoice_id: req.body.invoice_id
-       ,invoice_id: req.body.invoice_id_arb
-       ,invoice_source_id: req.body.invoice_source_id
-       ,invoice_source_id: req.body.invoice_source_id_arb
+       ,project_invoice_id: req.body.project_invoice_id
+       ,project_invoice_id: req.body.invoice_id_arb
+       ,project_invoice_source_id: req.body.project_invoice_source_id
+       ,project_invoice_source_id: req.body.project_invoice_source_id_arb
        ,source_type: req.body.source_type
        ,source_type: req.body.source_type_arb
        ,order_id: req.body.order_id
@@ -2682,7 +2682,7 @@ app.post('/insertInvoiceItem', (req, res, next) => {
     ,unit: req.body.unit_arb
 
  };
-  let sql = "INSERT INTO invoice_item SET ?";
+  let sql = "INSERT INTO project_invoice_item SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
       return res.status(400).send({
@@ -2700,7 +2700,7 @@ app.post('/insertInvoiceItem', (req, res, next) => {
 
 app.post('/hideEditIconById', (req, res, next) => {
   db.query(` SELECT it.quote_id
-  FROM invoice_item it  
+  FROM project_invoice_item it  
   WHERE it.quote_id =${db.escape(req.body.quote_id)}
   `,
     (err, result) => {
@@ -2724,7 +2724,7 @@ app.post('/insertPartialInvoiceItem', (req, res, next) => {
 
   let data = {
        qty: req.body.qty
-       ,invoice_id: req.body.invoice_id
+       ,project_invoice_id: req.body.project_invoice_id
        ,order_id: req.body.order_id
        ,goods_delivery_id: req.body.goods_delivery_id
     , item_title: req.body.item_title
@@ -2734,7 +2734,7 @@ app.post('/insertPartialInvoiceItem', (req, res, next) => {
     ,created_by: req.body.created_by
     ,creation_date: req.body.creation_date
  };
-  let sql = "INSERT INTO invoice_item SET ?";
+  let sql = "INSERT INTO project_invoice_item SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
       return res.status(400).send({
@@ -2755,7 +2755,7 @@ app.post('/insertPartialInvoiceItem', (req, res, next) => {
 
 //   let data = {
 //        qty: req.body.quantity
-//        ,invoice_id: req.body.invoice_id
+//        ,project_invoice_id: req.body.project_invoice_id
 //     , item_title: req.body.title
 //     , description: req.body.description
 //     , remarks: req.body.remarks
@@ -2764,11 +2764,11 @@ app.post('/insertPartialInvoiceItem', (req, res, next) => {
 //     ,creation_date: req.body.creation_date
 //     ,goods_delivery_id: req.body.goods_delivery_id
 //     ,goods_delivery_item_id: req.body.goods_delivery_item_id
-//     ,invoice_source_id: req.body.invoice_source_id
+//     ,project_invoice_source_id: req.body.project_invoice_source_id
 //     ,source_type: req.body.source_type
 //     ,quote_id: req.body.quote_id
 //  };
-//   let sql = "INSERT INTO invoice_item SET ?";
+//   let sql = "INSERT INTO project_invoice_item SET ?";
 //   let query = db.query(sql, data,(err, result) => {
 //     if (err) {
 //       return res.status(400).send({
@@ -2876,14 +2876,14 @@ app.post('/getInvoicePdf', (req, res, next) => {
                 ,o.cust_fax
                 ,gc.name AS cust_address_country
                 ,c.company_id
-                ,i.invoice_date
+                ,i.project_invoice_date
                 ,ini.unit_price
                 ,i.invoice_code
                 ,i.invoice_type
                 ,i.qty_text
                 ,i.rate_text
-                ,i.invoice_terms
-                ,i.invoice_due_date
+                ,i.project_invoice_terms
+                ,i.project_invoice_due_date
                 ,i.notes
                 ,i.gst_percentage
                 ,i.discount
@@ -2894,13 +2894,13 @@ app.post('/getInvoicePdf', (req, res, next) => {
                 ,i.po_number
                 ,co.first_name
                 ,co.salutation
-        FROM invoice_item ini
-        LEFT JOIN invoice i  ON (i.invoice_id  = ini.invoice_id)
+        FROM project_invoice_item ini
+        LEFT JOIN invoice i  ON (i.project_invoice_id  = ini.project_invoice_id)
         LEFT JOIN orders o  ON (o.order_id	= i.order_id)
         LEFT JOIN company c  ON (c.company_id  = o.company_id)
         LEFT JOIN contact co ON (co.contact_id = o.contact_id)
         LEFT JOIN geo_country gc ON (o.cust_address_country = gc.country_code)
-        WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}
+        WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}
         ORDER BY ini.invoice_item_id`,
     (err, result) => {
 
@@ -2922,17 +2922,17 @@ app.post('/getInvoicePdf', (req, res, next) => {
 });
 
 app.get('/getInvoiveByMonth', (req, res, next) => {
-  db.query(`SELECT DATE_FORMAT(i.invoice_date, '%b %Y') AS invoice_month
+  db.query(`SELECT DATE_FORMAT(i.project_invoice_date, '%b %Y') AS invoice_month
   ,(SUM(i.invoice_amount + 
         ((i.invoice_amount * i.gst_percentage) / 100)
                     )
                 ) AS invoice_amount_monthly
         FROM invoice i
-        LEFT JOIN orders o   ON (o.order_id   = i.invoice_source_id)
+        LEFT JOIN orders o   ON (o.order_id   = i.project_invoice_source_id)
          WHERE o.record_type = 'Project'
  AND i.status != 'Cancelled'
- AND i.invoice_date BETWEEN '2021-03-1' AND '2023-03-31'
- GROUP BY DATE_FORMAT(i.invoice_date, '%Y-%m')
+ AND i.project_invoice_date BETWEEN '2021-03-1' AND '2023-03-31'
+ GROUP BY DATE_FORMAT(i.project_invoice_date, '%Y-%m')
  `,
   (err, result) => {
     if (err) {
@@ -2954,7 +2954,7 @@ app.get('/getInvoiveByMonth', (req, res, next) => {
 
 app.get('/getInvoiveBestMonthSummary', (req, res, next) => {
   db.query(`SELECT DATE_FORMAT(i.creation_date, '%Y-%m') AS monthYear
-                  ,COUNT(i.invoice_id) AS total
+                  ,COUNT(i.project_invoice_id) AS total
                   ,SUM(i.invoice_amount) AS totalAmount 
             FROM invoice i
             WHERE DATE_FORMAT(i.creation_date, '%Y-%m-%d') > Date_add(Now(), interval - 12 month)
@@ -2980,7 +2980,7 @@ app.get('/getInvoiveBestMonthSummary', (req, res, next) => {
 });
 
 app.post('/editInvoiceItems', (req, res, next) => {
-  db.query(`UPDATE invoice_item     
+  db.query(`UPDATE project_invoice_item     
             SET 
             item_title = ${db.escape(req.body.item_title)}
             ,item_title_arb = ${db.escape(req.body.item_title_arb)}

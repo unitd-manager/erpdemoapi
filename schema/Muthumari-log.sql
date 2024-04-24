@@ -405,3 +405,71 @@ VALUES
 (NULL, 'mdProduct.PublishedNo', 'No', 'لا', 'Product PublishedNo', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
 (NULL, 'mdProduct.Description', 'Description', 'وصف', 'Product Description', '10-04-2024', NULL, NULL, NULL, NULL, '0')
 
+.........................................Project sales invoice(translation inserted fields)..................................................................................................
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdProjectSalesInvoice.Edit', 'Edit', 'يحرر', 'Project Sales Invoice Edit', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.InvoiceCode', 'Invoice Code', 'رمز الفاتورة', 'Project Sales Invoice Code', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.CompanyName', 'Company Name', 'اسم الشركة', 'Project Sales Invoice Company', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.InvoiceDate', 'Invoice Date', 'تاريخ الفاتورة', 'Project Sales Invoice Date', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.InvoiceDueDate', 'Invoice Due Date', 'تاريخ استحقاق الفاتورة', 'Project Sales Invoice Due Date', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.Status', 'Status', 'حالة', 'Project Sales Invoice Status', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.InvoiceSource', 'Invoice Source', 'مصدر الفاتورة', 'Project Sales Invoice Source', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.SalesOrder', 'Sales Order', 'مصدر الفاتورة', 'Project Sales Invoice Sales Order', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.GoodsDelivery', 'Goods Delivery', 'تسليم جيد', 'Project Sales Invoice Goods Delivery', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.InvoiceAmount', 'Invoice Amount', 'قيمة الفاتورة', 'Project Sales Invoice Amount', '10-04-2024', NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesInvoice.InvoiceTerms', 'Invoice Terms', 'شروط الفاتورة', 'Project Sales Invoice Terms', '10-04-2024', NULL, NULL, NULL, NULL, '0')
+........................................Project Invoice Item Table(20/4/24)............................
+--
+-- Database: `databaseerp`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `invoice_item`
+--
+
+CREATE TABLE `project_invoice_item` (
+  `project_invoice_item_id` int(10) NOT NULL,
+  `project_invoice_id` int(10) UNSIGNED DEFAULT NULL,
+  `record_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `qty` int(11) DEFAULT NULL,
+  `unit_price` decimal(10,2) DEFAULT 0.00,
+  `item_title` varchar(255) DEFAULT NULL,
+  `model` varchar(255) DEFAULT NULL,
+  `module` varchar(50) DEFAULT NULL,
+  `supplier_id` int(11) DEFAULT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL,
+  `order_item_id` int(11) DEFAULT NULL,
+  `item_code` varchar(255) DEFAULT NULL,
+  `vat` decimal(10,2) DEFAULT NULL,
+  `discount_percentage` decimal(10,2) DEFAULT NULL,
+  `discount_type` varchar(100) DEFAULT NULL,
+  `site_id` int(11) DEFAULT NULL,
+  `item_code_backup` varchar(100) DEFAULT NULL,
+  `unit` varchar(25) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  `month` int(4) DEFAULT NULL,
+  `year` int(6) DEFAULT NULL,
+  `total_cost` varchar(100) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `s_no` varchar(100) DEFAULT NULL,
+  `qty_returned` decimal(10,2) DEFAULT NULL,
+  `project_goods_delivery_id` int(11) DEFAULT NULL,
+  `project_goods_delivery_item_id` int(11) DEFAULT NULL,
+  `project_order_id` int(11) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `project_invoice_qty` int(11) DEFAULT NULL,
+  `project_invoice_source_id` int(11) DEFAULT NULL,
+  `source_type` varchar(255) DEFAULT NULL,
+  `project_quote_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+........................................pdf(material requset)(23/4/24)......................................
+ALTER TABLE `contact` ADD `company_name_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `company_name`; 
+ALTER TABLE `contact` ADD `first_name_arb` VARCHAR(100) NULL DEFAULT NULL AFTER `first_name`; 

@@ -94,7 +94,11 @@ app.post("/getCodeValue", (req, res, next) => {
   }else if(type == 'orders'){
       key_text = 'nextOrderCode';
       sql = "SELECT * FROM setting WHERE key_text='orderCodePrefix' OR key_text='nextOrderCode'";
-  }  else if(type == 'lead'){
+  } else if(type == 'projectorders'){
+    key_text = 'nextProjectOrderCode';
+    sql = "SELECT * FROM setting WHERE key_text='projectorderCodePrefix' OR key_text='nextProjectOrderCode'";
+} 
+   else if(type == 'lead'){
       key_text = 'nextLeadsCode';
       sql = "SELECT * FROM setting WHERE key_text='leadsPrefix' OR key_text='nextLeadsCode'";  
   }else if(type == 'invoice'){

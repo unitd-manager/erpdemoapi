@@ -705,12 +705,14 @@ app.get('/getQuote', (req, res, next) => {
        q.creation_date,
        q.modification_date,
        q.currency_item,
-       q.note
+       q.note,
+       c.company_name
 FROM quote q
 LEFT JOIN orders o ON o.quote_id = q.quote_id
+LEFT JOIN (company c) on q.company_id = c.company_id
 WHERE q.quote_id != '' 
       AND q.quote_status != 'Cancelled' 
-      AND o.quote_id IS NULL`,
+      `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
