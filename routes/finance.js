@@ -138,10 +138,15 @@ app.get('/getOrder', (req, res, next) => {
 app.get('/getOrders', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_code
+  ,o.order_code 
   ,o.creation_date
   ,o.order_status
+  ,c.company_id
+  ,c.company_name
+
   FROM orders o 
+  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
+
   WHERE o.order_id !=''
   AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
     (err, result) => {
@@ -267,7 +272,7 @@ app.post('/editSalesReturn', (req, res, next) => {
     (err, result) => {
       if (err) {
         console.log("error: ", err);
-        return;
+        return; 
       } else {
             return res.status(200).send({
               data: result,
