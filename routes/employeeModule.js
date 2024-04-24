@@ -186,7 +186,6 @@ ORDER BY a.employee_name ASC`,
 app.get('/getCurrentEmployee', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id AS employee_id_duplicate
   ,a.emp_code
-  ,a.emp_code_arb
   ,a.first_name
   ,a.first_name_arb
   ,a.employee_name
@@ -244,7 +243,6 @@ ORDER BY a.employee_name ASC`,
 app.post('/getEmployeeByID', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id
   ,a.emp_code
-  ,a.emp_code_arb
   ,a.first_name
   ,a.first_name_arb
   ,a.employee_name

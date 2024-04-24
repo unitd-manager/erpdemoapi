@@ -243,3 +243,30 @@ ALTER TABLE `empleave` ADD `no_of_days_arb` INT(50) NULL DEFAULT NULL AFTER `no_
 ALTER TABLE `empleave` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;
 ALTER TABLE `empleave` ADD `no_of_days_next_month_arb` INT(50) NULL DEFAULT NULL AFTER `no_of_days_next_month`;
 ALTER TABLE `empleave` ADD `went_overseas_arb` INT(50) NULL DEFAULT NULL AFTER `went_overseas`;
+
+********************************(16/04/2024 Translation(ProjectSalesReturn-inserts field))**************************************
+
+INSERT INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdTradingProjSalesReturn.Invoice Code', 'Invoice Code', 'رمز الفاتورة', 'SalesReturn Invoice Code field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Status', 'Status', 'حالة', 'SalesReturn Status field\r\n', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Date', 'Date', 'تاريخ', 'SalesReturn Date field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Item', 'Item', 'غرض ', 'SalesReturn Item field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Quantity', 'Quantity', 'كمية', 'SalesReturn Quantity field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Unit Price', 'Unit Price', 'سعر الوحدة', 'SalesReturn Unit Price field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Total', 'Total', 'المجموع ', 'SalesReturn Total field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Qty Returned', 'Qty Returned', 'الكمية التي تم إرجاعها ', 'SalesReturn Qty Returned field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(16/04/2024 proj_sales_return(ProjectSalesReturn createField))************************************
+
+ALTER TABLE `proj_sales_return` ADD `sales_return_id_arb` INT(50) NULL DEFAULT NULL AFTER `sales_return_id`,
+ALTER TABLE `proj_sales_return` ADD `return_date_arb` varchar(255) NULL DEFAULT NULL AFTER `return_date`,
+ALTER TABLE `proj_sales_return` ADD `invoice_id_arb` INT(50) NULL DEFAULT NULL AFTER `invoice_id`,
+ALTER TABLE `proj_sales_return` ADD `status_arb` varchar(50) NULL DEFAULT NULL AFTER `status`,
+ALTER TABLE `proj_sales_return` ADD `order_id_arb` INT(50) NULL DEFAULT NULL AFTER `order_id`;
+********************************(16/04/2024 proj_sales_return_history(ProjectSalesReturn createField))************************************
+
+ALTER TABLE `proj_sales_return_history` ADD `qty_return_arb` INT(50) NULL DEFAULT NULL AFTER `qty_return`;
+ALTER TABLE `proj_sales_return_history` ADD `price_arb` INT(50) NULL DEFAULT NULL AFTER `price`;
+ALTER TABLE `proj_sales_return_history` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;

@@ -21,7 +21,7 @@ app.get('/getProjectEnquiry', (req, res, next) => {
   db.query(`SELECT 
             o.*
             ,c.company_name 
-            ,c.company_name_arb 
+            ,c.company_name_arb  
             ,c.company_size 
             ,c.source,c.industry 
             FROM project_enquiry o 
@@ -351,7 +351,7 @@ app.post('/insertContact', (req, res, next) => {
 app.post("/getCodeValue", (req, res, next) => {
   var type = req.body.type;
   let sql = '';
-  let key_text = '';
+  let key_text = ''; 
   let withprefix = true;
   if(type == 'opportunity'){
       key_text = 'nextOpportunityCode';
