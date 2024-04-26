@@ -277,8 +277,11 @@ app.get("/getProjectTitle", (req, res, next) => {
   db.query(`SELECT
    p.project_id
   ,p.title 
+  ,c.company_name
+  ,c.company_name_arb
   FROM project p
   LEFT JOIN document d ON d.project_id=p.project_id
+  LEFT JOIN (company c) on p.company_id = c.company_id
   WHERE p.project_id !=''
   AND d.project_id IS NULL`, 
    (err, result) => {

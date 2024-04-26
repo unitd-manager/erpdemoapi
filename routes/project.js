@@ -807,9 +807,10 @@ app.post("/getProposalDataById", (req, res, next) => {
   );
 });  
   app.get('/getProposalCode', (req, res, next) => {
-  db.query(`SELECT p.proposal_code, pp.project_id 
+  db.query(`SELECT p.proposal_code, pp.project_id , c.company_name, c.company_name_arb
 FROM proposal p
 LEFT JOIN project pp ON p.proposal_id = pp.proposal_id
+LEFT JOIN (company c) on p.company_id = c.company_id
 WHERE p.status = 'Awarded' AND pp.project_id IS NULL`,
     (err, result) => {
       if (err) {
