@@ -22,11 +22,11 @@ app.use(
 app.post("/getgoodsdeliveryById", (req, res, next) => {
   db.query(
     ` SELECT 
-    gd.goods_delivery_id
+    gd.project_goods_delivery_id
     ,gd.delivery_no
-    ,gd.goods_delivery_date
-      ,gd.order_id
-      ,gd.goods_delivery_code
+    ,gd.project_goods_delivery_date
+      ,gd.project_order_id
+      ,gd.project_goods_delivery_code
     ,o.order_code
     ,gd.goods_ref_no
     ,c.company_id
@@ -38,12 +38,12 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
     ,c.address_street_arb
     ,c.address_town
     ,c.address_country
-    ,c.address_po_code
+     ,c.address_po_code
     ,c.phone
     ,cont.first_name
     ,cont.first_name_arb
-    ,gd.goods_delivery_status
-    ,gd.goods_delivery_status_arb
+    ,gd.project_goods_delivery_status
+    ,gd.project_goods_delivery_status_arb
     ,gd.po_no
     ,opt.office_ref_no
     ,gd.sales_man
@@ -55,18 +55,16 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
     ,gd.created_by
     ,gd.modified_by
     ,gi.goods_delivery_item_id  
-    ,gi.title
-    ,gi.title_arb
+    ,gi.item_title
     ,gi.description  
-    ,gi.description_arb  
-       FROM goods_delivery gd  
-       LEFT JOIN (orders o) ON (o.order_id=gd.order_id)  
-       LEFT JOIN quote q ON (o.quote_id = q.quote_id )
-       LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)    
+       FROM project_goods_delivery gd  
+       LEFT JOIN (project_orders o) ON (o.project_order_id=gd.project_order_id)  
+       LEFT JOIN project_quote q ON (o.project_quote_id = q.project_quote_id )
+       LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id)    
        LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
        LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
-       LEFT JOIN (goods_delivery_item gi) ON (gi.goods_delivery_id = gd.goods_delivery_id)  
-       WHERE gd.goods_delivery_id = ${db.escape(req.body.goods_delivery_id)}`,
+       LEFT JOIN (project_goods_delivery_item gi) ON (gi.project_goods_delivery_id = gd.project_goods_delivery_id)  
+       WHERE gd.project_goods_delivery_id = ${db.escape(req.body.project_goods_delivery_id)}`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -101,7 +99,7 @@ app.get('/getTranslationforTradingGoods', (req, res, next) => {
 });
 app.get('/checkDeliveryItems', (req, res, next) => {
   db.query(
-    `SELECT order_item_id FROM goods_delivery_item`,
+    `SELECT project_order_item_id FROM project_goods_delivery_item`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -119,22 +117,47 @@ app.get('/checkDeliveryItems', (req, res, next) => {
   );
 });
 
+app.get("/getOrderCode", (req, res, next) => {
+  db.query(`SELECT 
+  o.project_order_code,
+  o.project_order_id ,
+  c.company_name,
+  c.company_id
+  from project_orders o   
+  LEFT JOIN (project_goods_delivery gd) ON o.project_order_id = gd.project_order_id
+  left join (company c) ON o.company_id = c.company_id
+  WHERE
+  o.project_order_id != '' 
+  AND gd.project_order_id IS NULL`, (err, result) => {
+    if (result.length == 0) {
+      return res.status(400).send({
+        msg: "No result found",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  });
+});
+
 app.get("/getgoodsdelivery", (req, res, next) => {
   db.query(
     `SELECT 
-    gd.goods_delivery_id
+    gd.project_goods_delivery_id
     ,gd.delivery_no
-    ,gd.goods_delivery_date
-    ,gd.goods_delivery_code
-    ,gd.order_id
+    ,gd.project_goods_delivery_date
+    ,gd.project_goods_delivery_code
+    ,gd.project_order_id
     ,o.order_code
-    ,gd.goods_ref_no
+    ,gd.project_goods_ref_no
     ,c.company_id
     ,c.company_name
     ,c.company_name_arb
     ,opt.office_ref_no
-    ,gd.goods_delivery_status
-    ,gd.goods_delivery_status_arb
+    ,gd.project_goods_delivery_status
+    ,gd.project_goods_delivery_status_arb
     ,gd.po_no 
     ,gd.sales_man
     ,gd.sales_man_arb
@@ -143,13 +166,13 @@ app.get("/getgoodsdelivery", (req, res, next) => {
     ,gd.modification_date
     ,gd.created_by
     ,gd.modified_by    
-       FROM goods_delivery gd  
-       LEFT JOIN (orders o) ON (o.order_id=gd.order_id)
-       LEFT JOIN quote q ON (o.quote_id = q.quote_id )
-       LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)    
+       FROM project_goods_delivery gd  
+       LEFT JOIN (project_orders o) ON (o.project_order_id=gd.project_order_id)
+       LEFT JOIN project_quote q ON (o.project_quote_id = q.project_quote_id )
+       LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id)    
        LEFT JOIN (company c) ON (c.company_id=opt.company_id)  
-       WHERE gd.goods_delivery_id != ''
-       ORDER BY goods_delivery_id DESC`,
+       WHERE gd.project_goods_delivery_id != ''
+       ORDER BY project_goods_delivery_id DESC`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -169,12 +192,9 @@ app.get("/getgoodsdelivery", (req, res, next) => {
 app.get("/getOrderCode", (req, res, next) => {
   db.query(`  SELECT 
   o.order_code,
-  o.order_id,
-  o.company_id,
-  c.company_name 
+  o.order_id 
   from orders o   
   LEFT JOIN (goods_delivery gd) ON o.order_id = gd.order_id
-  LEFT JOIN (company c) on o.company_id = c.company_id
   WHERE
   o.order_id != '' 
   AND gd.order_id IS NULL`, (err, result) => {
@@ -195,8 +215,8 @@ app.post("/getgoodsdeliveryitemById", (req, res, next) => {
   db.query(
     ` SELECT gi.*
     
-       FROM goods_delivery_item gi 
-       WHERE gi.goods_delivery_id =${db.escape(req.body.goods_delivery_id)}
+       FROM project_goods_delivery_item gi 
+       WHERE gi.project_goods_delivery_id =${db.escape(req.body.project_goods_delivery_id)}
     `,
     (err, result) => {
       if (result.length == 0) {
@@ -215,10 +235,9 @@ app.post("/getgoodsdeliveryitemById", (req, res, next) => {
 
 app.post("/getOrdersById", (req, res, next) => {
   db.query(
-    ` SELECT o.order_id
-    ,oi.order_item_id
+    ` SELECT o.project_order_id
+    ,oi.project_order_item_id
     ,oi.description
-    ,oi.description_arb
     ,oi.item_title
     ,oi.item_title_arb
     ,oi.qty
@@ -226,13 +245,11 @@ app.post("/getOrdersById", (req, res, next) => {
     ,oi.cost_price
     ,oi.unit
     ,oi.unit_arb
-    ,oi.quote_id
+    ,oi.project_quote_id
     ,oi.quote_items_id
-     
-       FROM order_item oi 
-       LEFT JOIN (orders o) ON o.order_id=oi.order_id 
-       WHERE o.order_id =${db.escape(req.body.order_id)}
-    `,
+       FROM project_order_item oi 
+       LEFT JOIN (project_orders o) ON o.project_order_id=oi.project_order_id 
+       WHERE o.project_order_id =${db.escape(req.body.project_order_id)}`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -314,17 +331,16 @@ app.post("/getOrdersitemById", (req, res, next) => {
 });
 app.post("/edit-goodsdelivery", (req, res, next) => {
   db.query(
-    `UPDATE goods_delivery  
+    `UPDATE project_goods_delivery  
               SET 
                delivery_no=${db.escape(req.body.delivery_no)}
-              ,goods_delivery_date=${db.escape(req.body.goods_delivery_date)}
-              ,order_id=${db.escape(req.body.order_id)}
+              ,project_goods_delivery_date=${db.escape(req.body.project_goods_delivery_date)}
+              ,project_order_id=${db.escape(req.body.project_order_id)}
               ,goods_ref_no=${db.escape(req.body.goods_ref_no)}
               ,company_id=${db.escape(req.body.company_id)}
               ,contact_id=${db.escape(req.body.contact_id)}
-              ,goods_delivery_status=${db.escape(req.body.goods_delivery_status)}
-              ,goods_delivery_status_arb=${db.escape(req.body.goods_delivery_status_arb)}
-
+              ,project_goods_delivery_status=${db.escape(req.body.project_goods_delivery_status)}
+              ,project_goods_delivery_status_arb=${db.escape(req.body.project_goods_delivery_status_arb)}
               ,po_no=${db.escape(req.body.po_no)}
               ,sales_man=${db.escape(req.body.sales_man)}
               ,sales_man_arb=${db.escape(req.body.sales_man_arb)}
@@ -333,7 +349,7 @@ app.post("/edit-goodsdelivery", (req, res, next) => {
               ,modification_date=${db.escape(req.body.modification_date)}
               ,created_by=${db.escape(req.body.created_by)}
               ,modified_by=${db.escape(req.body.modified_by)}              
-              WHERE goods_delivery_id =  ${db.escape(req.body.goods_delivery_id)}`,
+              WHERE project_goods_delivery_id =  ${db.escape(req.body.project_goods_delivery_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -347,12 +363,38 @@ app.post("/edit-goodsdelivery", (req, res, next) => {
     }
   );
 });
+app.post("/getQuoteLineItemsByIdss", (req, res, next) => {
+  db.query(
+    `SELECT
+              qt.* 
+              ,qt.project_goods_delivery_id
+              ,qt.goods_delivery_item_id
+              ,qt.creation_date
+              ,qt.modification_date
+              ,qt.created_by
+              ,qt.modified_by
+              FROM project_goods_delivery_item qt 
+              WHERE qt.project_goods_delivery_id =  ${db.escape(req.body.project_goods_delivery_id)}`,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
 
 app.post("/edit-goodsdeliveryitem", (req, res, next) => {
   db.query(
-    `UPDATE goods_delivery_item  
+    `UPDATE project_goods_delivery_item  
               SET 
-               goods_delivery_id=${db.escape(req.body.goods_delivery_id)}
+               project_goods_delivery_id=${db.escape(req.body.project_goods_delivery_id)}
               ,quantity =${db.escape(req.body.quantity)}
               ,delivery_qty=${db.escape(req.body.delivery_qty)}  
               WHERE goods_delivery_item_id =  ${db.escape(req.body.goods_delivery_item_id)}`,
@@ -372,19 +414,18 @@ app.post("/edit-goodsdeliveryitem", (req, res, next) => {
 
 app.post("/insertgoodsdeliveryitem", (req, res, next) => {
   let data = {
-    title: req.body.title,
-    title: req.body.title_arb,
+    item_title: req.body.item_title,
     unit: req.body.unit,
     unit_price: req.body.unit_price,
     amount: req.body.amount,
     quantity: req.body.quantity,
     description: req.body.description,
     description: req.body.description_arb,
-    goods_delivery_id: req.body.goods_delivery_id,
-    order_id: req.body.order_id,
-    order_item_id: req.body.order_item_id,
+    project_goods_delivery_id: req.body.project_goods_delivery_id,
+    project_order_id: req.body.project_order_id,
+    project_order_item_id: req.body.project_order_item_id,
   };
-  let sql = "INSERT INTO goods_delivery_item SET ?";
+  let sql = "INSERT INTO project_goods_delivery_item SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log("error: ", err);
@@ -402,14 +443,14 @@ app.post("/insertgoodsdeliveryitem", (req, res, next) => {
 });
 app.post("/insertgoodsdelivery", (req, res, next) => {
   let data = {
-    goods_delivery_id: req.body.goods_delivery_id,
+    project_goods_delivery_id: req.body.project_goods_delivery_id,
     delivery_no: req.body.delivery_no,
-    goods_delivery_date: req.body.goods_delivery_date,
-    goods_delivery_code: req.body.goods_delivery_code,
-    order_id: req.body.order_id,
+    project_goods_delivery_date: req.body.project_goods_delivery_date,
+    project_goods_delivery_code: req.body.project_goods_delivery_code,
+    project_order_id: req.body.project_order_id,
     goods_ref_no: req.body.goods_ref_no,
     company_id: req.body.company_id,
-    goods_delivery_status: req.body.goods_delivery_status,
+    project_goods_delivery_status: req.body.project_goods_delivery_status,
     po_no: req.body.po_no,
     sales_man: req.body.sales_man,
     contact_id: req.body.contact_id,
@@ -419,7 +460,7 @@ app.post("/insertgoodsdelivery", (req, res, next) => {
     created_by: req.body.created_by,
     modified_by: req.body.modified_by,
   };
-  let sql = "INSERT INTO goods_delivery SET ?";
+  let sql = "INSERT INTO project_goods_delivery SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log("error: ", err);

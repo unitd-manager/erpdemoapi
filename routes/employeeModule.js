@@ -187,17 +187,24 @@ app.get('/getCurrentEmployee', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id AS employee_id_duplicate
   ,a.emp_code
   ,a.first_name
+  ,a.first_name_arb
   ,a.employee_name
   ,a.salutation
+  ,a.salutation_arb
   ,a.gender
+  ,a.gender_arb
   ,a.status
+  ,a.status_arb
   ,a.date_of_birth
   ,a.passport
   ,a.date_of_expiry
   ,a.work_permit_expiry_date
   ,a.marital_status
+  ,a.marital_status_arb
   ,a.nationality
+  ,a.nationality_arb
   ,a.citizen
+  ,a.citizen_arb
   ,a.race
   ,a.notes
   ,a.religion
@@ -236,30 +243,48 @@ ORDER BY a.employee_name ASC`,
 app.post('/getEmployeeByID', (req, res, next) => {
   db.query(`SELECT DISTINCT a.employee_id
   ,a.emp_code
+  ,a.first_name
+  ,a.first_name_arb
   ,a.employee_name
+  ,a.employee_name_arb
   ,a.salutation
+  ,a.salutation_arb
   ,a.gender
+  ,a.gender_arb
   ,a.status
+  ,a.status_arb
   ,a.date_of_birth
   ,a.passport
   ,a.date_of_expiry
   ,a.marital_status
+  ,a.marital_status_arb
   ,a.nationality
+  ,a.nationality_arb
   ,a.race
+  ,a.race_arb
   ,a.religion
+  ,a.religion_arb
   ,a.project_designation
+  ,a.project_designation_arb
   ,a.project_manager
+  ,a.project_manager_arb
   ,a.admin_staff
+  ,a.admin_staff_arb
   ,a.team
+  ,a.team_arb
   ,a.company_id
   ,a.notes
+  ,a.notes_arb
   ,gc.name AS country_name
   ,a.email AS login_email
+  ,a.email_arb AS login_email_arb
   ,a.pass_word AS login_pass_word
   ,a.user_group_id AS staff_user_group_id
   ,a.published AS staff_published
+  ,a.published_arb AS staff_published_arb
   ,j.act_join_date
   ,a.pay
+  ,a.pay_arb
 FROM employee a
 LEFT JOIN geo_country gc ON (a.address_country = gc.country_code)
 LEFT JOIN job_information j ON (a.employee_id = j.employee_id)
@@ -286,27 +311,47 @@ ORDER BY a.employee_name ASC`,
 app.post('/edit-Employee', (req, res, next) => {
   db.query(`UPDATE employee  
             SET employee_name=${db.escape(req.body.employee_name)}
+            ,employee_name_arb=${db.escape(req.body.employee_name_arb)}
+            ,first_name=${db.escape(req.body.first_name)}
+            ,first_name_arb=${db.escape(req.body.first_name_arb)}
             ,salutation=${db.escape(req.body.salutation)}
+            ,salutation_arb=${db.escape(req.body.salutation_arb)}
             ,emp_code=${db.escape(req.body.emp_code)}
+            ,emp_code_arb=${db.escape(req.body.emp_code_arb)}
             ,gender=${db.escape(req.body.gender)}
+            ,gender_arb=${db.escape(req.body.gender_arb)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
             ,date_of_birth=${db.escape(new Date(req.body.date_of_birth).toISOString().slice(0, 19).replace("T", " "))}
             ,passport=${db.escape(req.body.passport)}
             ,date_of_expiry=${db.escape(new Date(req.body.date_of_expiry).toISOString().slice(0, 19).replace("T", " "))}
             ,marital_status=${db.escape(req.body.marital_status)}
+            ,marital_status_arb=${db.escape(req.body.marital_status_arb)}
             ,nationality =${db.escape(req.body.nationality)}
+            ,nationality_arb =${db.escape(req.body.nationality_arb)}
             ,race=${db.escape(req.body.race)}
+            ,race_arb=${db.escape(req.body.race_arb)}
             ,religion=${db.escape(req.body.religion)}
+            ,religion_arb=${db.escape(req.body.religion_arb)}
             ,project_designation =${db.escape(req.body.project_designation)}
+            ,project_designation_arb =${db.escape(req.body.project_designation_arb)}
             ,team =${db.escape(req.body.team)}
+            ,team_arb =${db.escape(req.body.team_arb)}
             ,team_leader =${db.escape(req.body.team_leader)}
+            ,team_leader_arb =${db.escape(req.body.team_leader_arb)}
             ,project_manager=${db.escape(req.body.project_manager)}
+            ,project_manager_arb=${db.escape(req.body.project_manager_arb)}
             ,email=${db.escape(req.body.login_email)}
+            ,email_arb=${db.escape(req.body.login_email_arb)}
             ,pass_word=${db.escape(req.body.login_pass_word)}
+            ,pass_word_arb=${db.escape(req.body.login_pass_word_arb)}
             ,user_group_id=${db.escape(req.body.staff_user_group_id)}
             ,published =${db.escape(req.body.staff_published)}
+            ,published_arb =${db.escape(req.body.staff_published_arb)}
             ,notes =${db.escape(req.body.notes)}
+            ,notes_arb =${db.escape(req.body.notes_arb)}
             ,pay =${db.escape(req.body.pay)}
+            ,pay_arb =${db.escape(req.body.pay_arb)}
             ,company_id=${db.escape(req.body.company_id)}
             WHERE employee_id = ${db.escape(req.body.employee_id)}`,
     (err, result) => {

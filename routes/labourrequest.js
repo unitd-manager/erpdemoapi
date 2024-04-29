@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../config/Database.js');
 const userMiddleware = require('../middleware/UserModel.js');
 var md5 = require('md5');
+var mysql = require('mysql');
 const fileUpload = require('express-fileupload');
 const _ = require('lodash');
 const mime = require('mime-types')
@@ -145,6 +146,7 @@ app.get('/getTranslationColumn', (req, res, next) => {
 );
 });
 
+
 app.post('/getLabourRequestById', (req, res, next) => {
   db.query(`select
   lr.labour_request_id
@@ -195,15 +197,81 @@ app.post('/getLabourRequestById', (req, res, next) => {
   );
 });
 
-app.post('/getLabourTranslation', (req, res, next) => {
+
+// Create a MySQL connection pool
+const pool = mysql.createPool({
+  host: 'localhost',
+    user: 'root',
+    password: '',
+    //database: 'erpdemonew',
+    database: 'erpdemo'
+});
+
+
+// Endpoint to fetch all table names
+app.get('/getTables', (req, res) => {
+  // SQL query to retrieve table names
+  const query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'erpdemo'";
+
+  // Execute the query
+  pool.query(query, (error, results) => {
+    if (error) {
+      console.error('Error retrieving table names:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    // Extract table names from the query results
+    const tableNames = results.map(row => row.TABLE_NAME);
+
+    // Send the table names as a response
+    res.json({ tableNames });
+  });
+});
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+})
+
+app.post('/getTranslationColumnFromTables', (req, res, next) => {
+  const tableNames = db.escape(req.body.tableNames);
+  // let result = tableNames.replace(/'/g, "");
+  // console.log('tableNames',tableNames)
+  db.query(`SELECT SUBSTRING(COLUMN_NAME, 1, LENGTH(COLUMN_NAME) - 4) AS COLUMN_NAME_TRUNCATED FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ${tableNames} AND COLUMN_NAME LIKE '%arb'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+
+app.post('/getTableTranslation', (req, res, next) => {
   const columnNames = db.escape(req.body.columnNames);
-  const labourRequestId = db.escape(req.body.labour_request_id);
+  const labourRequestId = db.escape(req.body.whereId);
+  const whereCondition = db.escape(req.body.whereCondition);
+  const tableNames = db.escape(req.body.tableNames);
   let result = columnNames.replace(/'/g, "");
- 
+  let resultTable = tableNames.replace(/'/g, "");
+  let resultWhereCondition = whereCondition.replace(/'/g, "");
+  console.log('columnNames',columnNames)
+  console.log('tableNames',tableNames)
+  console.log('labourRequestId',labourRequestId)
+  console.log('whereCondition',whereCondition)
   const query = `
     SELECT ${result}
-    FROM labour_request 
-    WHERE labour_request_id = ${labourRequestId}
+    FROM ${resultTable} 
+    WHERE ${resultWhereCondition} = ${labourRequestId}
   `;
 
   db.query(query, (err, result) => {
@@ -222,14 +290,79 @@ app.post('/getLabourTranslation', (req, res, next) => {
   });
 });
 
-app.post('/getLabourTranslationGet', (req, res, next) => {
-  const columnNames = db.escape(req.body.columnNames);
-  let result = columnNames.replace(/'/g, "");
-   console.log('columnNameGet',result)
+app.post('/getTableTranslationArbValue', (req, res, next) => {
+  const condition = db.escape(req.body.condition);
+  const labourRequestId = db.escape(req.body.whereId);
+  const whereCondition = db.escape(req.body.whereCondition);
+  const tableNames = db.escape(req.body.tableNames);
+  let result = condition.replace(/'/g, "");
+  let resultTable = tableNames.replace(/'/g, "");
+  let resultWhereCondition = whereCondition.replace(/'/g, "");
+  // console.log('labourRequestId',labourRequestId)
+  // console.log('whereCondition',whereCondition)
   const query = `
     SELECT ${result}
-    FROM labour_request 
-    WHERE labour_request_id !=''
+    FROM ${resultTable} 
+    WHERE ${resultWhereCondition} = ${labourRequestId}
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      return res.status(500).send({
+        data: err,
+        msg: 'Failed to retrieve labour translation data',
+      });
+    }
+
+    return res.status(200).send({
+      data: result,
+      msg: 'Success',
+    });
+  });
+});
+
+app.post('/editRequestArb', (req, res, next) => {
+  const columnNames = db.escape(req.body.columnName);
+  let column = columnNames.replace(/'/g, "");
+  const value = db.escape(req.body.value);
+  const labourRequestId = db.escape(req.body.whereId);
+  const tableNames = db.escape(req.body.tableNames);
+  const whereCondition = db.escape(req.body.whereCondition);
+  let resultTable = tableNames.replace(/'/g, "");
+  let resultWhereCondition = whereCondition.replace(/'/g, "");
+  db.query(
+    `UPDATE ${resultTable}  
+     SET ${column}=${value}
+     WHERE ${resultWhereCondition} = ${labourRequestId}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err);
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
+
+app.post('/getTranslationGetApi', (req, res, next) => {
+  const tableNameUni = db.escape(req.body.tableNameUni);
+  const whereCondition = db.escape(req.body.whereCondition);
+  let resultTable = tableNameUni.replace(/'/g, "");
+  let result = whereCondition.replace(/'/g, "");
+  console.log('resultTable',resultTable)
+   console.log('result',result)
+  const query = `
+    SELECT ${result}
+    FROM ${resultTable} 
+    WHERE ${result} !=''
   `;
 
   db.query(query, (err, result) => {
@@ -342,41 +475,6 @@ app.post('/editLabourRequest', (req, res, next) => {
 //   );
 // });
 
-app.post('/editLabourRequestArb', (req, res, next) => {
-  const columnNames = db.escape(req.body.columnName);
-  let column = columnNames.replace(/'/g, "");
-  const value = db.escape(req.body.value);
-  const labourRequestId = db.escape(req.body.labour_request_id);
-
-  // Assuming req.body.columnNames is an object where keys are column names and values are the new values
-//   const updates = Object.entries(columnNames).map(([columnName, value]) => {
-//     return `${columnName} = ${db.escape(value)}`;
-//   }).join(", ");
-// const updates=()=>{
-
-// }
-console.log('columnNames',column)
-console.log('value',value)
-  db.query(
-    `UPDATE labour_request 
-     SET ${column}=${value}
-     WHERE labour_request_id = ${labourRequestId}`,
-    (err, result) => {
-      if (err) {
-        console.log('error: ', err);
-        return res.status(400).send({
-          data: err,
-          msg: 'Failed',
-        });
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: 'Success',
-        });
-      }
-    }
-  );
-});
 
 app.post('/insertLabourRequest', (req, res, next) => {
 

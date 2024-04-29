@@ -1089,6 +1089,10 @@ app.post("/getCodeValue", (req, res, next) => {
   key_text = 'nextGoodsDeliveryCode';
   sql = "SELECT * FROM setting WHERE key_text='goodsDeliveryCodePrefix' OR key_text='nextGoodsDeliveryCode'";  
 }
+else if(type == 'projectgoodsdelivery'){
+  key_text = 'nextProjectGoodsDeliveryCode';
+  sql = "SELECT * FROM setting WHERE key_text='projectgoodsDeliveryCodePrefix' OR key_text='nextProjectGoodsDeliveryCode'";  
+}
   else if(type == 'project'){
       key_text = 'nextProjectCode';
       sql = "SELECT * FROM setting WHERE key_text='projectCodePrefix' OR key_text='nextProjectCode'";  

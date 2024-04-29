@@ -213,7 +213,7 @@ app.post("/insertCategory", (req, res, next) => {
     category_title: req.body.category_title,
     category_title: req.body.category_title_arb,
     category_type: "Content",
-    category_type_arb: "Content",
+    category_type_arb: "محتوى",
     internal_link: req.body.internal_link,
     published: "0",
     published_arb: "0",

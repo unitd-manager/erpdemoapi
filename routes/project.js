@@ -244,9 +244,7 @@ app.post('/getProjectById', (req, res, next) => {
   ,p.status_arb
   ,p.contact_id
   ,p.start_date
-  ,p.start_date_arb
   ,p.estimated_finish_date
-  ,p.estimated_finish_date_arb
   ,p.description
   ,p.description_arb
   ,p.project_manager_id
@@ -809,9 +807,10 @@ app.post("/getProposalDataById", (req, res, next) => {
   );
 });  
   app.get('/getProposalCode', (req, res, next) => {
-  db.query(`SELECT p.proposal_code, pp.project_id 
+  db.query(`SELECT p.proposal_code, pp.project_id , c.company_name, c.company_name_arb
 FROM proposal p
 LEFT JOIN project pp ON p.proposal_id = pp.proposal_id
+LEFT JOIN (company c) on p.company_id = c.company_id
 WHERE p.status = 'Awarded' AND pp.project_id IS NULL`,
     (err, result) => {
       if (err) {
@@ -1126,15 +1125,13 @@ app.post('/edit-Project', (req, res, next) => {
             SET title=${db.escape(req.body.title)}
             ,title_arb=${db.escape(req.body.title_arb)}
             ,category_arb=${db.escape(req.body.category_arb)}
-            ,category=${db.escape(req.body.category)}
+            ,category=${db.escape(req.body.category)} 
             ,status=${db.escape(req.body.status)}
             ,status_arb=${db.escape(req.body.status_arb)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,company_id=${db.escape(req.body.company_id)}
             ,start_date=${db.escape(req.body.start_date)}
-            ,start_date_arb=${db.escape(req.body.start_date_arb)}
             ,estimated_finish_date=${db.escape(req.body.estimated_finish_date)}
-            ,estimated_finish_date_arb=${db.escape(req.body.estimated_finish_date_arb)}
             ,description=${db.escape(req.body.description)}
             ,description_arb=${db.escape(req.body.description_arb)}
             ,project_manager_id=${db.escape(req.body.project_manager_id)}

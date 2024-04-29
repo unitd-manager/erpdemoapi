@@ -36,16 +36,33 @@ app.get('/getTranslationforTradingSalesReturn', (req, res, next) => {
 );
 });
 
+app.get('/getTranslationforTradingProjitSalesReturn', (req, res, next) => {
+  db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingSalesReturn%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get('/getFinances', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_date_arb
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
   ,q.quote_id
   ,opt.office_ref_no
-  ,opt.office_ref_no_arb
   ,c.company_id
   ,c.company_name
   ,c.company_name_arb
@@ -56,14 +73,12 @@ app.get('/getFinances', (req, res, next) => {
   ,o.notes
   ,(select sum(it.total_cost)) as amount
   ,o.order_code
-  ,o.order_code_arb
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
   ,o.shipping_address2
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
-  ,q.quote_code_arb
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
@@ -123,10 +138,15 @@ app.get('/getOrder', (req, res, next) => {
 app.get('/getOrders', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_code
+  ,o.order_code 
   ,o.creation_date
   ,o.order_status
+  ,c.company_id
+  ,c.company_name
+
   FROM orders o 
+  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
+
   WHERE o.order_id !=''
   AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
     (err, result) => {
@@ -246,11 +266,13 @@ app.post('/editSalesReturn', (req, res, next) => {
             ,modification_date = ${db.escape(req.body.modification_date)}
             ,modified_by = ${db.escape(req.body.modified_by)}
             ,status=${db.escape(req.body.status)}
+            ,status_arb=${db.escape(req.body.status_arb)}
+
              WHERE sales_return_id =  ${db.escape(req.body.sales_return_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
-        return;
+        return; 
       } else {
             return res.status(200).send({
               data: result,
@@ -384,7 +406,6 @@ app.post('/getFinancesById', (req, res, next) => {
   db.query(`SELECT 
   o.order_id,
   o.order_date,
-  o.order_date_arb,
   o.company_id,
   c.company_name,
   c.company_name_arb,
@@ -401,7 +422,6 @@ app.post('/getFinancesById', (req, res, next) => {
   o.shipping_first_name,
   o.shipping_address1,
   o.order_code,
-  o.order_code_arb,
   o.shipping_address2,
   o.shipping_address_country,
   o.shipping_address_po_code,
@@ -425,7 +445,6 @@ app.post('/getFinancesById', (req, res, next) => {
   c.address_street AS company_address_street,
   op.opportunity_id,
   op.office_ref_no,
-  op.office_ref_no_arb,
   c.address_town AS company_address_town,
   c.address_state AS company_address_state,
   gc3.name AS company_country_name,
@@ -544,7 +563,6 @@ app.post('/getOrdersByIds', (req, res, next) => {
   ,r.order_id
   ,o.order_code
   ,r.qty
-  ,r.qty_arb
   ,r.unit_price
   ,r.item_title
   ,r.item_title_arb
@@ -687,12 +705,14 @@ app.get('/getQuote', (req, res, next) => {
        q.creation_date,
        q.modification_date,
        q.currency_item,
-       q.note
+       q.note,
+       c.company_name
 FROM quote q
 LEFT JOIN orders o ON o.quote_id = q.quote_id
+LEFT JOIN (company c) on q.company_id = c.company_id
 WHERE q.quote_id != '' 
       AND q.quote_status != 'Cancelled' 
-      AND o.quote_id IS NULL`,
+      `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -734,12 +754,10 @@ app.get('/getGst', (req, res, next) => {
 app.post('/getFinanceById', (req, res, next) => {
   db.query(`SELECT o.order_id
   ,o.order_date
-  ,o.order_date_arb
   ,o.project_id
   ,o.project_type
   ,q.opportunity_id
   ,opt.office_ref_no
-  ,opt.office_ref_no_arb
   ,c.company_id
   ,c.company_name
   ,c.company_name_arb
@@ -752,7 +770,6 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.modified_by
   ,o.notes
   ,(select sum(it.total_cost)) as amount
-  ,o.order_code_arb
   ,o.order_code
   ,o.shipping_first_name
   ,o.cust_address1 AS shipping_address1
@@ -760,7 +777,6 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
-  ,q.quote_code_arb
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
@@ -1297,8 +1313,11 @@ app.post('/editInvoiceItem', (req, res, next) => {
             SET qty=${db.escape(req.body.qty)}
             ,unit_price=${db.escape(req.body.unit_price)}
             ,item_title=${db.escape(req.body.item_title)}
+            ,item_title_arb=${db.escape(req.body.item_title_arb)}
             ,model=${db.escape(req.body.model)}
+            ,model_arb=${db.escape(req.body.model_arb)}
             ,module=${db.escape(req.body.module)}
+            ,module_arb=${db.escape(req.body.module_arb)}
             ,invoice_id=${db.escape(req.body.invoice_id)}
             ,item_code=${db.escape(req.body.item_code)}
             ,vat=${db.escape(req.body.vat)}
@@ -1308,7 +1327,9 @@ app.post('/editInvoiceItem', (req, res, next) => {
             ,item_code_backup=${db.escape(req.body.item_code_backup)}
             ,unit=${db.escape(req.body.unit)}
             ,description=${db.escape(req.body.description)}
+            ,description_arb=${db.escape(req.body.description)}
             ,remarks=${db.escape(req.body.remarks)}
+            ,remarks_arb=${db.escape(req.body.remarks)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
             ,month=${db.escape(req.body.month)}
@@ -1866,6 +1887,43 @@ app.post('/insertreceipt', (req, res, next) => {
   });
 });
 
+app.post('/insertprojectreceipt', (req, res, next) => {
+
+  let data = {project_receipt_code: req.body.project_receipt_code,
+              amount: req.body.amount,
+              mode_of_payment: req.body.mode_of_payment,
+              remarks: req.body.remarks,
+              project_receipt_date: req.body.project_receipt_date,
+              published: req.body.published,
+              flag: req.body.flag,
+              creation_date: req.body.creation_date,
+              modification_date: req.body.modification_date,
+              created_by: req.body.created_by,
+              modified_by: req.body.modified_by,
+              order_id: req.body.order_id,
+              project_receipt_status: req.body.project_receipt_status,
+              cheque_date: req.body.cheque_date,
+              bank_name: req.body.bank_name,
+              site_id: req.body.site_id,
+              cheque_no: req.body.cheque_no,
+               project_id: req.body.project_id,
+          };
+
+  let sql = "INSERT INTO project_receipt SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 
 app.delete('/deleteReceipt', (req, res, next) => {
 
