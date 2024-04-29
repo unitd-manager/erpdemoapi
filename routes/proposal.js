@@ -145,9 +145,12 @@ app.post("/getProposalById", (req, res, next) => {
 
 app.get("/getProjectQuoteCode", (req, res, next) => {
   db.query(`SELECT pq.quote_code,
-  pq.project_quote_id 
+  pq.project_quote_id ,
+  c.company_name
+  ,c.company_name_arb
   FROM project_quote pq
   LEFT JOIN proposal p ON p.project_quote_id=pq.project_quote_id
+  LEFT JOIN (company c) on pq.company_id = c.company_id
   WHERE pq.project_quote_id !=''
   AND p.project_quote_id IS NULL `, (err, result) => {
     if (result.length == 0) {

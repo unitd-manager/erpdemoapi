@@ -386,6 +386,18 @@ CREATE TABLE `project_invoice` (
   `company_id` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+.....................Project sales invoice..............................
+ALTER TABLE `project_invoice` ADD `source_type_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `source_type`; 
+ALTER TABLE `project_invoice` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`; 
+ALTER TABLE `project_invoice_item` ADD `unit_price_arb` decimal(10,2)  NULL DEFAULT NULL AFTER `unit_price`; 
+ALTER TABLE `project_invoice_item` ADD `item_title_arb` varchar(255)  NULL DEFAULT NULL AFTER `item_title`; 
+ALTER TABLE `project_invoice_item` ADD `cost_price_arb` decimal(10,2)  NULL DEFAULT NULL AFTER `cost_price`; 
+ALTER TABLE `project_invoice_item` ADD `project_invoice_qty_arb` int(11)   NULL DEFAULT NULL AFTER `project_invoice_qty`; 
+ALTER TABLE `project_invoice_item` ADD `qty_arb` int(11)   NULL DEFAULT NULL AFTER `qty`; 
+ALTER TABLE `project_invoice_item` ADD `description_arb` text   NULL DEFAULT NULL AFTER `description`; 
+ALTER TABLE `project_invoice_item` ADD `unit_arb` varchar(25)   NULL DEFAULT NULL AFTER `unit`; 
+
+
 
 ..................Product module Inserted translation field(10/4/24).................
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 

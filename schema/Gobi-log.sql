@@ -215,3 +215,12 @@ ALTER TABLE `supplier_receipt` CHANGE `date` `date` VARCHAR(255) NULL DEFAULT NU
 
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.ExpiryDate', 'Expiry Date', 'تاريخ النفاذ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+
+
+********************************(29/04/2024 Purchase Invoice)**************************************(Gobi)
+
+ALTER TABLE `purchase_invoice` ADD `purchase_invoice_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `purchase_invoice_code`;
+
+********************************(29/04/2024 Purchase Invoice Item)**************************************(Gobi)
+ALTER TABLE `purchase_invoice_items` ADD `total_cost_arb` VARCHAR(10) NULL DEFAULT NULL AFTER `total_cost`;
