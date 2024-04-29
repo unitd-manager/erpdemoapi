@@ -345,7 +345,6 @@ app.post('/insertQuote', (req, res, next) => {
       , payment_method: req.body.payment_method
       , supplier_id: req.body.supplier_id
       ,rq_code: req.body.rq_code
-      ,created_by: req.body.created_by
       ,purchase_request_id:req.body.purchase_request_id
       ,creation_date: new Date().toISOString().slice(0, 19).replace('T', ' ')
       ,modification_date: req.body.modification_date
@@ -473,7 +472,7 @@ app.post('/RequestLineItemById', (req, res, next) => {
     ,pq.purchase_quote_items_id
     ,pq.description
     ,q.rq_code
-    ,q.created_by
+    
     FROM purchase_quote q
     LEFT JOIN (purchase_request r) ON (r.purchase_request_id = q.purchase_request_id) 
     LEFT JOIN (purchase_quote_items pq) ON (pq.purchase_quote_id = q.purchase_quote_id) 
@@ -509,7 +508,7 @@ app.post('/getRequestLineItempdf', (req, res, next) => {
     ,pq.purchase_quote_items_id
     ,pq.description
     ,q.rq_code
-    ,q.created_by
+    
     FROM purchase_quote q
     LEFT JOIN (purchase_request r) ON (r.purchase_request_id = q.purchase_request_id) 
     LEFT JOIN (purchase_quote_items pq) ON (pq.purchase_quote_id = q.purchase_quote_id) 
