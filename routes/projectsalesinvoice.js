@@ -421,7 +421,7 @@ app.get('/checkQuoteItems', (req, res, next) => {
           msg: 'Failed'
         });
       } else {
-        const quoteItemsIds = result.map((row) => row.order_item_id);
+        const quoteItemsIds = result.map((row) => row.project_order_item_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'
@@ -440,9 +440,9 @@ app.get('/checkGoodsItems', (req, res, next) => {
         return res.status(400).send({
           data: err,
           msg: 'Failed'
-        });
+        }); 
       } else {
-        const quoteItemsIds = result.map((row) => row.goods_delivery_item_id);
+        const quoteItemsIds = result.map((row) => row.project_goods_delivery_item_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'
@@ -479,7 +479,7 @@ app.post('/getGoodsLineItemsById', (req, res, next) => {
   os.project_quote_id
   FROM project_goods_delivery_item qt 
   LEFT JOIN project_orders os ON os.project_order_id=qt.project_order_id
-  WHERE qt.project_goods_delivery_id =  ${db.escape(req.body.goods_delivery_id)}`,
+  WHERE qt.project_goods_delivery_id =  ${db.escape(req.body.project_goods_delivery_id)}`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -3002,7 +3002,7 @@ app.post('/editInvoiceItems', (req, res, next) => {
             ,total_cost_arb=${db.escape(req.body.total_cost_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
-             WHERE invoice_item_id  =  ${db.escape(req.body.invoice_item_id )}`,
+             WHERE project_invoice_item_id  =  ${db.escape(req.body.project_invoice_item_id )}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -3098,6 +3098,55 @@ app.post("/updateCancelledStatus/:orderId", (req, res, next) => {
     }
   });
 });
+
+app.post("/getCodeValue", (req, res, next) => {
+  var type = req.body.type;
+  let sql = '';
+  let key_text = '';
+  let withprefix = true;
+  if(type == 'ProjectInvoiceCode'){
+      key_text = 'nextProjectInvoiceCode';
+      sql = "SELECT * FROM setting WHERE key_text='ProjectInvoiceCodePrefix' OR key_text='nextProjectInvoiceCode'";
+  }
+  let query = db.query(sql, (err, result) => {
+      let old = result
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+       
+        var finalText = '';
+        var newvalue = 0
+        if(withprefix == true){
+            var codeObject = result.filter(obj => obj.key_text === key_text);
+            
+             var prefixObject = result.filter(obj => obj.key_text != key_text);
+            finalText = prefixObject[0].value + codeObject[0].value;
+            newvalue = parseInt(codeObject[0].value) + 1
+        }else{
+            finalText = result[0].value
+            newvalue = parseInt(result[0].value) + 1
+        }
+        newvalue = newvalue.toString()
+         let query = db.query(`UPDATE setting SET value=${db.escape(newvalue)} WHERE key_text = ${db.escape(key_text)}`, (err, result) => {
+            if (err) {
+              return res.status(400).send({
+                data: err,
+                msg: "failed",
+              });
+            } else {
+              return res.status(200).send({
+                data: finalText,
+                result:old
+              });
+            }
+        });
+    }
+  });
+});
+
 
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
