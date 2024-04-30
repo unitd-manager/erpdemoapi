@@ -310,7 +310,7 @@ app.get('/getSubCategoryTypeFromValueList', (req, res, next) => {
     `SELECT 
   value
   ,valuelist_id
-  FROM valuelist WHERE key_text='Sub Category Type'`,
+  FROM valuelist WHERE key_text='SubCategory Type'`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
