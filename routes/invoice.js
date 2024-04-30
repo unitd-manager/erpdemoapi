@@ -1318,18 +1318,9 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
   o.order_id
   ,o.order_code
   ,o.order_code_arb
-<<<<<<< HEAD
-FROM orders o
-  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id 
-  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
-
-  WHERE
-  o.order_id != '' 
-=======
   FROM orders o
   LEFT JOIN invoice i ON i.invoice_source_id = o.order_id 
   WHERE o.order_id != '' 
->>>>>>> faac428f1e6deae137aee7979e64c47ebb88dfea
   AND i.invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
@@ -1351,16 +1342,14 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   g.goods_delivery_id_arb,
   g.goods_delivery_code,
   g.goods_delivery_code_arb
-  FROM goods_delivery g
-  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id
-  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
-
-  WHERE
+FROM goods_delivery g
+LEFT JOIN invoice i ON i.invoice_source_id = g.goods_delivery_id
+LEFT JOIN company c ON c.company_id = g.company_id
+WHERE 
   g.goods_delivery_id != '' 
-  AND i.invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}, 
-  LEFT JOIN invoice i ON i.invoice_source_id = g.goods_delivery_id
-  WHERE g.goods_delivery_id != '' 
-  AND i.invoice_source_id IS NULL AND g.company_id= ${db.escape(req.body.company_id)}`, 
+  AND i.invoice_source_id IS NULL 
+  AND g.company_id = ${db.escape(req.body.company_id)}; 
+  `, 
   (err, result) => {
     if (err) {
       return res.status(400).send({
