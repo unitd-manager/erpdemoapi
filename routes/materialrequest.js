@@ -21,11 +21,8 @@ app.get('/getMaterialRequest', (req, res, next) => {
   lr.material_request_id
   ,lr.project_id
   ,lr.material_request_code
-  ,lr.material_request_code_arb
   ,lr.material_request_date
-  ,lr.material_request_date_arb
   ,lr.request_date
-  ,lr.request_date_arb
   ,lr.site_reference
   ,lr.site_reference_arb
   ,lr.approved_by

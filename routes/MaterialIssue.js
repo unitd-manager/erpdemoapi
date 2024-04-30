@@ -23,13 +23,9 @@ app.get('/getMaterialIssue', (req, res, next) => {
   ,lr.project_id
   ,lr.material_request_id
   ,lr.reason_for_issue
-  ,lr.reason_for_issue_arb
   ,lr.material_issue_date
-  ,lr.reason_for_issue_arb
   ,lr.notes
-  ,lr.notes_arb
   ,lr.authorized_by
-  ,lr.authorized_by_arb
   ,lr.creation_date
   ,lr.modification_date
   ,p.title AS proj_title
@@ -55,6 +51,71 @@ app.get('/getMaterialIssue', (req, res, next) => {
 
         }
  
+    }
+  );
+});
+app.get('/getSettingsForCompany', (req, res, next) => {
+  db.query(`SELECT * FROM setting WHERE key_text LIKE 'cp%'`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.post("/getMaterialIssueDataById", (req, res, next) => {
+  db.query(
+    `SELECT
+    lr.material_issue_id,
+    lr.project_id,
+    lr.material_request_id,
+    lr.material_issue_date,
+    lr.material_issue_date_arb,
+    lr.material_r_code,
+    lr.material_request_code_arb,
+    c.company_name,
+    c.company_name_arb,
+    c.address_flat,
+    c.address_street,
+    c.address_town,
+    c.address_country,
+    c.address_po_code,
+    c.phone,
+    cont.first_name,
+    cont.first_name_arb
+FROM
+    material_issue lr
+LEFT JOIN
+    project p ON p.project_id = lr.project_id
+LEFT JOIN
+    company c ON c.company_id = p.company_id
+LEFT JOIN
+    contact cont ON cont.contact_id = p.contact_id
+WHERE
+    lr.material_issue_id = ${db.escape(req.body.material_issue_id)}
+ORDER BY
+    lr.material_request_id DESC`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result[0],
+          msg: "Success",
+        });
+      }
     }
   );
 });

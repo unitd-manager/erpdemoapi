@@ -741,6 +741,7 @@ app.post('/getInvoiceOrderedQty', (req, res, next) => {
 );
 });
 
+
 app.get('/getInvoice', (req, res, next) => {
   db.query(`SELECT
   i.invoice_id,
