@@ -63,7 +63,8 @@ app.get('/getProducts', (req, res, next) => {
   LEFT JOIN (section s) ON (p.section_id = s.section_id) 
   LEFT JOIN (sub_category sc) ON (p.sub_category_id  = sc.sub_category_id)
   LEFT JOIN (product_company pc) ON (pc.product_id = p.product_id) 
-  LEFT JOIN (supplier co) ON (co.supplier_id = pc.company_id)`,
+  LEFT JOIN (supplier co) ON (co.supplier_id = pc.company_id)
+  ORDER By product_id DESC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)

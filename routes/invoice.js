@@ -276,9 +276,7 @@ app.get('/getMainInvoice', (req, res, next) => {
   db.query(
     `SELECT i.* 
     ,cont.contact_id
-    ,cont.contact_id_arb
     ,c.company_id
-    ,c.company_id_arb
     ,c.company_name
     ,c.company_name_arb
     ,CONCAT_WS(' ', cont.first_name, cont.last_name) AS contact_name

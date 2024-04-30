@@ -59,16 +59,18 @@ app.get('/getTranslationforTradingSalesReceipt', (req, res, next) => {
 app.post('/insertInvoice', (req, res, next) => {
 
   let data = {
-    invoice_code: req.body.invoice_code
+      project_invoice_code: req.body.project_invoice_code
     , project_invoice_source_id: req.body.project_invoice_source_id
     , company_id: req.body.company_id
     , source_type: req.body.source_type
+    , source_type_arb: req.body.source_type_arb
     , status: 'Due'
     , creation_date: req.body.creation_date   
     , created_by: req.body.created_by
+    , created_by_arb: req.body.created_by_arb
     ,project_invoice_date: new Date()
  };
-  let sql = "INSERT INTO invoice SET ?";
+  let sql = "INSERT INTO project_invoice SET ?";
   let query = db.query(sql, data,(err, result) => {
     if (err) {
      return res.status(400).send({
@@ -410,9 +412,7 @@ app.post('/getInvoiceForReceipt', (req, res, next) => {
 app.get('/checkQuoteItems', (req, res, next) => {
   db.query(
     `SELECT 
-    order_item_id ,
-    order_item_id_arb 
-
+    project_order_id
      FROM project_invoice_item`,
     (err, result) => {
       if (err) {
@@ -421,7 +421,7 @@ app.get('/checkQuoteItems', (req, res, next) => {
           msg: 'Failed'
         });
       } else {
-        const quoteItemsIds = result.map((row) => row.order_item_id);
+        const quoteItemsIds = result.map((row) => row.project_order_item_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'
@@ -433,17 +433,16 @@ app.get('/checkQuoteItems', (req, res, next) => {
 
 app.get('/checkGoodsItems', (req, res, next) => {
   db.query(
-    `SELECT goods_delivery_item_id,
-    goods_delivery_item_id_arb
-     FROM project_invoice_item`,
+    `SELECT project_goods_delivery_id
+    FROM project_invoice_item`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
           data: err,
           msg: 'Failed'
-        });
+        }); 
       } else {
-        const quoteItemsIds = result.map((row) => row.goods_delivery_item_id);
+        const quoteItemsIds = result.map((row) => row.project_goods_delivery_item_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'
@@ -457,8 +456,8 @@ app.get('/checkGoodsItems', (req, res, next) => {
 app.post('/getOrderLineItemsById', (req, res, next) => {
   db.query(`SELECT
   qt.* 
-  FROM order_item qt 
-  WHERE qt.order_id =  ${db.escape(req.body.order_id)}`,
+  FROM project_order_item qt 
+  WHERE qt.project_order_id =  ${db.escape(req.body.project_order_id)}`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -477,12 +476,10 @@ app.post('/getOrderLineItemsById', (req, res, next) => {
 app.post('/getGoodsLineItemsById', (req, res, next) => {
   db.query(`SELECT
   qt.*,
-  os.quote_id,
-  os.quote_id_arb
-
-  FROM goods_delivery_item qt 
-  LEFT JOIN orders os ON os.order_id=qt.order_id
-  WHERE qt.goods_delivery_id =  ${db.escape(req.body.goods_delivery_id)}`,
+  os.project_quote_id
+  FROM project_goods_delivery_item qt 
+  LEFT JOIN project_orders os ON os.project_order_id=qt.project_order_id
+  WHERE qt.project_goods_delivery_id =  ${db.escape(req.body.project_goods_delivery_id)}`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -969,7 +966,7 @@ app.post('/getInvoiceByInvoiceItemId', (req, res, next) => {
   ,i.total_cost
    from project_invoice_item i
    LEFT JOIN invoice o ON o.project_invoice_id=i.project_invoice_id
- WHERE i.invoice_item_id= ${db.escape(req.body.invoice_item_id)}`,
+ WHERE i.project_invoice_item_id= ${db.escape(req.body.project_invoice_item_id)}`,
     (err, result) => {
 
       if (err) {
@@ -1051,22 +1048,20 @@ app.post('/getInvoiceByItemId', (req, res, next) => {
 });
 app.post('/getInvoiceByOrderItemId', (req, res, next) => {
   db.query(`select 
-  i.project_invoice_id,
-  i.invoice_id_arb
+  i.project_invoice_id
   ,i.item_title
   ,i.item_title_arb
-  ,o.invoice_code
-  ,o.invoice_code_arb
+  ,o.project_invoice_code
+  ,o.project_invoice_code_arb
   ,i.description
   ,i.description_arb
   ,i.total_cost
   ,i.qty
   ,i.qty_arb
-  ,i.invoice_qty
-  ,i.invoice_qty_arb
+  ,i.project_invoice_qty
+  ,i.project_invoice_qty_arb
   ,i.unit_price
-  ,i.invoice_item_id
-  ,i.invoice_item_id_arb
+  ,i.project_invoice_item_id
   ,i.unit
   ,i.unit_arb
   ,i.created_by
@@ -1074,7 +1069,7 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
   ,i.modified_by
   ,i.modification_date
    from project_invoice_item i
-   LEFT JOIN invoice o ON o.project_invoice_id=i.project_invoice_id
+   LEFT JOIN project_invoice o ON o.project_invoice_id=i.project_invoice_id
  WHERE i.project_invoice_id= ${db.escape(req.body.project_invoice_id)}`,
     (err, result) => {
 
@@ -1178,9 +1173,11 @@ app.post('/getInvoiceById', (req, res, next) => {
   i.project_invoice_id,
   i.project_invoice_source_id,
   i.source_type,
+  i.source_type_arb,
   i.project_invoice_code,
   i.project_invoice_due_date,
   co.company_name,
+  co.company_name_arb,
   i.status,
   i.project_invoice_date,
   i.project_invoice_amount,
@@ -1191,17 +1188,17 @@ app.post('/getInvoiceById', (req, res, next) => {
   i.modification_date,
   i.project_invoice_terms,
   i.company_id,
-  o.order_id,
-  o.order_code,
-  g.goods_delivery_id,
-  g.goods_delivery_code,
+  o.project_order_id,
+  o.project_order_code,
+  g.project_goods_delivery_id,
+  g.project_goods_delivery_code,
   SUM(it.total_cost) AS InvoiceAmount
 FROM
   project_invoice i
 LEFT JOIN
-  orders o ON o.order_id = i.project_invoice_source_id AND i.source_type = 'Sales_Order'
+  project_orders o ON o.project_order_id = i.project_invoice_source_id AND i.source_type = 'Sales_Order'
 LEFT JOIN
-  goods_delivery g ON g.goods_delivery_id = i.project_invoice_source_id AND i.source_type = 'Goods_Delivery'
+project_goods_delivery g ON g.project_goods_delivery_id = i.project_invoice_source_id AND i.source_type = 'Goods_Delivery'
 LEFT JOIN
   project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
 LEFT JOIN
@@ -1287,7 +1284,7 @@ app.post('/getInvoiceByInvoiceIdId', (req, res, next) => {
 
 
 app.get('/getCustomerDropdown', (req, res, next) => {
-  db.query(`SELECT company_name,company_id FROM company`, (err, result) => {
+  db.query(`SELECT company_name, company_name_arb, company_id FROM company`, (err, result) => {
     if (err) {
       return res.status(400).send({
         data: err,
@@ -1303,15 +1300,15 @@ app.get('/getCustomerDropdown', (req, res, next) => {
 
 app.post('/getSalesOrderDropdown', (req, res, next) => {
   db.query(`SELECT 
-  o.order_id
-  o.order_id_arb
-  ,o.order_code
-  ,o.order_code_arb
-
-  FROM orders o
-  LEFT JOIN (invoice i) ON i.project_invoice_source_id = o.order_id 
+  o.project_order_id 
+  ,o.project_order_code
+  ,c.company_name
+  ,c.company_name_arb
+  FROM project_orders o
+  LEFT JOIN (project_invoice i) ON i.project_invoice_source_id = o.project_order_id 
+  LEFT JOIN (company c) on o.company_id = c.company_id
   WHERE
-  o.order_id != '' 
+  o.project_order_id != '' 
   AND i.project_invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
@@ -1329,14 +1326,16 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
 
 app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   db.query(`SELECT 
-  g.goods_delivery_id,
-  g.goods_delivery_id_arb,
-  g.goods_delivery_code
-  g.goods_delivery_code_arb
-  FROM goods_delivery g
-  LEFT JOIN (invoice i) ON i.project_invoice_source_id = g.goods_delivery_id
+  g.project_goods_delivery_id ,
+  g.project_goods_delivery_code,
+  g.project_goods_delivery_code_arb,
+  c.company_name,
+  c.company_name_arb
+  FROM project_goods_delivery g
+  LEFT JOIN (project_invoice i) ON i.project_invoice_source_id = g.project_goods_delivery_id
+  LEFT JOIN (company c) on g.company_id = c.company_id
   WHERE
-  g.goods_delivery_id != '' 
+  g.project_goods_delivery_id != '' 
   AND i.project_invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
@@ -1403,6 +1402,28 @@ GROUP BY
 
     }
   );
+});
+
+app.post("/updateOrderStatus/:orderId", (req, res, next) => {
+  const orderId = req.params.orderId;
+  const newStatus = req.body.order_status; // Assuming the new status is provided in the request body
+
+  // Construct the SQL query
+  let sql = "UPDATE project_orders SET order_status = ? WHERE project_order_id = ?";
+  let query = db.query(sql, [newStatus, orderId], (err, result) => {
+    if (err) {
+      console.log("Error updating order status:", err);
+      return res.status(500).send({ error: "Internal server error" });
+    } else {
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ error: "Enquiry not found" });
+      }
+      return res.status(200).send({
+        message: "Order status updated successfully",
+        data: result,
+      });
+    }
+  });
 });
 
 app.get('/checkReceiptItemshide', (req, res, next) => {
@@ -1695,7 +1716,7 @@ app.post('/getReceiptCancel', (req, res, next) => {
   );
 }); 
 app.post('/editInvoices', (req, res, next) => {
-  db.query(`UPDATE invoice 
+  db.query(`UPDATE project_invoice 
             SET 
             project_invoice_date = ${db.escape(req.body.project_invoice_date)}
              ,project_invoice_terms = ${db.escape(req.body.project_invoice_terms)}
@@ -1703,11 +1724,10 @@ app.post('/editInvoices', (req, res, next) => {
              ,source_type = ${db.escape(req.body.source_type)}
              ,source_type_arb = ${db.escape(req.body.source_type_arb)}
              ,project_invoice_source_id =  ${db.escape(req.body.project_invoice_source_id)}
-             ,project_invoice_source_id_arb =  ${db.escape(req.body.project_invoice_source_id_arb)}
              ,project_invoice_due_date =  ${db.escape(req.body.project_invoice_due_date)}
              ,modified_by = ${db.escape(req.body.modified_by)}
              ,modification_date = ${db.escape(req.body.modification_date)}
-    ,invoice_amount = (
+    ,project_invoice_amount = (
         SELECT SUM(total_cost) 
         FROM project_invoice_item 
         WHERE project_invoice_id = ${db.escape(req.body.project_invoice_id)}
@@ -2648,35 +2668,21 @@ app.post('/insertInvoiceItem', (req, res, next) => {
 
   let data = {
        qty: req.body.qty,
-       qty: req.body.qty_arb,
-       invoice_qty: req.body.invoice_qty,
-       invoice_qty: req.body.invoice_qty_arb
+       project_invoice_qty: req.body.project_invoice_qty
        ,project_invoice_id: req.body.project_invoice_id
-       ,project_invoice_id: req.body.invoice_id_arb
        ,project_invoice_source_id: req.body.project_invoice_source_id
-       ,project_invoice_source_id: req.body.project_invoice_source_id_arb
        ,source_type: req.body.source_type
-       ,source_type: req.body.source_type_arb
-       ,order_id: req.body.order_id
-       ,order_id: req.body.order_id_arb
-       ,order_item_id : req.body.order_item_id 
-       ,order_item_id : req.body.order_item_id_arb
-       ,goods_delivery_id: req.body.goods_delivery_id
-       ,goods_delivery_id: req.body.goods_delivery_id_arb
-       ,goods_delivery_item_id: req.body.goods_delivery_item_id
-       ,goods_delivery_item_id: req.body.goods_delivery_item_id_arb
+       ,project_order_id: req.body.project_order_id
+       ,project_goods_delivery_id: req.body.goods_delivery_id
+       ,project_goods_delivery_item_id: req.body.goods_delivery_item_id
     , item_title: req.body.item_title
     , item_title: req.body.item_title_arb
     , description: req.body.description
-    , description: req.body.description_arb
     , remarks: req.body.remarks
-    , remarks: req.body.remarks_arb
     , total_cost: req.body.total_cost
-    , total_cost: req.body.total_cost_arb
-    ,created_by: req.body.created_by
+    , created_by: req.body.created_by
     ,creation_date: req.body.creation_date
-    ,quote_id: req.body.quote_id
-    ,quote_id: req.body.quote_id_arb
+    ,project_quote_id: req.body.project_quote_id
     ,unit_price: req.body.unit_price
     ,unit: req.body.unit
     ,unit: req.body.unit_arb
@@ -2996,7 +3002,7 @@ app.post('/editInvoiceItems', (req, res, next) => {
             ,total_cost_arb=${db.escape(req.body.total_cost_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
-             WHERE invoice_item_id  =  ${db.escape(req.body.invoice_item_id )}`,
+             WHERE project_invoice_item_id  =  ${db.escape(req.body.project_invoice_item_id )}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -3070,6 +3076,78 @@ app.post('/getProductDatas', (req, res, next) => {
     }
   );
 });
+
+app.post("/updateCancelledStatus/:orderId", (req, res, next) => {
+  const orderId = req.params.orderId;
+  const newStatus = req.body.order_status; // Assuming the new status is provided in the request body
+
+  // Construct the SQL query
+  let sql = "UPDATE project_orders SET order_status = ? WHERE project_order_id = ?";
+  let query = db.query(sql, [newStatus, orderId], (err, result) => {
+    if (err) {
+      console.log("Error updating order status:", err);
+      return res.status(500).send({ error: "Internal server error" });
+    } else {
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ error: "Enquiry not found" });
+      }
+      return res.status(200).send({
+        message: "Order status updated successfully",
+        data: result,
+      });
+    }
+  });
+});
+
+app.post("/getCodeValue", (req, res, next) => {
+  var type = req.body.type;
+  let sql = '';
+  let key_text = '';
+  let withprefix = true;
+  if(type == 'ProjectInvoiceCode'){
+      key_text = 'nextProjectInvoiceCode';
+      sql = "SELECT * FROM setting WHERE key_text='ProjectInvoiceCodePrefix' OR key_text='nextProjectInvoiceCode'";
+  }
+  let query = db.query(sql, (err, result) => {
+      let old = result
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+       
+        var finalText = '';
+        var newvalue = 0
+        if(withprefix == true){
+            var codeObject = result.filter(obj => obj.key_text === key_text);
+            
+             var prefixObject = result.filter(obj => obj.key_text != key_text);
+            finalText = prefixObject[0].value + codeObject[0].value;
+            newvalue = parseInt(codeObject[0].value) + 1
+        }else{
+            finalText = result[0].value
+            newvalue = parseInt(result[0].value) + 1
+        }
+        newvalue = newvalue.toString()
+         let query = db.query(`UPDATE setting SET value=${db.escape(newvalue)} WHERE key_text = ${db.escape(key_text)}`, (err, result) => {
+            if (err) {
+              return res.status(400).send({
+                data: err,
+                msg: "failed",
+              });
+            } else {
+              return res.status(200).send({
+                data: finalText,
+                result:old
+              });
+            }
+        });
+    }
+  });
+});
+
+
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);

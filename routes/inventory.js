@@ -142,6 +142,8 @@ app.post('/getinventoryById', (req, res, next) => {
   ,i.modification_date
   ,p.product_code
   ,i.actual_stock AS stock
+  ,i.created_by
+  ,i.modified_by
 FROM inventory i
 LEFT JOIN (product p) ON (p.product_id = i.product_id)
 LEFT JOIN (product_company pc) ON (pc.product_id = p.product_id)
@@ -226,6 +228,7 @@ app.post('/editinventoryMain', (req, res, next) => {
             SET minimum_order_level =${db.escape(req.body.minimum_order_level)}
                 ,notes=${db.escape(req.body.notes)}
                 ,modification_date=${db.escape(req.body.modification_date)}
+                ,modified_by=${db.escape(req.body.modified_by)}
              WHERE product_id =  ${db.escape(req.body.productId)}`,
     (err, result) => {
        
@@ -295,7 +298,7 @@ app.post('/updateInventoryStock', (req, res, next) => {
 
 app.post('/insertinventory', (req, res, next) => {
 
-  let data = {creation_date: new Date().toISOString().slice(0, 19).replace("T", " "),
+  let data = {creation_date: req.body.creation_date,
               product_id:req.body.product_id,
               modification_date: req.body.modification_date,
               flag: req.body.flag,

@@ -215,3 +215,53 @@ ALTER TABLE `supplier_receipt` CHANGE `date` `date` VARCHAR(255) NULL DEFAULT NU
 
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdSupplierPriceList.ExpiryDate', 'Expiry Date', 'تاريخ النفاذ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+
+
+********************************(29/04/2024 Purchase Invoice)**************************************(Gobi)
+
+ALTER TABLE `purchase_invoice` ADD `purchase_invoice_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `purchase_invoice_code`;
+ALTER TABLE `purchase_invoice` ADD `status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `status`;
+
+********************************(29/04/2024 Purchase Invoice Item)**************************************(Gobi)
+ALTER TABLE `purchase_invoice_items` ADD `total_cost_arb` VARCHAR(10) NULL DEFAULT NULL AFTER `total_cost`;
+ALTER TABLE `purchase_invoice_items` ADD `unit_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `unit`;
+ALTER TABLE `purchase_invoice_items` ADD `ordered_quantity_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `ordered_quantity`;
+ALTER TABLE `purchase_invoice_items` ADD `cost_price_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `cost_price`;
+
+********************************(29/04/2024 Purchase order)**************************************(Gobi)
+ALTER TABLE `purchase_order` ADD `po_code_arb` VARCHAR(10) NULL DEFAULT NULL AFTER `po_code`;
+
+
+********************************(29/04/2024 po product)**************************************(Gobi)
+ALTER TABLE `po_product` ADD `qty_arb` INT(10) NULL DEFAULT NULL AFTER `qty`;
+ALTER TABLE `po_product` ADD `qty_delivered_arb` INT(10) NULL DEFAULT NULL AFTER `qty_delivered`;
+ALTER TABLE `po_product` ADD `cost_price_arb` INT(10) NULL DEFAULT NULL AFTER `cost_price`;
+ALTER TABLE `po_product` ADD `quantity_arb` INT(10) NULL DEFAULT NULL AFTER `quantity`;
+
+
+
+********************************(29/04/2024 Employee)**************************************(Gobi)
+ALTER TABLE `employee` ADD `nric_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `nric_no`;
+ALTER TABLE `employee` ADD `fin_no_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `fin_no`;
+ALTER TABLE `employee` ADD `citizen_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `citizen`;
+ALTER TABLE `employee` ADD `passport_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `passport`;
+
+
+
+********************************(29/04/2024 Job information)**************************************(Gobi)
+ALTER TABLE `job_information` ADD `rest_day_per_week_arb` VARCHAR(10) NULL DEFAULT NULL AFTER `rest_day_per_week`;
+ALTER TABLE `job_information` ADD `paid_annual_leave_per_year_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `paid_annual_leave_per_year`;
+ALTER TABLE `job_information` ADD `hourly_pay` VARCHAR(255) NULL DEFAULT NULL AFTER `over_time_rate`;
+
+********************************(29/04/2024 Translation)**************************************(Gobi)
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Title', 'Title', 'عنوان', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Trainer', 'Trainer', 'مدرب', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Date', 'Date', 'تاريخ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.From Date', 'From Date', 'من التاريخ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.To Date', 'To Date', 'ان يذهب في موعد', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Description', 'Description', 'وصف', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Training Company Name', 'Training Company Name', 'اسم شركة التدريب', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Training Company address', 'Training Company address', 'عنوان شركة التدريب', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Training Company email', 'Training Company email', 'البريد الإلكتروني لشركة ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Training Company phone', 'Training Company phone', 'هاتف شركة التدريب', NULL, NULL, NULL, NULL, NULL, NULL, '0');

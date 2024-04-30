@@ -156,9 +156,10 @@ app.post('/getProjectquoteById', (req, res, next) => {
   });
 
   app.get('/getEnquiryCode', (req, res, next) => {
-    db.query(`  SELECT pe.enquiry_code,pe.project_enquiry_id 
+    db.query(`  SELECT pe.enquiry_code,pe.project_enquiry_id, c.company_name, c.company_name_arb
     from project_enquiry pe
     LEFT JOIN project_quote o ON o.project_enquiry_id = pe.project_enquiry_id
+    LEFT JOIN (company c) on pe.company_id = c.company_id
      WHERE pe.project_enquiry_id != ''
      AND o.project_enquiry_id IS NULL  `,
       (err, result) => {
