@@ -966,7 +966,7 @@ app.post('/getInvoiceByInvoiceItemId', (req, res, next) => {
   ,i.total_cost
    from project_invoice_item i
    LEFT JOIN invoice o ON o.project_invoice_id=i.project_invoice_id
- WHERE i.invoice_item_id= ${db.escape(req.body.invoice_item_id)}`,
+ WHERE i.project_invoice_item_id= ${db.escape(req.body.project_invoice_item_id)}`,
     (err, result) => {
 
       if (err) {
