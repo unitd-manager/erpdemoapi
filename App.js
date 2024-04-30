@@ -11,8 +11,15 @@ var credentials = {key: privateKey, cert: certificate};
 
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
-httpServer.listen(2005);
-httpsServer.listen(2006);
+let port = 2005;
+let secureport = 2006;
+httpServer.listen(port, () => {
+    console.log(`Server Running in port:${port}`);
+  });
+httpsServer.listen(secureport, () => {
+    console.log(`Server Running in secure port:${secureport}`);
+  });
+    
     
 var bodyParser = require('body-parser');
 var cors = require('cors');
