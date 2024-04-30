@@ -481,10 +481,7 @@ app.post('/getGoodsLineItemsById', (req, res, next) => {
   db.query(`SELECT
   qt.*,
   os.quote_id,
-<<<<<<< HEAD
-=======
   os.quote_id_arb
->>>>>>> deba6c0d9b718ddf75640259c9cdcb8db8eb35fd
 
   FROM goods_delivery_item qt 
   LEFT JOIN orders os ON os.order_id=qt.order_id
@@ -766,7 +763,7 @@ FROM
   invoice i
 LEFT JOIN
   sales_return sr ON i.invoice_id = sr.invoice_id
-  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
+  LEFT JOIN (company c) ON (c.company_id=i.company_id)    
 
   
 WHERE
@@ -876,12 +873,10 @@ it.invoice_item_id,
 it.price,
 it.notes,
 it.notes_arb,
-
 it.qty_return,
 it.order_id,
 iv.item_title,
 iv.item_title_arb
-
 FROM sales_return_history it
 LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
 LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
@@ -915,7 +910,7 @@ it.unit_price,
 it.remarks
 FROM invoice_item it
 LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
-WHERE i.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
+WHERE it.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
           (err, result) => {
        
       if (result.length === 0) {
