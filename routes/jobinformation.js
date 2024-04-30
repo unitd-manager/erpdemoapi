@@ -180,20 +180,13 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.place_of_work
             ,j.place_of_work_arb
             ,j.work_hour_details
-            ,j.work_hour_details_arb
             ,j.rest_day_per_week
-            ,j.rest_day_per_week_arb
             ,j.paid_annual_leave_per_year
-            ,j.paid_annual_leave_per_year_arb
             ,j.paid_outpatient_sick_leave_per_year
-            ,j.paid_outpatient_sick_leave_per_year_arb
-            ,j.paid_hospitalisation_leave_per_year_arb
             ,j.paid_hospitalisation_leave_per_year
             ,j.paid_medical_examination_fee
             ,j.other_type_of_leave
-            ,j.other_type_of_leave_arb
             ,j.other_medical_benefits
-            ,j.other_medical_benefits_arb
             ,j.probationary
             ,j.emp_type
             ,j.designation
@@ -229,22 +222,17 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.bank_code
             ,j.branch_code
             ,j.notice_period_for_termination
-            ,j.notice_period_for_termination_arb
             ,j.resignation_notice_date
             ,j.termination_date
             ,j.termination_reason
-            ,j.termination_reason_arb
             ,j.departure_date
             ,j.pay_cdac
             ,j.pay_eucf
             ,j.pay_mbmf
             ,j.pay_sinda
             ,j.length_of_probation
-            ,j.length_of_probation_arb
             ,j.probation_start_date
-            ,j.probation_start_date_arb
             ,j.probation_end_date
-            ,j.probation_end_date_arb
             ,j.over_time_rate
             ,e.emp_code
             ,e.employee_name
@@ -254,7 +242,7 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,e.email
             ,e.salary
             ,e.nric_no
-            ,e.nric_arb_
+            ,e.nric_no_arb
             ,e.position
             ,e.date_of_expiry
             ,e.spass_no

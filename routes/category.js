@@ -46,6 +46,8 @@ app.get("/getCategory", (req, res, next) => {
   c.modification_date,
   c.modified_by,
   c.modified_by_arb
+  ,c.seo_title
+  ,c.seo_title_arb
   FROM category c LEFT JOIN (section s) ON s.section_id=c.section_id 
   
   ORDER By c.sort_order ASC`,
@@ -90,6 +92,8 @@ app.post("/getCategoryById", (req, res, next) => {
     c.modification_date,
     c.modified_by,
     c.modified_by_arb
+    ,c.seo_title
+  ,c.seo_title_arb
   FROM category c LEFT JOIN (section s) ON (s.section_id=c.section_id )
     WHERE c.category_id = ${db.escape(req.body.category_id)}`,
     (err, result) => {
@@ -211,9 +215,9 @@ app.post("/insertCategory", (req, res, next) => {
     category_id: req.body.category_id,
     section_id: req.body.section_id,
     category_title: req.body.category_title,
-    category_title: req.body.category_title_arb,
+    category_title_arb: req.body.category_title_arb,
     category_type: "Content",
-    category_type_arb: "محتوى",
+    category_type_arb: "Content",
     internal_link: req.body.internal_link,
     published: "0",
     published_arb: "0",
@@ -223,6 +227,8 @@ app.post("/insertCategory", (req, res, next) => {
     creation_date: req.body.creation_date,
     created_by: req.body.created_by,
     created_by_arb: req.body.created_by_arb,
+    seo_title: req.body.category_title,
+    seo_title_arb: req.body.category_title_arb,
   };
   let sql = "INSERT INTO category SET ?";
   let query = db.query(sql, data, (err, result) => {
@@ -344,6 +350,30 @@ app.get('/getTranslationForCategory', (req, res, next) => {
   }
 );
 });
+
+app.get('/getCategoryTypeFromValueList', (req, res, next) => {
+  db.query(
+    `SELECT 
+  value
+  ,valuelist_id
+  FROM valuelist WHERE key_text='Category Type'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        })
+      }
+    },
+  )
+})
+
 
 
 
