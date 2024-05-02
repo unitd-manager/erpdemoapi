@@ -386,6 +386,65 @@ CREATE TABLE `project_invoice` (
   `company_id` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+...............................project_invice_itme table.........................
+
+--
+-- Database: `databaseerp`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_invoice_item`
+--
+
+CREATE TABLE `project_invoice_item` (
+  `project_invoice_item_id` int(10) NOT NULL,
+  `project_invoice_id` int(10) UNSIGNED DEFAULT NULL,
+  `record_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `qty` int(11) DEFAULT NULL,
+  `qty_arb` int(11) DEFAULT NULL,
+  `unit_price` decimal(10,2) DEFAULT 0.00,
+  `unit_price_arb` decimal(10,2) DEFAULT NULL,
+  `item_title` varchar(255) DEFAULT NULL,
+  `item_title_arb` varchar(255) DEFAULT NULL,
+  `model` varchar(255) DEFAULT NULL,
+  `module` varchar(50) DEFAULT NULL,
+  `supplier_id` int(11) DEFAULT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL,
+  `cost_price_arb` decimal(10,2) DEFAULT NULL,
+  `order_item_id` int(11) DEFAULT NULL,
+  `item_code` varchar(255) DEFAULT NULL,
+  `vat` decimal(10,2) DEFAULT NULL,
+  `discount_percentage` decimal(10,2) DEFAULT NULL,
+  `discount_type` varchar(100) DEFAULT NULL,
+  `site_id` int(11) DEFAULT NULL,
+  `item_code_backup` varchar(100) DEFAULT NULL,
+  `unit` varchar(25) DEFAULT NULL,
+  `unit_arb` varchar(25) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `description_arb` text DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `modification_date` varchar(255) DEFAULT NULL,
+  `modified_by` varchar(255) DEFAULT NULL,
+  `month` int(4) DEFAULT NULL,
+  `year` int(6) DEFAULT NULL,
+  `total_cost` varchar(100) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `s_no` varchar(100) DEFAULT NULL,
+  `qty_returned` decimal(10,2) DEFAULT NULL,
+  `project_goods_delivery_id` int(11) DEFAULT NULL,
+  `project_goods_delivery_item_id` int(11) DEFAULT NULL,
+  `project_order_id` int(11) DEFAULT NULL,
+  `creation_date` varchar(255) DEFAULT NULL,
+  `created_by` varchar(255) DEFAULT NULL,
+  `project_invoice_qty` int(11) DEFAULT NULL,
+  `project_invoice_qty_arb` int(11) DEFAULT NULL,
+  `project_invoice_source_id` int(11) DEFAULT NULL,
+  `source_type` varchar(255) DEFAULT NULL,
+  `project_quote_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 .....................Project sales invoice..............................
 ALTER TABLE `project_invoice` ADD `source_type_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `source_type`; 
 ALTER TABLE `project_invoice` ADD `created_by_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`; 

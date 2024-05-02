@@ -57,6 +57,43 @@ app.get('/getPurchaseRequest', (req, res, next) => {
   }
 );
 });
+app.post('/getPurchaseRequestByPurchaseId', (req, res, next) => {
+  db.query(`SELECT 
+  pr.purchase_request_id,
+  pr.purchase_request_code,
+  pr.purchase_request_code_arb,
+  pr.purchase_request_date,
+  pr.purchase_request_date_arb,
+  pr.purchase_delivery_date,
+  pr.purchase_delivery_date_arb,
+  c.company_name,
+  c.company_id,
+  pq.unit,
+  pq.title,
+  pq.purchase_request_qty,
+  pq.unit_arb,
+  pq.title_arb,
+  pq.purchase_request_qty_arb
+  FROM purchase_request pr
+  LEFT join company c on c.company_id=pr.company_id
+  LEFT JOIN purchase_request_items pq ON pr.purchase_request_id= pq.purchase_request_id
+  Where pr.purchase_request_id=${db.escape(req.body.purchase_request_id)}`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
 
 app.post('/getPurchaseRequestById', (req, res, next) => {
   db.query(`SELECT 

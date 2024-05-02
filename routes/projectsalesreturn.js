@@ -23,15 +23,15 @@ app.get('/getSalesReturns', (req, res, next) => {
     ,o.return_date
     , o.creation_date
     ,o.modification_date
-    ,o.invoice_id
-    ,i.invoice_code
+    ,o.project_invoice_id
+    ,i.project_invoice_code
     ,o.order_id
     ,o.status
-    ,i.invoice_code
+    ,i.project_invoice_code
     ,(select sum(total_cost)) as InvoiceAmount
     from proj_sales_return o
-    LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
-    LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
+    LEFT JOIN project_invoice i ON i.project_invoice_id = o.project_invoice_id
+    LEFT JOIN project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
      WHERE o.proj_sales_return_id !=''
      Group by o.proj_sales_return_id
      ORDER BY o.proj_sales_return_id DESC`,
@@ -80,25 +80,28 @@ app.get('/getSalesReturns', (req, res, next) => {
     ,o.created_by
     ,o.modified_by
     ,o.modification_date
-    ,o.invoice_id
-    ,i.invoice_code
+    ,o.project_invoice_id
+    ,i.project_invoice_code
     ,i.status AS invoice_status
     ,i.status AS invoice_status_arb
     ,o.order_id
     ,o.status
     ,o.status_arb
-    ,i.invoice_code
+    ,i.project_invoice_code
     ,(select sum(total_cost)) as InvoiceAmount
     from proj_sales_return o
-    LEFT JOIN invoice i ON i.invoice_id = o.invoice_id
-    LEFT JOIN invoice_item it ON it.invoice_id = i.invoice_id
+    LEFT JOIN project_invoice i ON i.project_invoice_id = o.project_invoice_id
+    LEFT JOIN project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
      WHERE o.proj_sales_return_id = ${db.escape(req.body.proj_sales_return_id)}`,
             (err, result) => {
          
-        if (result.length === 0) {
-          return res.status(400).send({
-            msg: 'No result found'
-          });
+              if (err) {
+                console.error('Database error:', err);
+                return res.status(500).send({
+                    error: 'Database error occurred'
+                });
+            
+            
         } else {
               return res.status(200).send({
                 data: result,
@@ -109,14 +112,66 @@ app.get('/getSalesReturns', (req, res, next) => {
       } 
     );
   });
+  app.get('/getInvoice', (req, res, next) => {
+    db.query(`SELECT
+    i.project_invoice_id,
+    i.project_invoice_code,
+    i.project_invoice_due_date,
+    i.project_invoice_date,
+    i.project_invoice_amount,
+    i.selling_company,
+    i.start_date,
+    i.end_date,
+    i.quote_code,
+    i.po_number,
+    i.project_location,
+    i.project_reference,
+    i.so_ref_no,
+    i.code,
+    i.reference,
+    i.project_invoice_terms,
+    i.attention,
+    i.status,
+    c.company_name,
+    c.company_id
+  FROM
+  project_invoice i
+  LEFT JOIN
+  proj_sales_return sr ON i.project_invoice_id = sr.project_invoice_id
+    LEFT JOIN (company c) ON (c.company_id=i.company_id)    
+  
+    
+  WHERE
+    i.project_invoice_id != '' AND
+    i.status != LOWER('Paid') AND
+    sr.project_invoice_id IS NULL
+  ORDER BY
+    i.project_invoice_date DESC`,
+      (err, result) => {
+  
+        if (err) {
+          return res.status(400).send({
+               data: err,
+               msg:'Failed'
+             });
+       } else {
+             return res.status(200).send({
+               data: result,
+               msg:'Success'
+             });
+    
+       }
+     }
+    );
+  });
+  
 
   app.post('/getInvoiceItemsById', (req, res, next) => {
     db.query(`SELECT it.item_title,
-    it.invoice_item_id,
-  i.invoice_id,
+    it.project_invoice_item_id,
+  i.project_invoice_id,
   it.description,
   it.description_arb,
-  
   it.total_cost,
   it.unit,
   it.qty,
@@ -124,13 +179,11 @@ app.get('/getSalesReturns', (req, res, next) => {
   it.unit_price,
   it.remarks,
   it.remarks_arb,
-  
-  i.invoice_id,
   o.order_id
-  FROM invoice_item it
-  LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
-  LEFT JOIN (orders o) ON (o.order_id=i.invoice_source_id)
-  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+  FROM project_invoice_item it
+  LEFT JOIN (project_invoice i) ON (i.project_invoice_id=it.project_invoice_id)
+  LEFT JOIN (orders o) ON (o.order_id=i.project_invoice_source_id)
+  WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
             (err, result) => {
          
         if (err) {
@@ -151,27 +204,28 @@ app.get('/getSalesReturns', (req, res, next) => {
   app.post('/getReturnInvoiceItemsById', (req, res, next) => {
     db.query(`SELECT it.proj_sales_return_history_id ,
     it.return_date,
-  i.invoice_id,
-  it.invoice_item_id,
+  i.project_invoice_id,
+  it.project_invoice_item_id,
   it.price,
   it.notes,
-  it.notes_arb,
-  
   it.qty_return,
   it.order_id,
   iv.item_title,
   iv.item_title_arb
   
   FROM proj_sales_return_history it
-  LEFT JOIN (proj_sales_return i) ON (i.invoice_id=it.invoice_id)
-  LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
-  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+  LEFT JOIN (proj_sales_return i) ON (i.project_invoice_id=it.project_invoice_id)
+  LEFT JOIN (project_invoice_item iv) ON (iv.project_invoice_item_id=it.project_invoice_item_id)
+  WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
             (err, result) => {
          
-        if (result.length === 0) {
-          return res.status(400).send({
-            msg: 'No result found'
-          });
+              if (err) {
+                console.error('Database error:', err);
+                return res.status(500).send({
+                    error: 'Database error occurred'
+                });
+            
+            
         } else {
               return res.status(200).send({
                 data: result,
@@ -183,6 +237,34 @@ app.get('/getSalesReturns', (req, res, next) => {
     );
   });
 
+  app.post('/insertSalesReturn', (req, res, next) => {
+
+    let data = {
+      // proj_sales_return_id : req.body.proj_sales_return_id 
+       return_date: req.body.return_date
+      , creation_date: req.body.creation_date
+      , modification_date: req.body.modification_date
+      , project_invoice_id: req.body.project_invoice_id
+      ,order_id: req.body.order_id
+      ,status: req.body.status
+      ,created_by: req.body.created_by
+   };
+    let sql = "INSERT INTO proj_sales_return SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+       return res.status(400).send({
+                data: err,
+                msg:'failed'
+              });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+    });
+  });
+  
   app.post('/editSalesReturn', (req, res, next) => {
     db.query(`UPDATE proj_sales_return
               SET return_date = ${db.escape(req.body.return_date)}
@@ -208,7 +290,7 @@ app.get('/getSalesReturns', (req, res, next) => {
 
   app.get('/checkInvoiceItem', (req, res, next) => {
     db.query(
-      `SELECT invoice_item_id FROM proj_sales_return_history`,
+      `SELECT project_invoice_item_id FROM proj_sales_return_history`,
       (err, result) => {
         if (err) {
           return res.status(400).send({
@@ -216,7 +298,7 @@ app.get('/getSalesReturns', (req, res, next) => {
             msg: 'Failed'
           });
         } else {
-          const quoteItemsIds = result.map((row) => row.invoice_item_id);
+          const quoteItemsIds = result.map((row) => row.project_invoice_item_id);
           return res.status(200).send({
             data: quoteItemsIds,
             msg: 'Success'
@@ -228,16 +310,16 @@ app.get('/getSalesReturns', (req, res, next) => {
 
   app.post('/insertSalesReturnHistory', (req, res, next) => {
     let data = {
-        proj_sales_return_history_id: req.body.proj_sales_return_history_id,
+        // proj_sales_return_history_id: req.body.proj_sales_return_history_id,
       return_date: req.body.return_date,
       creation_date: req.body.creation_date,
       modification_date: req.body.modification_date,
-      invoice_id: req.body.invoice_id,
+      project_invoice_id: req.body.project_invoice_id,
       order_id: req.body.order_id,
       status: req.body.status,
       status: req.body.status_arb,
   
-      invoice_item_id: req.body.invoice_item_id,
+      project_invoice_item_id: req.body.project_invoice_item_id,
       price: req.body.unit_price,
       notes: req.body.notes,
       notes: req.body.notes_arb,
@@ -247,12 +329,12 @@ app.get('/getSalesReturns', (req, res, next) => {
   
     // Update the invoice_item table to subtract the returned quantity
     let updateInvoiceItemSql = `
-      UPDATE invoice_item 
+      UPDATE project_invoice_item 
       SET qty = qty - ${req.body.qty_return},
       total_cost = (qty) * ${req.body.price},
       invoice_qty= ${req.body.qty_return},
       qty_returned = qty_returned + ${req.body.qty_return}
-      WHERE invoice_item_id = ${req.body.invoice_item_id}
+      WHERE project_invoice_item_id = ${req.body.project_invoice_item_id}
     `;
   
     // Insert the sales_return_history record

@@ -287,15 +287,10 @@ app.post("/getContactLinkedByCompanyId", (req, res, next) => {
   ,c.first_name
   ,c.first_name_arb
   ,c.email
-  ,c.email_arb
   ,c.phone
-  ,c.phone_arb
   ,c.phone_direct
-  ,c.phone_direct_arb
   ,c.fax
-  ,c.fax_arb
   ,c.mobile
-  ,c.mobile_arb
   ,c.position
   ,c.position_arb
   ,c.department 
@@ -434,7 +429,7 @@ app.post("/insertContact", (req, res, next) => {
   let data = {
     company_name: req.body.company_name,
     position: req.body.position,
-    position: req.body.position_arb,
+    position_arb: req.body.position_arb,
     email: req.body.email,
     address_street: req.body.address_street,
     address_area: req.body.address_area,
@@ -470,7 +465,6 @@ app.post("/insertContact", (req, res, next) => {
     member_type: req.body.member_type,
     address_flat: req.body.address_flat,
     phone_direct: req.body.phone_direct,
-    phone_direct_arb: req.body.phone_direct_arb,
     company_id: req.body.company_id,
     salutation: req.body.salutation,
     department: req.body.department,
