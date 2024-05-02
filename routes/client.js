@@ -434,7 +434,7 @@ app.post("/insertContact", (req, res, next) => {
   let data = {
     company_name: req.body.company_name,
     position: req.body.position,
-    position: req.body.position_arb,
+    position_arb: req.body.position_arb,
     email: req.body.email,
     address_street: req.body.address_street,
     address_area: req.body.address_area,

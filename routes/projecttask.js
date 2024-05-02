@@ -87,8 +87,8 @@ app.post("/getEmployeeByID", (req, res, next) => {
                 e.employee_id
                ,e.first_name
                ,p.title
-                           FROM employee e 
-                LEFT JOIN project_task t ON (t.employee_id = e.employee_id) 
+                FROM employee e 
+                LEFT JOIN employee_timesheet t ON (t.employee_id = e.employee_id) 
                 LEFT JOIN project p ON (p.project_id = t.project_id) 
                 WHERE  p.project_id=${db.escape(req.body.project_id)}
 GROUP BY p.project_id,e.employee_id;`,
