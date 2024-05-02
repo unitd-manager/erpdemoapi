@@ -177,3 +177,48 @@ ALTER TABLE `employee` ADD `foreign_addrs_country_arb` TEXT NULL DEFAULT NULL AF
 ********************************(02/04/2024 Translation(Employee insertField))**************************************(Sabina)
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Address', 'Address', 'عنوان', 'Employee Address field', NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdEmployee.Basic Pay', 'Basic Pay', 'الدفع الأساسي', 'Employee Basic Pay field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.From Date', 'From Date', 'من التاريخ', 'Employee From Date field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.To Date', 'To Date', 'ان يذهب في موعد', 'Employee To Date field', NULL, NULL, NULL, NULL, NULL, '0'), (NULL, 'mdEmployee.Course Title', 'Course Title', 'عنوان الدورة', 'Employee Course Title field', NULL, NULL, NULL, NULL, NULL, '0');
+
+********************************(01/05/2024 project_receipt(project_receipt createFields))**************************************(Sabina)
+CREATE TABLE `project_receipt` (
+  `project_receipt_id` int(11) NOT NULL,
+  `receipt_code` varchar(55) DEFAULT NULL,
+  `amount` float(10,2) DEFAULT NULL,
+  `mode_of_payment` varchar(55) DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `receipt_date` varchar(255) DEFAULT NULL,
+  `published` tinyint(4) DEFAULT NULL,
+  `flag` tinyint(4) DEFAULT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `modification_date` datetime DEFAULT NULL,
+  `created_by` varchar(100) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `project_order_id` int(11) DEFAULT NULL,
+  `receipt_status` varchar(100) DEFAULT NULL,
+  `cheque_date` varchar(255) DEFAULT NULL,
+  `bank_name` varchar(500) DEFAULT NULL,
+  `site_id` int(11) DEFAULT NULL,
+  `cheque_no` int(11) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL
+)
+
+ALTER TABLE `project_receipt`
+ADD PRIMARY KEY (`project_receipt_id`);
+
+  ALTER TABLE `project_receipt` ADD `receipt_code_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `receipt_code`; 
+  ALTER TABLE `project_receipt` ADD `amount_arb` INT(11) NULL DEFAULT NULL AFTER `amount`; 
+  ALTER TABLE `project_receipt` ADD `mode_of_payment_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `mode_of_payment`; 
+  ALTER TABLE `project_receipt` ADD `remarks_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `remarks`; 
+  ALTER TABLE `project_receipt` ADD `receipt_status_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `receipt_status`; 
+
+
+********************************(01/05/2024 Translation(project_receipt insertField))**************************************(Sabina)
+INSERT INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES 
+(NULL, 'mdProjectSalesReceipt.Order No', 'Order No', 'رقم الطلب', 'Project SalesReceipt Order No field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesReceipt.Receipt Code', 'Receipt Code', 'رمز الاستلام', 'Project SalesReceipt Receipt Code field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesReceipt.Mode of Payment', 'Mode of Payment', 'طريقة الدفع ', 'Project SalesReceipt Mode of Payment field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesReceipt.Status', 'Status', 'حالة', 'Project SalesReceipt Status field\r\n', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesReceipt.Amount', 'Amount', 'كمية ', 'Project SalesReceipt Amount field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesReceipt.Date', 'Date', 'تاريخ', 'Project SalesReceipt Date field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdProjectSalesReceipt.Print', 'Print', 'مطبعة ', 'Project SalesReceipt Print field', NULL, NULL, NULL, NULL, NULL, '0');
