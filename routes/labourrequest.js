@@ -209,29 +209,29 @@ const pool = mysql.createPool({
 
 
 // Endpoint to fetch all table names
-app.get('/getTables', (req, res) => {
-  // SQL query to retrieve table names
-  const query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'erpdemo'";
+// app.get('/getTables', (req, res) => {
+//   // SQL query to retrieve table names
+//   const query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'erpdemo'";
 
-  // Execute the query
-  pool.query(query, (error, results) => {
-    if (error) {
-      console.error('Error retrieving table names:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
+//   // Execute the query
+//   pool.query(query, (error, results) => {
+//     if (error) {
+//       console.error('Error retrieving table names:', error);
+//       return res.status(500).json({ error: 'Internal server error' });
+//     }
 
-    // Extract table names from the query results
-    const tableNames = results.map(row => row.TABLE_NAME);
+//     // Extract table names from the query results
+//     const tableNames = results.map(row => row.TABLE_NAME);
 
-    // Send the table names as a response
-    res.json({ tableNames });
-  });
-});
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-})
+//     // Send the table names as a response
+//     res.json({ tableNames });
+//   });
+// });
+// // Start the server
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//   console.log(`Server listening on port ${PORT}`);
+// })
 
 app.post('/getTranslationColumnFromTables', (req, res, next) => {
   const tableNames = db.escape(req.body.tableNames);

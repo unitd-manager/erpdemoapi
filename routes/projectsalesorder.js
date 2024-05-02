@@ -397,6 +397,77 @@ app.delete('/deleteorder_item/:quoteId', (req, res) => {
   });
 });
 
+app.post('/getReceiptByIds', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.receipt_id
+  ,r.project_receipt_id 
+  ,o.project_order_id
+  ,r.receipt_code
+  ,r.receipt_status
+  ,r.amount
+  ,r.receipt_date
+  ,r.mode_of_payment
+  ,r.remarks
+  ,r.creation_date
+  ,r.created_by
+  ,r.modification_date
+  ,r.modified_by 
+  FROM project_receipt r  
+   LEFT JOIN project_invoice i ON (i.project_invoice_id = ih.project_invoice_id) 
+ LEFT JOIN project_orders o ON (o.project_order_id = i.project_order_id) WHERE o.project_order_id = ${db.escape(req.body.project_order_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+app.post('/getInvoiceById', (req, res, next) => {
+  db.query(`SELECT i.project_invoice_id
+  ,i.project_invoice_code
+  ,co.company_name
+  ,i.status
+  ,i.project_invoice_date
+  ,i.project_invoice_amount
+  ,i.project_invoice_due_date
+  ,o.project_order_id
+  ,o.project_order_code
+  ,(select sum(it.total_cost)) as InvoiceAmount
+  from project_invoice i
+  LEFT JOIN project_orders o ON (o.project_order_id = i.project_order_id) 
+   LEFT JOIN project_invoice_item it ON (it.project_invoice_id = i.project_invoice_id) 
+  LEFT JOIN company co ON (co.company_id = o.company_id) 
+  WHERE i.project_order_id = ${db.escape(req.body.project_order_id)} 
+  Group by i.project_invoice_id`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
 app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
             qt.* 

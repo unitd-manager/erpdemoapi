@@ -481,10 +481,7 @@ app.post('/getGoodsLineItemsById', (req, res, next) => {
   db.query(`SELECT
   qt.*,
   os.quote_id,
-<<<<<<< HEAD
-=======
   os.quote_id_arb
->>>>>>> deba6c0d9b718ddf75640259c9cdcb8db8eb35fd
 
   FROM goods_delivery_item qt 
   LEFT JOIN orders os ON os.order_id=qt.order_id
@@ -739,6 +736,7 @@ app.post('/getInvoiceOrderedQty', (req, res, next) => {
 );
 });
 
+
 app.get('/getInvoice', (req, res, next) => {
   db.query(`SELECT
   i.invoice_id,
@@ -765,7 +763,7 @@ FROM
   invoice i
 LEFT JOIN
   sales_return sr ON i.invoice_id = sr.invoice_id
-  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
+  LEFT JOIN (company c) ON (c.company_id=i.company_id)    
 
   
 WHERE
@@ -875,12 +873,10 @@ it.invoice_item_id,
 it.price,
 it.notes,
 it.notes_arb,
-
 it.qty_return,
 it.order_id,
 iv.item_title,
 iv.item_title_arb
-
 FROM sales_return_history it
 LEFT JOIN (sales_return i) ON (i.invoice_id=it.invoice_id)
 LEFT JOIN (invoice_item iv) ON (iv.invoice_item_id=it.invoice_item_id)
@@ -914,7 +910,7 @@ it.unit_price,
 it.remarks
 FROM invoice_item it
 LEFT JOIN (invoice i) ON (i.invoice_id=it.invoice_id)
-WHERE i.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
+WHERE it.invoice_item_id = ${db.escape(req.body.invoice_item_id)}`,
           (err, result) => {
        
       if (result.length === 0) {
@@ -1318,18 +1314,9 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
   o.order_id
   ,o.order_code
   ,o.order_code_arb
-<<<<<<< HEAD
-FROM orders o
-  LEFT JOIN (invoice i) ON i.invoice_source_id = o.order_id 
-  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
-
-  WHERE
-  o.order_id != '' 
-=======
   FROM orders o
   LEFT JOIN invoice i ON i.invoice_source_id = o.order_id 
   WHERE o.order_id != '' 
->>>>>>> faac428f1e6deae137aee7979e64c47ebb88dfea
   AND i.invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
@@ -1351,16 +1338,14 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   g.goods_delivery_id_arb,
   g.goods_delivery_code,
   g.goods_delivery_code_arb
-  FROM goods_delivery g
-  LEFT JOIN (invoice i) ON i.invoice_source_id = g.goods_delivery_id
-  LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
-
-  WHERE
+FROM goods_delivery g
+LEFT JOIN invoice i ON i.invoice_source_id = g.goods_delivery_id
+LEFT JOIN company c ON c.company_id = g.company_id
+WHERE 
   g.goods_delivery_id != '' 
-  AND i.invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}, 
-  LEFT JOIN invoice i ON i.invoice_source_id = g.goods_delivery_id
-  WHERE g.goods_delivery_id != '' 
-  AND i.invoice_source_id IS NULL AND g.company_id= ${db.escape(req.body.company_id)}`, 
+  AND i.invoice_source_id IS NULL 
+  AND g.company_id = ${db.escape(req.body.company_id)}; 
+  `, 
   (err, result) => {
     if (err) {
       return res.status(400).send({

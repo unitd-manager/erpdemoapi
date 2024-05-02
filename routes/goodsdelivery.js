@@ -29,6 +29,7 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
       ,gd.goods_delivery_code
     ,o.order_code
     ,gd.goods_ref_no
+    ,gd.goods_ref_no_arb
     ,c.company_id
     ,c.company_name
     ,c.company_name_arb
@@ -129,6 +130,7 @@ app.get("/getgoodsdelivery", (req, res, next) => {
     ,gd.order_id
     ,o.order_code
     ,gd.goods_ref_no
+    ,gd.goods_ref_no_arb
     ,c.company_id
     ,c.company_name
     ,c.company_name_arb
@@ -324,7 +326,7 @@ app.post("/edit-goodsdelivery", (req, res, next) => {
               ,contact_id=${db.escape(req.body.contact_id)}
               ,goods_delivery_status=${db.escape(req.body.goods_delivery_status)}
               ,goods_delivery_status_arb=${db.escape(req.body.goods_delivery_status_arb)}
-
+              ,goods_ref_no_arb=${db.escape(req.body.goods_ref_no_arb)}
               ,po_no=${db.escape(req.body.po_no)}
               ,sales_man=${db.escape(req.body.sales_man)}
               ,sales_man_arb=${db.escape(req.body.sales_man_arb)}
