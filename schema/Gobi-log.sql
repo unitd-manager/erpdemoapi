@@ -265,3 +265,7 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Training Company address', 'Training Company address', 'عنوان شركة التدريب', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Training Company email', 'Training Company email', 'البريد الإلكتروني لشركة ', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdHRTraining.Training Company phone', 'Training Company phone', 'هاتف شركة التدريب', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+
+
+********************************(2/5/2024 Po Product)**************************************(Gobi)
+ALTER TABLE `po_product` CHANGE `item_title_arb` `item_title_arb` VARCHAR(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
