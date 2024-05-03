@@ -449,7 +449,7 @@ app.post('/getFinancesById', (req, res, next) => {
   c.address_state AS company_address_state,
   gc3.name AS company_country_name,
   SUM(CASE WHEN ii.status != 'Cancelled' THEN ii.invoice_amount ELSE 0 END) AS orderamount,
-  (SELECT (SUM(oi.unit_price * oi.qty) + o.shipping_charge)
+  (SELECT (SUM(oi.unit_price * oi.qty))
    FROM order_item oi
    WHERE oi.order_id = o.order_id) AS order_amount,
   q.quote_code,
@@ -777,9 +777,12 @@ app.post('/getFinanceById', (req, res, next) => {
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
+  ,(SELECT (SUM(oi.unit_price * oi.qty))
+  FROM order_item oi
+  WHERE oi.order_id = o.order_id) AS order_amount
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
-  LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
+  LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)  
   LEFT JOIN invoice i ON (i.order_id = o.order_id) 
   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id = ${db.escape(req.body.order_id)} `,
@@ -1414,7 +1417,7 @@ app.post('/insertOrder', (req, res, next) => {
     cust_phone: req.body.cust_phone,
     memo: req.body.memo,
      quote_id: req.body.quote_id,
-    creation_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    creation_date: req.body.creation_date,
     modification_date: req.body.modification_date,
     flag: req.body.flag,
     record_type: req.body.record_type,

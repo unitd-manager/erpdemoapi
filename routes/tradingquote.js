@@ -22,7 +22,6 @@ app.use(
 app.post("/getTradingquoteById", (req, res, next) => {
   db.query(
     `SELECT q.quote_date
-    ,q.quote_date_arb
     ,q.quote_id
     ,q.quote_code
     ,q.quote_code_arb
