@@ -149,7 +149,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
       modification_date: req.body.modification_date,
       purchase_invoice_id: req.body.purchase_invoice_id,
       purchase_order_id: req.body.purchase_order_id,
-      status: req.body.status,
+      status: req.body.status
     };
   
     // Insert data into sales_return_history table
@@ -185,7 +185,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
             }));
   
             let insertItemsQuery =
-            "INSERT INTO purchase_return_items (purchase_return_id, item_title, ordered_quantity,unit,cost_price,total_cost) VALUES ?";
+            "INSERT INTO purchase_return_items (purchase_return_id, item_title, ordered_quantity,unit,cost_price,total_cost) VALUES ?,?,?,?,?,?";
           let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id,item.cost_price,item.total_cost, item.unit,item.item_title, item.ordered_quantity]);
           
           db.query(insertItemsQuery, [values], (err, itemResult) => {

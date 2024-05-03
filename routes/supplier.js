@@ -302,15 +302,11 @@ app.get('/getSupplierReceipts', (req, res, next) => {
     ,i.created_by
     ,i.modified_by
     ,i.supplier_receipt_code  
-    ,o.payment_status
     ,i.amount
     ,i.mode_of_payment
     ,i.mode_of_payment_arb
-    ,o.po_code
      ,i.date
      from supplier_receipt i
-    LEFT JOIN supplier s ON s.supplier_id=i.supplier_id
-      LEFT JOIN purchase_order o ON o.supplier_id=s.supplier_id
    WHERE i.supplier_receipt_id != '' ORDER BY i.supplier_receipt_id DESC;`,
     (err, result) => {
       if (err) {
@@ -470,7 +466,7 @@ app.post('/getMakePayment', (req, res, next) => {
   i.purchase_order_id,
   i.supplier_id,
   i.payment_status,
-  o.company_id
+  o.company_name
   ,(SELECT SUM(pop.cost_price*pop.quantity) AS prev_sum 
     FROM po_product pop
     WHERE pop.purchase_order_id =  i.purchase_order_id) as prev_inv_amount
