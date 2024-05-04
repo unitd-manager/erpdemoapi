@@ -29,7 +29,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.payment_method
     ,q.revision
     ,q.intro_drawing_quote 
-    ,q.total_amount
+    ,SUM(qi.amount) AS total_amount
     ,q.total_amount_arb
     ,q.project_enquiry_id
     ,o.company_id
@@ -45,6 +45,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     LEFT JOIN (project_enquiry o) ON (o.project_enquiry_id=q.project_enquiry_id)
     LEFT JOIN (company c) ON (c.company_id = o.company_id)
     LEFT JOIN (contact cont) ON (cont.contact_id = q.contact_id)   
+    LEFT JOIN (project_quote_items qi) ON qi.project_quote_id = q.project_quote_id
     WHERE q.project_quote_id =${db.escape(req.body.project_quote_id)}
     `,
       (err, result) => {
@@ -63,6 +64,69 @@ app.post('/getProjectquoteById', (req, res, next) => {
       }
     );
   });
+
+// app.post('/getProjectquoteById', (req, res, next) => {
+//   // Fetch project quote details including the sum of quote items' amounts
+//   db.query(`
+//       SELECT q.quote_date,
+//              q.project_quote_id,
+//              q.quote_code,
+//              q.quote_status,
+//              q.ref_no_quote,
+//              q.ref_no_quote_arb,
+//              q.project_location,
+//              q.project_reference,
+//              q.payment_method,
+//              q.revision,
+//              q.intro_drawing_quote,
+//              SUM(qi.amount) AS total_amount,
+//              q.total_amount_arb,
+//              q.project_enquiry_id,
+//              o.company_id,
+//              q.contact_id,
+//              o.enquiry_code,
+//              c.company_name,
+//              cont.first_name,
+//              q.creation_date,
+//              q.modification_date,
+//              q.created_by,
+//              q.modified_by,
+             
+//       FROM project_quote q
+//       LEFT JOIN project_enquiry o ON o.project_enquiry_id = q.project_enquiry_id
+//       LEFT JOIN company c ON c.company_id = o.company_id
+//       LEFT JOIN contact cont ON cont.contact_id = q.contact_id
+//       LEFT JOIN (project_quote_items qi) ON qi.project_quote_id = q.project_quote_id
+//       WHERE q.project_quote_id = ${db.escape(req.body.project_quote_id)}
+      
+//   `, (err, result) => {
+//       if (err) {
+//           // Handle error
+//           return res.status(500).json({ error: 'Internal Server Error' });
+//       }
+
+//       if (result.length === 0) {
+//           // No project quote found
+//           return res.status(404).json({ error: 'Project quote not found' });
+//       }
+
+//       // Update the total_amount field in the project_quote table
+//       const totalAmount = result[0].total_amount || 0; // Ensure totalAmount is not null
+//       db.query(`
+//           UPDATE project_quote
+//           SET total_amount = ${totalAmount}
+//           WHERE project_quote_id = ${db.escape(req.body.project_quote_id)}
+//       `, (updateErr) => {
+//           if (updateErr) {
+//               // Handle error
+//               return res.status(500).json({ error: 'Failed to update total amount' });
+//           }
+          
+//           // Send the project quote details with updated total_amount
+//           res.json(result[0]);
+//       });
+//   });
+// });
   
   app.get('/getTranslationForProjectQuote', (req, res, next) => {
     db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProjectQuote%'`,
