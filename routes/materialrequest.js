@@ -45,7 +45,8 @@ app.get('/getMaterialRequest', (req, res, next) => {
   ,p.project_code
   From material_request lr
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
-            where lr.material_request_id  !=''`,
+            where lr.material_request_id  !=''
+            ORDER BY lr.material_request_id DESC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -115,6 +116,8 @@ app.post('/getMaterialRequestById', (req, res, next) => {
   ,lr.modification_date
   ,p.title AS proj_title
   ,p.project_code
+  ,lr.created_by
+  ,lr.modified_by
   From material_request lr
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
             where lr.material_request_id = ${db.escape(req.body.material_request_id)}`,
@@ -161,6 +164,7 @@ app.post('/editMaterialRequest', (req, res, next) => {
             ,payment_terms_arb=${db.escape(req.body.payment_terms_arb)}
             ,shipping_method=${db.escape(req.body.shipping_method)}
             ,shipping_method_arb=${db.escape(req.body.shipping_method_arb)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             WHERE material_request_id = ${db.escape(req.body.material_request_id)}`,
     (err, result) => {
      

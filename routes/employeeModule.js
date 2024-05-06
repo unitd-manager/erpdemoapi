@@ -1040,6 +1040,26 @@ ORDER BY ts.to_date DESC `,
   );
 });
 
+app.post('/deleteEmployeeTime', (req, res, next) => {
+  let data = { employee_timesheet_id: req.body.employee_timesheet_id }
+  let sql = 'DELETE FROM employee_timesheet WHERE ?'
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Tender has been removed successfully',
+      })
+    }
+  })
+})
+
+
 app.get('/getMaxEmpCode', (req, res, next) => {
   db.query(`SELECT MAX (emp_code) As empc
   FROM employee

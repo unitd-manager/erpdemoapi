@@ -1021,6 +1021,10 @@ app.post('/getTabQuoteLineItems', (req, res, next) => {
     ,qt.quote_items_id
     ,qt.project_id
     ,qt.unit_price
+    ,qt.created_by
+    ,qt.creation_date
+    ,qt.modified_by
+    ,qt.modification_date
     ,qt.amount FROM quote_items_log qt WHERE  qt.quote_log_id = ${db.escape(req.body.quote_log_id)}`,
       (err, result) => {
          

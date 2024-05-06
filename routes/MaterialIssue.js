@@ -34,7 +34,8 @@ app.get('/getMaterialIssue', (req, res, next) => {
   From material_issue lr
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
   LEFT JOIN (material_request mr)   ON (mr.material_request_id   = lr.material_request_id) 
-            where lr.material_issue_id  !=''`,
+            where lr.material_issue_id  !=''
+            Order by lr.material_issue_id DESC`,
             
     (err, result) => {
       if (err) {
@@ -157,6 +158,8 @@ app.post('/getMaterialIssueById', (req, res, next) => {
   ,lr.modification_date
   ,p.title AS proj_title
   ,p.project_code
+  ,lr.created_by
+  ,lr.modified_by
   ,mr.material_request_code
   From material_issue lr
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 

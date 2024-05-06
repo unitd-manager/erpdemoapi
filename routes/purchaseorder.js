@@ -135,6 +135,10 @@ app.post('/getPurchaseOrderById', (req, res, next) => {
   ,po.shipping_address_street
   ,po.shipping_address_country
   ,po.shipping_address_po_code
+  ,s.address_flat
+  ,s.address_street
+  ,s.address_country
+  ,s.address_po_code
   ,po.payment_status
   ,po.payment_status_arb
   ,po.supplier_inv_code
