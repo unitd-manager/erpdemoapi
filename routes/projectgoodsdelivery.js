@@ -119,7 +119,7 @@ app.get('/checkDeliveryItems', (req, res, next) => {
 
 app.get("/getOrderCode", (req, res, next) => {
   db.query(`SELECT 
-  o.project_order_code,
+  o.order_code,
   o.project_order_id ,
   c.company_name,
   c.company_id
@@ -188,28 +188,6 @@ app.get("/getgoodsdelivery", (req, res, next) => {
   );
 });
 
-
-app.get("/getOrderCode", (req, res, next) => {
-  db.query(`  SELECT 
-  o.order_code,
-  o.order_id 
-  from orders o   
-  LEFT JOIN (goods_delivery gd) ON o.order_id = gd.order_id
-  WHERE
-  o.order_id != '' 
-  AND gd.order_id IS NULL`, (err, result) => {
-    if (result.length == 0) {
-      return res.status(400).send({
-        msg: "No result found",
-      });
-    } else {
-      return res.status(200).send({
-        data: result,
-        msg: "Success",
-      });
-    }
-  });
-});
 
 app.post("/getgoodsdeliveryitemById", (req, res, next) => {
   db.query(
