@@ -48,6 +48,35 @@ app.get('/getProjectEnquiry', (req, res, next) => {
     }
   );
 });
+
+app.post('/getProjectQuoteLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+            qt.title,
+            qt.description,
+            qt.quantity, 
+            qt.unit_price,
+            qt.amount,
+            qt.project_enquiry_id
+            FROM project_quote_items qt 
+            WHERE qt.project_enquiry_id =  ${db.escape(req.body.project_enquiry_id)}`,
+          (err, result) => {
+       
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
+
 app.post('/getTendersById', (req, res, next) => {
   db.query(`SELECT 
   o.*
@@ -228,6 +257,7 @@ app.post('/edit-Tenders', (req, res, next) => {
   db.query(`UPDATE project_enquiry 
   SET office_ref_no=${db.escape(req.body.office_ref_no)}
   ,office_ref_no_arb=${db.escape(req.body.office_ref_no_arb)}
+  ,title=${db.escape(req.body.title)}
   ,company_id=${db.escape(req.body.company_id)}  
   ,services=${db.escape(req.body.services)}
   ,services_arb=${db.escape(req.body.services_arb)}
