@@ -269,3 +269,56 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 
 ********************************(2/5/2024 Po Product)**************************************(Gobi)
 ALTER TABLE `po_product` CHANGE `item_title_arb` `item_title_arb` VARCHAR(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+
+
+
+
+
+***********(04/05/2024 proj_sales_return(ProjectSalesReturn createTable))*************
+
+CREATE TABLE proj_sales_return (
+    'proj_sales_return_id' INT PRIMARY KEY,
+    'proj_sales_return_id_arb' VARCHAR(255),
+    'return_date DATE',
+    'return_date_arb' VARCHAR(255),
+    'creation_date' TIMESTAMP,
+    'modification_date' TIMESTAMP,
+    'project_invoice_id' INT,
+    'project_invoice_id_arb' VARCHAR(255),
+    'status' VARCHAR(50),
+    'status_arb' VARCHAR(255),
+    'order_id' INT,
+    'order_id_arb' VARCHAR(255),
+    'created_by' VARCHAR(100),
+    'modified_by' VARCHAR(100)
+);
+
+***********(04/05/2024  Translation(ProjectSalesReturn-inserts field))*************
+
+INSERT INTO translation 
+(translation_id, key_text, value, arb_value, chi_value, creation_date, modification_date, group_name, is_html_text, show_to_user, flag) 
+VALUES 
+(NULL, 'mdTradingProjSalesReturn.Invoice Code', 'Invoice Code', 'رمز الفاتورة', 'SalesReturn Invoice Code field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Status', 'Status', 'حالة', 'SalesReturn Status field\r\n', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Date', 'Date', 'تاريخ', 'SalesReturn Date field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Item', 'Item', 'غرض ', 'SalesReturn Item field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Quantity', 'Quantity', 'كمية', 'SalesReturn Quantity field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Unit Price', 'Unit Price', 'سعر الوحدة', 'SalesReturn Unit Price field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Total', 'Total', 'المجموع ', 'SalesReturn Total field', NULL, NULL, NULL, NULL, NULL, '0'),
+(NULL, 'mdTradingProjSalesReturn.Qty Returned', 'Qty Returned', 'الكمية التي تم إرجاعها ', 'SalesReturn Qty Returned field', NULL, NULL, NULL, NULL, NULL, '0');
+
+***********(04/05/2024  proj_sales_return(ProjectSalesReturn createField))*************
+
+ALTER TABLE proj_sales_return ADD sales_return_id_arb INT(50) NULL DEFAULT NULL AFTER sales_return_id,
+ALTER TABLE proj_sales_return ADD return_date_arb varchar(255) NULL DEFAULT NULL AFTER return_date,
+ALTER TABLE proj_sales_return ADD invoice_id_arb INT(50) NULL DEFAULT NULL AFTER invoice_id,
+ALTER TABLE proj_sales_return ADD status_arb varchar(50) NULL DEFAULT NULL AFTER status,
+ALTER TABLE proj_sales_return ADD order_id_arb INT(50) NULL DEFAULT NULL AFTER order_id;
+
+
+***********(04/05/2024  proj_sales_return_history(ProjectSalesReturn createField))*************
+
+ALTER TABLE proj_sales_return_history ADD qty_return_arb INT(50) NULL DEFAULT NULL AFTER qty_return;
+ALTER TABLE proj_sales_return_history ADD price_arb INT(50) NULL DEFAULT NULL AFTER price;
+ALTER TABLE proj_sales_return_history ADD status_arb VARCHAR(255) NULL DEFAULT NULL AFTER status;

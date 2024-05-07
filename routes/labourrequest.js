@@ -589,7 +589,8 @@ app.get('/getProjecttitle', (req, res, next) => {
   ,p.company_id
   ,p.project_code
   ,CONCAT_WS('/', p.title, p.project_code,c.company_name)  AS project_title
- 
+ ,c.company_id
+ ,c.company_name
   FROM project p
   LEFT JOIN (company c) ON p.company_id=c.company_id `,
     (err, result) => {

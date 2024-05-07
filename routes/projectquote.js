@@ -28,7 +28,8 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.project_reference
     ,q.payment_method
     ,q.revision
-    ,q.intro_drawing_quote 
+    ,q.intro_drawing_quote
+    ,q.total_amount 
     ,SUM(qi.amount) AS total_amount
     ,q.total_amount_arb
     ,q.project_enquiry_id

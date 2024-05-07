@@ -163,9 +163,11 @@ app.post('/getProjectOrderById', (req, res, next) => {
   ,o.shipping_address_po_code 
   ,q.quote_code 
   ,q.quote_code_arb
+  ,(select(sum(poi.cost_price)))as netAmount
   FROM project_orders o 
   LEFT JOIN project_quote q ON o.project_quote_id = q.project_quote_id 
   LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id) 
+  LEFT JOIN project_order_item poi ON (o.project_order_id = poi.project_order_id) 
   LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.project_order_id = ${db.escape(req.body.project_order_id)} `,
     (err, result) => {
       if (err) {
@@ -442,7 +444,7 @@ app.post('/getInvoiceById', (req, res, next) => {
   ,i.project_invoice_amount
   ,i.project_invoice_due_date
   ,o.project_order_id
-  ,o.project_order_code
+  ,o.order_code
   ,(select sum(it.total_cost)) as InvoiceAmount
   from project_invoice i
   LEFT JOIN project_orders o ON (o.project_order_id = i.project_order_id) 
