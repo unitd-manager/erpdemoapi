@@ -412,7 +412,8 @@ app.post('/getInvoiceForReceipt', (req, res, next) => {
 app.get('/checkQuoteItems', (req, res, next) => {
   db.query(
     `SELECT 
-    project_order_id
+    project_order_id,
+    project_order_item_id
      FROM project_invoice_item`,
     (err, result) => {
       if (err) {
@@ -2673,10 +2674,11 @@ app.post('/insertInvoiceItem', (req, res, next) => {
        ,project_invoice_source_id: req.body.project_invoice_source_id
        ,source_type: req.body.source_type
        ,project_order_id: req.body.project_order_id
+       ,project_order_item_id: req.body.project_order_item_id
        ,project_goods_delivery_id: req.body.goods_delivery_id
        ,project_goods_delivery_item_id: req.body.goods_delivery_item_id
-    , item_title: req.body.item_title
-    , item_title: req.body.item_title_arb
+       , item_title: req.body.item_title
+    , item_title_arb: req.body.item_title_arb
     , description: req.body.description
     , remarks: req.body.remarks
     , total_cost: req.body.total_cost
@@ -2685,7 +2687,7 @@ app.post('/insertInvoiceItem', (req, res, next) => {
     ,project_quote_id: req.body.project_quote_id
     ,unit_price: req.body.unit_price
     ,unit: req.body.unit
-    ,unit: req.body.unit_arb
+    ,unit_arb: req.body.unit_arb
 
  };
   let sql = "INSERT INTO project_invoice_item SET ?";
