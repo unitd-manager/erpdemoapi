@@ -310,10 +310,10 @@ VALUES
 
 ***********(04/05/2024  proj_sales_return(ProjectSalesReturn createField))*************
 
-ALTER TABLE proj_sales_return ADD sales_return_id_arb INT(50) NULL DEFAULT NULL AFTER sales_return_id,
-ALTER TABLE proj_sales_return ADD return_date_arb varchar(255) NULL DEFAULT NULL AFTER return_date,
-ALTER TABLE proj_sales_return ADD invoice_id_arb INT(50) NULL DEFAULT NULL AFTER invoice_id,
-ALTER TABLE proj_sales_return ADD status_arb varchar(50) NULL DEFAULT NULL AFTER status,
+ALTER TABLE proj_sales_return ADD sales_return_id_arb INT(50) NULL DEFAULT NULL AFTER  	proj_sale_return_id;
+ALTER TABLE proj_sales_return ADD return_date_arb varchar(255) NULL DEFAULT NULL AFTER return_date;
+ALTER TABLE proj_sales_return ADD invoice_id_arb INT(50) NULL DEFAULT NULL AFTER invoice_id;
+ALTER TABLE proj_sales_return ADD status_arb varchar(50) NULL DEFAULT NULL AFTER status;
 ALTER TABLE proj_sales_return ADD order_id_arb INT(50) NULL DEFAULT NULL AFTER order_id;
 
 
