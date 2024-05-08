@@ -175,12 +175,13 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,e.first_name
     ,e.first_name_arb
     ,e.employee_id
-
-
+    ,jo.project_job_id
+    ,jo.job_title
+    ,jo.job_code
     FROM project_task pt
     LEFT JOIN project p ON p.project_id = pt.project_id
     LEFT JOIN employee e ON e.employee_id = pt.employee_id
-    LEFT JOIN project_job jo ON p.project_id = jo.project_id
+    LEFT JOIN project_job jo ON pt.project_job_id = jo.project_job_id
     Where pt.project_task_id = ${db.escape(req.body.project_task_id)}`,
     (err, result) => {
       if (err) {

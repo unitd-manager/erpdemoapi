@@ -118,7 +118,8 @@ app.get('/getProjectQuote', (req, res, next) => {
   q.contact_id      
 FROM project_quote q
 WHERE q.project_quote_id != '' 
- AND q.quote_status != 'Cancelled' `,
+ AND q.quote_status != 'Cancelled'
+ AND q.project_quote_id IS NULL `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
