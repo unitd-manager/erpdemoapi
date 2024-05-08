@@ -23,7 +23,7 @@ app.get('/getProjectSalesOrder', (req, res, next) => {
   ,o.project_enquiry_id
   ,o.project_type
   ,q.project_enquiry_id
-  ,q.project_quote_id
+  ,opt.office_ref_no
   ,c.company_id
   ,c.company_name
   ,c.company_name_arb
@@ -31,6 +31,9 @@ app.get('/getProjectSalesOrder', (req, res, next) => {
   ,o.order_status
   ,o.order_status_arb
   ,o.invoice_terms
+  ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
   ,o.notes
   ,o.order_code
   ,o.shipping_first_name
@@ -39,9 +42,12 @@ app.get('/getProjectSalesOrder', (req, res, next) => {
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
+  ,q.quote_code_arb
+  ,(select(sum(poi.cost_price)))as netAmount
   FROM project_orders o 
   LEFT JOIN project_quote q ON o.project_quote_id = q.project_quote_id 
   LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id) 
+  LEFT JOIN project_order_item poi ON (o.project_order_id = poi.project_order_id) 
   LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.project_order_id !=''
   GROUP BY o.project_order_id 
   ORDER BY o.project_order_id DESC`,
@@ -117,9 +123,10 @@ app.get('/getProjectQuote', (req, res, next) => {
   q.company_id,
   q.contact_id      
 FROM project_quote q
+Left join project_orders p on q.project_quote_id = p.project_quote_id
 WHERE q.project_quote_id != '' 
  AND q.quote_status != 'Cancelled'
- AND q.project_quote_id IS NULL `,
+ AND p.project_quote_id IS NULL`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
