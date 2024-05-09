@@ -16,6 +16,36 @@ app.use(cors());
 app.use(fileUpload({
   createParentPath: true
 }));
+
+app.get('/getOrders', (req, res, next) => {
+  db.query(`SELECT o.project_order_id
+  ,o.order_date
+  ,o.order_code 
+  ,o.creation_date
+  ,o.order_status
+  ,c.company_id
+  ,c.company_name
+  FROM project_orders o 
+  LEFT JOIN (company c) ON (c.company_id=o.company_id)    
+  WHERE o.project_order_id !=''`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.get('/getProjectReceipts', (req, res, next) => {
     db.query(
       `select i.project_receipt_id
@@ -78,8 +108,8 @@ app.get('/getProjectReceipts', (req, res, next) => {
     ,i.invoice_source_id
     ,i.invoice_id
     FROM project_orders o
-    LEFT JOIN invoice i ON o.project_order_id = i.invoice_source_id
-    WHERE o.project_order_id !='' AND i.invoice_id != ''`,
+    LEFT JOIN project_invoice i ON o.project_order_id = i.invoice_source_id
+    WHERE o.project_order_id !='' AND i.project_invoice_id != ''`,
       (err, result) => {
         if (err) {
           return res.status(400).send({
@@ -135,6 +165,68 @@ app.get('/getProjectReceipts', (req, res, next) => {
       }
     });
   });
+
+  app.post('/insertreceipt', (req, res, next) => {
+
+    let data = {receipt_code: req.body.receipt_code,
+                amount: req.body.amount,
+                mode_of_payment: req.body.mode_of_payment,
+                remarks: req.body.remarks,
+                receipt_date: req.body.receipt_date,
+                published: req.body.published,
+                flag: req.body.flag,
+                creation_date: req.body.creation_date,
+                modification_date: req.body.modification_date,
+                created_by: req.body.created_by,
+                modified_by: req.body.modified_by,
+                project_order_id: req.body.project_order_id,
+                receipt_status: req.body.receipt_status,
+                cheque_date: req.body.cheque_date,
+                bank_name: req.body.bank_name,
+                site_id: req.body.site_id,
+                cheque_no: req.body.cheque_no,
+                 project_id: req.body.project_id,
+            };
+  
+    let sql = "INSERT INTO project_receipt SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+       return res.status(400).send({
+                data: err,
+                msg:'failed'
+              });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+    });
+  });
+  app.post('/insertreceipthistory', (req, res, next) => {
+
+    let data = {
+                amount: req.body.amount,
+                project_invoice_id: req.body.project_invoice_id
+
+            };
+  
+    let sql = "INSERT INTO project_receipt_history SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+       return res.status(400).send({
+                data: err,
+                msg:'failed'
+              });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+    });
+  });
+
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);

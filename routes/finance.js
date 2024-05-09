@@ -147,8 +147,7 @@ app.get('/getOrders', (req, res, next) => {
   FROM orders o 
   LEFT JOIN (company c) ON (c.company_id=o.company_id)    
 
-  WHERE o.order_id !=''
-  AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
+  WHERE o.order_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({

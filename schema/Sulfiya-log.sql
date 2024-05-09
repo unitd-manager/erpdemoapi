@@ -252,3 +252,8 @@ ALTER TABLE `po_product` ADD `quantity_arb` VARCHAR(55) NULL DEFAULT NULL AFTER 
 ALTER TABLE `product` ADD `product_code_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `product_code`; 
 ALTER TABLE `job_information` ADD `termination_reason_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `hourly_pay`; 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.Unit', 'Unit', 'وحدة', '', '', '', NULL, '', '0', NULL); 
+
+********************************(08/05/2024 Project Invoice)**********************************
+ALTER TABLE `project_invoice` CHANGE `order_id` `project_order_id` INT(11) NULL DEFAULT NULL; 
+ALTER TABLE `invoice_receipt_history` CHANGE `invoice_id` `project_invoice_id` INT(11) NULL DEFAULT NULL; 
+ALTER TABLE `invoice_receipt_history` CHANGE `receipt_id` `project_receipt_id` INT(11) NULL DEFAULT NULL; 
