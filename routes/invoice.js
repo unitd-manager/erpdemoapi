@@ -378,18 +378,22 @@ app.post('/getInvoiceForReceiptOld', (req, res, next) => {
 
 app.post('/getInvoiceForReceipt', (req, res, next) => {
   db.query(`
-    SELECT
-      i.invoice_code,
-      i.status,
-      i.invoice_id,
-      i.invoice_source_id,
-      SUM(ii.total_cost) AS invoice_amount
-    FROM
-      invoice i
-      LEFT JOIN invoice_item ii ON ii.invoice_id = i.invoice_id
-      LEFT JOIN orders b ON b.order_id = i.invoice_source_id
-    WHERE b.order_id = ${db.escape(req.body.order_id)} AND i.status != 'Paid' AND ii.total_cost !=''
-   GROUP BY i.invoice_id `,
+  SELECT
+  i.project_invoice_code,
+  i.status,
+  i.project_invoice_id,
+  i.project_invoice_source_id,
+  SUM(ii.total_cost) AS invoice_amount
+FROM
+  project_invoice i
+  LEFT JOIN project_invoice_item ii ON ii.project_invoice_id = i.project_invoice_id
+  LEFT JOIN project_orders b ON b.project_order_id = i.project_invoice_source_id
+WHERE 
+  b.project_order_id = ${db.escape(req.body.project_order_id)} AND 
+  i.status != 'Paid' AND 
+  ii.total_cost != '' AND
+  i.project_invoice_id NOT IN (SELECT project_invoice_id FROM project_receipt_history)
+GROUP BY i.project_invoice_id`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -399,13 +403,13 @@ app.post('/getInvoiceForReceipt', (req, res, next) => {
       } else {
         return res.status(200).send({
           data: result,
+
           msg: 'Success'
         });
       }
     }
   );
 });
-
 
 app.get('/checkQuoteItems', (req, res, next) => {
   db.query(

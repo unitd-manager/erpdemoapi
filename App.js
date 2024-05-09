@@ -35,6 +35,7 @@ app.use(
 );
 
 const project = require('./routes/project.js');
+const projectreceipts = require('./routes/projectreceipts.js');
 const Arouter = require('./routes/attachment.js');
 const Auth = require('./routes/auth.js');
 const tender = require('./routes/tender.js');
@@ -150,6 +151,7 @@ app.use('/payrollmanagement', payrollmanagement);
 //app.use('/employeeModule',employeeModule);
 app.use('/product', product);
 app.use('/project', project);
+app.use('/projectreceipts', projectreceipts);
 app.use('/attachment', Arouter);
 app.use('/api', Auth);
 app.use('/tender', tender);
