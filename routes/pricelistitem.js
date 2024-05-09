@@ -333,6 +333,28 @@ app.get('/getTranslationForPriceList', (req, res, next) => {
 );
 });
 
+app.get('/getPricelistStatusFromValuelist', (req, res, next) => {
+  db.query(
+    `SELECT 
+  value
+  ,valuelist_id
+  FROM valuelist WHERE key_text='PriceList Status'`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        })
+      }
+    },
+  )
+})
 
 
 
