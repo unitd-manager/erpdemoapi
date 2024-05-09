@@ -257,3 +257,5 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 ALTER TABLE `project_invoice` CHANGE `order_id` `project_order_id` INT(11) NULL DEFAULT NULL; 
 ALTER TABLE `invoice_receipt_history` CHANGE `invoice_id` `project_invoice_id` INT(11) NULL DEFAULT NULL; 
 ALTER TABLE `invoice_receipt_history` CHANGE `receipt_id` `project_receipt_id` INT(11) NULL DEFAULT NULL; 
+
+********************************(08/05/2024 Goods Delivery)**********************************
