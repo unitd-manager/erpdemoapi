@@ -559,3 +559,6 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 ALTER TABLE `project_quote_items` CHANGE `opportunity_id` `project_enquiry_id` INT(11) NULL DEFAULT NULL; 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdProjectEnq.Title', 'Title', 'عنوان', 'project Enquiry Title', NULL, NULL, NULL, NULL, NULL, '0'); 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdTradingEnq.Customer', 'Customer', 'عميل', 'Trading Enquiry Customer', NULL, NULL, NULL, NULL, NULL, '0'); 
+
+
+ALTER TABLE `project_goods_delivery_item` CHANGE `goods_delivery_item_id` `project_goods_delivery_item_id` INT(11) NOT NULL AUTO_INCREMENT; 
