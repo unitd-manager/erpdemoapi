@@ -266,7 +266,6 @@ app.post('/editSalesReturn', (req, res, next) => {
             ,modified_by = ${db.escape(req.body.modified_by)}
             ,status=${db.escape(req.body.status)}
             ,status_arb=${db.escape(req.body.status_arb)}
-
              WHERE sales_return_id =  ${db.escape(req.body.sales_return_id)}`,
     (err, result) => {
       if (err) {
@@ -695,22 +694,23 @@ app.get('/checkInvoiceItem', (req, res, next) => {
 
 app.get('/getQuote', (req, res, next) => {
   db.query(`SELECT q.quote_id,
-  q.opportunity_id,
-  q.company_id,
-  q.project_id,
-  q.quote_code,
-  q.quote_date,
-  q.quote_status,
-  q.creation_date,
-  q.modification_date,
-  q.currency_item,
-  q.note,
-  c.company_name
+       q.opportunity_id,
+       q.company_id,
+       q.project_id,
+       q.quote_code,
+       q.quote_date,
+       q.quote_status,
+       q.creation_date,
+       q.modification_date,
+       q.currency_item,
+       q.note,
+       c.company_name
 FROM quote q
 LEFT JOIN orders o ON o.quote_id = q.quote_id
 LEFT JOIN (company c) on q.company_id = c.company_id
-WHERE o.quote_id IS NULL 
- AND q.quote_status != 'Cancelled'`,
+WHERE q.quote_id != '' 
+      AND q.quote_status != 'Cancelled' 
+      `,
     (err, result) => {
       if (err) {
         return res.status(400).send({
