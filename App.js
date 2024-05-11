@@ -125,7 +125,9 @@ const milestone = require("./routes/milestone.js");
 const creditnote = require('./routes/creditnote.js');
 const debitnote = require('./routes/debitnote.js');
 const stats = require("./routes/stats.js");
+const projectgoodsdelivery = require('./routes/projectgoodsdelivery.js');
 
+app.use('/projectgoodsdelivery', projectgoodsdelivery);
 app.use('/debitnote', debitnote);
 app.use('/creditnote', creditnote);
 app.use('/supplierpricelistitem', supplierpricelistitem);
@@ -136,7 +138,7 @@ app.use('/bank', bank);
 app.use('/jobinformation', jobinformation);
 app.use('/finance', finance);
 app.use('/training', training);
-//app.use('/projectsalesorder', projectsalesorder);
+app.use('/projectsalesorder', projectsalesorder);
 app.use('/geocountry', geocountry);
 app.use('/support', support);
 app.use('/setting', setting);

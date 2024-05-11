@@ -484,10 +484,7 @@ GROUP BY i.project_invoice_id`,
 app.get('/checkQuoteItems', (req, res, next) => {
   db.query(
     `SELECT 
-    order_item_id ,
-    order_item_id_arb 
-
-
+    order_item_id 
      FROM invoice_item`,
     (err, result) => {
       if (err) {
@@ -1800,9 +1797,7 @@ app.post('/editInvoices', (req, res, next) => {
              ,invoice_terms = ${db.escape(req.body.invoice_terms)}
              ,invoice_terms_arb = ${db.escape(req.body.invoice_terms_arb)}
              ,source_type = ${db.escape(req.body.source_type)}
-             ,source_type_arb = ${db.escape(req.body.source_type_arb)}
              ,invoice_source_id =  ${db.escape(req.body.invoice_source_id)}
-             ,invoice_source_id_arb =  ${db.escape(req.body.invoice_source_id_arb)}
              ,invoice_due_date =  ${db.escape(req.body.invoice_due_date)}
              ,modified_by = ${db.escape(req.body.modified_by)}
              ,modification_date = ${db.escape(req.body.modification_date)}

@@ -259,6 +259,145 @@ WHERE c.company_id != ''`,
     }
   );
 });
+app.get('/getProjectSalesOrder', (req, res, next) => {
+  db.query(`SELECT o.project_order_id
+  ,o.order_date
+  ,o.project_enquiry_id
+  ,o.project_type
+  ,q.project_enquiry_id
+  ,opt.office_ref_no
+  ,c.company_id
+  ,c.company_name
+  ,c.company_name_arb
+  ,o.creation_date
+  ,o.order_status
+  ,o.order_status_arb
+  ,o.invoice_terms
+  ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
+  ,o.notes
+  ,o.order_code
+  ,o.shipping_first_name
+  ,o.cust_address1 AS shipping_address1
+  ,o.shipping_address2
+  ,o.shipping_address_country
+  ,o.shipping_address_po_code 
+  ,q.quote_code 
+  ,q.quote_code_arb
+  ,(select(sum(poi.cost_price)))as netAmount
+  ,q.project_quote_id
+  FROM project_orders o 
+  LEFT JOIN project_quote q ON o.project_quote_id = q.project_quote_id 
+  LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id) 
+  LEFT JOIN project_order_item poi ON (o.project_order_id = poi.project_order_id) 
+  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.project_order_id !=''
+  GROUP BY o.project_order_id 
+  ORDER BY o.project_order_id DESC`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+app.delete('/deleteorder_item/:quoteId', (req, res) => {
+  const quoteId = req.params.quoteId;
+
+  // Construct and execute the SQL query to delete old order items by quote_id
+  const sql = "DELETE FROM project_order_item WHERE project_quote_id = ?";
+  db.query(sql, [quoteId], (err, result) => {
+    if (err) {
+      console.error('Error deleting order items:', err);
+      return res.status(500).json({
+        error: 'Failed to delete order items',
+      });
+    }
+
+    console.log(`Deleted old order items with quote_id ${quoteId}`);
+    return res.status(200).json({
+      message: 'Order items deleted successfully',
+    });
+  });
+});
+app.post('/getQuoteLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+            qt.* 
+            FROM project_quote_items qt 
+             WHERE qt.project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      }else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+app.post('/getProjectOrderById', (req, res, next) => {
+  db.query(`SELECT o.project_order_id
+  ,o.order_date
+  ,o.project_enquiry_id
+  ,o.project_type
+  ,q.project_enquiry_id
+  ,opt.office_ref_no
+  ,c.company_id
+  ,c.company_name
+  ,c.company_name_arb
+  ,o.creation_date
+  ,o.order_status
+  ,o.order_status_arb
+  ,o.invoice_terms
+  ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
+  ,o.notes
+  ,o.order_code
+  ,o.shipping_first_name
+  ,o.cust_address1 AS shipping_address1
+  ,o.shipping_address2
+  ,o.shipping_address_country
+  ,o.shipping_address_po_code 
+  ,q.quote_code 
+  ,q.quote_code_arb
+  ,(select(sum(poi.cost_price)))as netAmount
+  FROM project_orders o 
+  LEFT JOIN project_quote q ON o.project_quote_id = q.project_quote_id 
+  LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id) 
+  LEFT JOIN project_order_item poi ON (o.project_order_id = poi.project_order_id) 
+  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.project_order_id = ${db.escape(req.body.project_order_id)} `,
+    (err, result) => {
+      if (err) {
+         return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result[0],
+              msg:'Success'
+            });
+
+      }
+
+  }
+ );
+});
 app.post('/editSalesReturn', (req, res, next) => {
   db.query(`UPDATE sales_return
             SET return_date = ${db.escape(req.body.return_date)}
