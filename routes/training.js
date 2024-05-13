@@ -50,6 +50,10 @@ app.post("/getTrainingById", (req, res, next) => {
   ,t.training_company_address
   ,t.training_company_email
   ,t.training_company_phone
+  ,t.creation_date
+  ,t.modification_date
+  ,t.created_by
+  ,t.modified_by
   FROM training t
   WHERE t.training_id=${db.escape(req.body.training_id)}`,
     (err, result) => {
@@ -83,7 +87,8 @@ app.get("/getTraining", (req, res, next) => {
   ,t.training_company_email
   ,t.training_company_phone
   FROM training t
-  WHERE t.training_id != ''`,
+  WHERE t.training_id != ''
+  ORDER BY t.training_id DESC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
@@ -155,6 +160,8 @@ app.post("/edit-Training", (req, res, next) => {
             ,trainer=${db.escape(req.body.trainer)}
             ,description=${db.escape(req.body.description)}
             ,training_company_name=${db.escape(req.body.training_company_name)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,training_company_address=${db.escape(
               req.body.training_company_address
             )}

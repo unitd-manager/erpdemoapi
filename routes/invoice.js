@@ -505,10 +505,7 @@ app.get('/checkQuoteItems', (req, res, next) => {
 
 app.get('/checkGoodsItems', (req, res, next) => {
   db.query(
-    `SELECT goods_delivery_item_id,
-
-    goods_delivery_item_id_arb
-
+    `SELECT goods_delivery_item_id
      FROM invoice_item`,
     (err, result) => {
       if (err) {
@@ -551,12 +548,13 @@ app.post('/getOrderLineItemsById', (req, res, next) => {
 app.post('/getGoodsLineItemsById', (req, res, next) => {
   db.query(`SELECT
   qt.*,
-  os.quote_id,
-  os.quote_id_arb
-
+  o.order_id,
+  o.quote_id,
+  g.order_id
   FROM goods_delivery_item qt 
-  LEFT JOIN orders os ON os.order_id=qt.order_id
-  WHERE qt.goods_delivery_id =  ${db.escape(req.body.goods_delivery_id)}`,
+  LEFT JOIN goods_delivery g ON g.goods_delivery_id=qt.goods_delivery_id
+  LEFT JOIN orders o ON  o.order_id=g.order_id
+  WHERE qt.goods_delivery_id =   ${db.escape(req.body.goods_delivery_id)}`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -1376,12 +1374,14 @@ app.get('/getCustomerDropdown', (req, res, next) => {
 app.post('/getSalesOrderDropdown', (req, res, next) => {
   db.query(`SELECT 
   o.order_id
-  ,o.order_code
-  ,o.order_code_arb
-  FROM orders o
-  LEFT JOIN invoice i ON i.invoice_source_id = o.order_id 
-  WHERE o.order_id != '' 
-  AND i.invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
+ ,o.order_code
+ ,o.order_code_arb
+ ,c.company_name
+ FROM orders o
+ LEFT JOIN invoice i ON i.invoice_source_id = o.order_id 
+ LEFT JOIN (company c) on o.company_id = c.company_id
+ WHERE o.order_id != '' 
+ AND i.invoice_source_id IS NULL AND o.company_id =${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -1401,7 +1401,8 @@ app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   g.goods_delivery_id,
   g.goods_delivery_id_arb,
   g.goods_delivery_code,
-  g.goods_delivery_code_arb
+  g.goods_delivery_code_arb,
+  c.company_name
 FROM goods_delivery g
 LEFT JOIN invoice i ON i.invoice_source_id = g.goods_delivery_id
 LEFT JOIN company c ON c.company_id = g.company_id
@@ -2742,38 +2743,27 @@ app.post('/insertInvoiceItem', (req, res, next) => {
 
   let data = {
        qty: req.body.qty,
-       qty: req.body.qty_arb,
-       invoice_qty: req.body.invoice_qty,
-       invoice_qty: req.body.invoice_qty_arb
+       qty_arb: req.body.qty_arb
+       ,invoice_qty: req.body.invoice_qty
        ,invoice_id: req.body.invoice_id
-       ,invoice_id: req.body.invoice_id_arb
        ,invoice_source_id: req.body.invoice_source_id
-       ,invoice_source_id: req.body.invoice_source_id_arb
        ,source_type: req.body.source_type
-       ,source_type: req.body.source_type_arb
        ,order_id: req.body.order_id
-       ,order_id: req.body.order_id_arb
        ,order_item_id : req.body.order_item_id 
-       ,order_item_id : req.body.order_item_id_arb
        ,goods_delivery_id: req.body.goods_delivery_id
-       ,goods_delivery_id: req.body.goods_delivery_id_arb
        ,goods_delivery_item_id: req.body.goods_delivery_item_id
-       ,goods_delivery_item_id: req.body.goods_delivery_item_id_arb
     , item_title: req.body.item_title
-    , item_title: req.body.item_title_arb
+    , item_title_arb: req.body.item_title_arb
     , description: req.body.description
-    , description: req.body.description_arb
+    , description_arb: req.body.description_arb
     , remarks: req.body.remarks
-    , remarks: req.body.remarks_arb
+    , remarks_arb: req.body.remarks_arb
     , total_cost: req.body.total_cost
-    , total_cost: req.body.total_cost_arb
     ,created_by: req.body.created_by
     ,creation_date: req.body.creation_date
     ,quote_id: req.body.quote_id
-    ,quote_id: req.body.quote_id_arb
     ,unit_price: req.body.unit_price
     ,unit: req.body.unit
-    ,unit: req.body.unit_arb
 
  };
   let sql = "INSERT INTO invoice_item SET ?";
@@ -3079,21 +3069,14 @@ app.post('/editInvoiceItems', (req, res, next) => {
             item_title = ${db.escape(req.body.item_title)}
             ,item_title_arb = ${db.escape(req.body.item_title_arb)}
             ,unit=${db.escape(req.body.unit)}
-             ,unit_arb=${db.escape(req.body.unit_arb)}
             ,unit_price=${db.escape(req.body.unit_price)}
-
             ,qty=${db.escape(req.body.qty)}
              ,invoice_qty=${db.escape(req.body.invoice_qty)}
              ,total_cost=${db.escape(req.body.total_cost)}
-
-            ,unit_price_arb=${db.escape(req.body.unit_price_arb)}
             ,qty=${db.escape(req.body.qty)}
              ,qty_arb=${db.escape(req.body.qty_arb)}
              ,invoice_qty=${db.escape(req.body.invoice_qty)}
-             ,invoice_qty_arb=${db.escape(req.body.invoice_qty_arb)}
              ,total_cost=${db.escape(req.body.total_cost)}
-            ,total_cost_arb=${db.escape(req.body.total_cost_arb)}
->>>>>>> deba6c0d9b718ddf75640259c9cdcb8db8eb35fd
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
              WHERE invoice_item_id  =  ${db.escape(req.body.invoice_item_id )}`,
