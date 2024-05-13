@@ -17,6 +17,7 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
+
 app.post('/import/excel', ( req, res ) => {
     const { data } = req.body;
     const parsed_data = JSON.parse(data);
@@ -285,6 +286,10 @@ app.post('/getEmployeeByID', (req, res, next) => {
   ,j.act_join_date
   ,a.pay
   ,a.pay_arb
+  ,a.creation_date
+  ,a.modification_date
+  ,a.created_by
+  ,a.modified_by
 FROM employee a
 LEFT JOIN geo_country gc ON (a.address_country = gc.country_code)
 LEFT JOIN job_information j ON (a.employee_id = j.employee_id)
@@ -313,6 +318,10 @@ app.post('/edit-Employee', (req, res, next) => {
             SET employee_name=${db.escape(req.body.employee_name)}
             ,employee_name_arb=${db.escape(req.body.employee_name_arb)}
             ,first_name=${db.escape(req.body.first_name)}
+            ,creation_date=${db.escape(req.body.creation_date)}
+            ,created_by=${db.escape(req.body.created_by)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,first_name_arb=${db.escape(req.body.first_name_arb)}
             ,salutation=${db.escape(req.body.salutation)}
             ,salutation_arb=${db.escape(req.body.salutation_arb)}

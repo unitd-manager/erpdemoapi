@@ -398,6 +398,60 @@ app.post('/getProjectOrderById', (req, res, next) => {
   }
  );
 });
+app.post('/insertorder_item', (req, res, next) => {
+
+  let data = {qty: req.body.qty,
+              unit_price: req.body.unit_price,
+              project_order_id: req.body.project_order_id,
+              item_title: req.body.item_title,
+              model: req.body.model,
+              module: req.body.module,
+              cost_price: req.body.cost_price,
+              discount_percentage: req.body.discount_percentage,
+              mark_up: req.body.mark_up,
+              qty_for_invoice: req.body.qty_for_invoice,
+              mark_up_type: req.body.mark_up_type,
+              item_code: req.body.item_code,
+              price_from_supplier: req.body.price_from_supplier,
+              ref_code: req.body.ref_code,
+              discount_type: req.body.discount_type,
+              vat: req.body.vat,
+              quote_items_id: req.body.quote_items_id,
+              item_code_backup: req.body.item_code_backup,
+              unit: req.body.unit,
+              description: req.body.description,
+              remarks: req.body.remarks,
+              month: req.body.month,
+              year: req.body.year,
+              ot_hourly_rate: req.body.ot_hourly_rate,
+              ph_hourly_rate: req.body.ph_hourly_rate,
+              employee_ot_hours: req.body.employee_ot_hours,
+              employee_ph_hours: req.body.employee_ph_hours,
+              part_no: req.body.part_no,
+              admin_charges: req.body.admin_charges,
+              transport_charges: req.body.transport_charges,
+              project_quote_id: req.body.project_quote_id,
+              drawing_number: req.body.drawing_number,
+              drawing_title: req.body.drawing_title,
+              drawing_revision: req.body.drawing_revision,
+            
+            };
+
+  let sql = "INSERT INTO project_order_item SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 app.post('/editSalesReturn', (req, res, next) => {
   db.query(`UPDATE sales_return
             SET return_date = ${db.escape(req.body.return_date)}

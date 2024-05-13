@@ -28,7 +28,7 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
       ,gd.project_order_id
       ,gd.project_goods_delivery_code
     ,o.order_code
-    ,gd.goods_ref_no
+    ,gd.project_goods_ref_no
     ,c.company_id
     ,c.company_name
     ,c.company_name_arb

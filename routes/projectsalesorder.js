@@ -44,6 +44,7 @@ app.get('/getProjectSalesOrder', (req, res, next) => {
   ,q.quote_code 
   ,q.quote_code_arb
   ,(select(sum(poi.cost_price)))as netAmount
+  ,q.project_quote_id
   FROM project_orders o 
   LEFT JOIN project_quote q ON o.project_quote_id = q.project_quote_id 
   LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id) 
