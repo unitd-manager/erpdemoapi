@@ -126,6 +126,10 @@ app.get('/getLeave', (req, res, next) => {
     ,j.designation
     ,e.position
     ,e.citizen
+    ,l.creation_date
+    ,l.modification_date
+    ,l.created_by
+    ,l.modified_by
     FROM empleave l
     LEFT JOIN (employee e) ON (l.employee_id = e.employee_id)
     LEFT JOIN (job_information j) ON (j.employee_id = l.employee_id)
@@ -165,6 +169,8 @@ app.get('/getLeave', (req, res, next) => {
               ,no_of_days_next_month=${db.escape(req.body.no_of_days_next_month)}
               ,employee_id=${db.escape(req.body.employee_id)}
               ,went_overseas=${db.escape(req.body.went_overseas)}
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
               WHERE leave_id = ${db.escape(req.body.leave_id)}`,
               (err, result) => {
                 if (err) {
