@@ -1654,7 +1654,7 @@ app.post('/insertreceipthistory', (req, res, next) => {
 
   let data = {
               amount: req.body.amount,
-              invoice_id: req.body.project_invoice_id,
+              invoice_id: req.body.invoice_id,
               receipt_id: req.body.receipt_id,
           };
 
