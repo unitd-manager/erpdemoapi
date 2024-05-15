@@ -81,8 +81,13 @@ app.post("/getCodeValue", (req, res, next) => {
   }else if(type == 'receipt'){
       key_text = 'nextReceiptCode';
       sql = "SELECT * FROM setting WHERE key_text='receiptCodePrefix' OR key_text='nextReceiptCode'";
-  }
-  else if(type == 'projectreceipt'){
+  }else if(type == 'projectreceipt'){
+    key_text = 'nextProjectReceiptCode';
+    sql = "SELECT * FROM setting WHERE key_text='projectreceiptCodePrefix' OR key_text='nextProjectReceiptCode'";
+}else if(type == 'goodsdelivery'){
+  key_text = 'nextGoodsDeliveryCode';
+  sql = "SELECT * FROM setting WHERE key_text='goodsDeliveryCodePrefix' OR key_text='nextGoodsDeliveryCode'";  
+}else if(type == 'projectreceipt'){
     key_text = 'nextProjectReceiptCode';
     sql = "SELECT * FROM setting WHERE key_text='projectReceiptCodePrefix' OR key_text='nextProjectReceiptCode'";
 }else if(type == 'supplier'){

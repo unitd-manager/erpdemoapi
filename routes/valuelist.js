@@ -124,7 +124,8 @@ app.get('/getValueListDropdown', (req, res, next) => {
       { id: '70', name: 'Supplier Type'},
       { id: '71', name: 'Project Status'},    
       { id: '72', name: 'Task Status'},
-      { id: '70', name: 'Unit'}
+      { id: '70', name: 'Unit'},
+      { id: '70', name: 'PriceList Status'}
 
     ],
     msg: 'Success',

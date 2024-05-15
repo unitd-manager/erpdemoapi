@@ -412,7 +412,8 @@ app.post('/getInvoiceForReceipt', (req, res, next) => {
 app.get('/checkQuoteItems', (req, res, next) => {
   db.query(
     `SELECT 
-    project_order_id
+    project_order_id,
+    project_order_item_id
      FROM project_invoice_item`,
     (err, result) => {
       if (err) {
@@ -433,7 +434,8 @@ app.get('/checkQuoteItems', (req, res, next) => {
 
 app.get('/checkGoodsItems', (req, res, next) => {
   db.query(
-    `SELECT project_goods_delivery_id
+    `SELECT project_goods_delivery_id,
+    project_goods_delivery_item_id
     FROM project_invoice_item`,
     (err, result) => {
       if (err) {
@@ -494,6 +496,7 @@ app.post('/getGoodsLineItemsById', (req, res, next) => {
   }
 );
 });
+
 
 
 app.post('/getOrderLineItemsByIdold', (req, res, next) => {
@@ -1727,7 +1730,7 @@ app.post('/editInvoices', (req, res, next) => {
              ,project_invoice_due_date =  ${db.escape(req.body.project_invoice_due_date)}
              ,modified_by = ${db.escape(req.body.modified_by)}
              ,modification_date = ${db.escape(req.body.modification_date)}
-    ,project_invoice_amount = (
+      ,project_invoice_amount = (
         SELECT SUM(total_cost) 
         FROM project_invoice_item 
         WHERE project_invoice_id = ${db.escape(req.body.project_invoice_id)}
@@ -2673,10 +2676,11 @@ app.post('/insertInvoiceItem', (req, res, next) => {
        ,project_invoice_source_id: req.body.project_invoice_source_id
        ,source_type: req.body.source_type
        ,project_order_id: req.body.project_order_id
-       ,project_goods_delivery_id: req.body.goods_delivery_id
-       ,project_goods_delivery_item_id: req.body.goods_delivery_item_id
-    , item_title: req.body.item_title
-    , item_title: req.body.item_title_arb
+       ,project_order_item_id: req.body.project_order_item_id
+       ,project_goods_delivery_id: req.body.project_goods_delivery_id
+       ,project_goods_delivery_item_id: req.body.project_goods_delivery_item_id
+       , item_title: req.body.item_title
+    , item_title_arb: req.body.item_title_arb
     , description: req.body.description
     , remarks: req.body.remarks
     , total_cost: req.body.total_cost
@@ -2685,7 +2689,7 @@ app.post('/insertInvoiceItem', (req, res, next) => {
     ,project_quote_id: req.body.project_quote_id
     ,unit_price: req.body.unit_price
     ,unit: req.body.unit
-    ,unit: req.body.unit_arb
+    ,unit_arb: req.body.unit_arb
 
  };
   let sql = "INSERT INTO project_invoice_item SET ?";
@@ -2997,10 +3001,9 @@ app.post('/editInvoiceItems', (req, res, next) => {
             ,unit_price_arb=${db.escape(req.body.unit_price_arb)}
             ,qty=${db.escape(req.body.qty)}
              ,qty_arb=${db.escape(req.body.qty_arb)}
-             ,invoice_qty=${db.escape(req.body.invoice_qty)}
-             ,invoice_qty_arb=${db.escape(req.body.invoice_qty_arb)}
+             ,project_invoice_qty=${db.escape(req.body.project_invoice_qty)}
+             ,project_invoice_qty_arb=${db.escape(req.body.project_invoice_qty_arb)}
              ,total_cost=${db.escape(req.body.total_cost)}
-            ,total_cost_arb=${db.escape(req.body.total_cost_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,modified_by=${db.escape(req.body.modified_by)}
              WHERE project_invoice_item_id  =  ${db.escape(req.body.project_invoice_item_id )}`,
@@ -3147,6 +3150,7 @@ app.post("/getCodeValue", (req, res, next) => {
     }
   });
 });
+
 
 
 

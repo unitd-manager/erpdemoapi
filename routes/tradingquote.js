@@ -158,8 +158,7 @@ app.get("/getEnquiryCode", (req, res, next) => {
   LEFT JOIN (company c) on o.company_id = c.company_id
   LEFT JOIN (quote q) ON o.opportunity_id = q.opportunity_id
   WHERE
-  o.opportunity_id != '' 
-  `,
+  q.opportunity_id IS NULL`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -283,7 +282,7 @@ app.post("/inserttradingquote", (req, res, next) => {
     intro_drawing_quote: req.body.intro_drawing_quote,
     show_project_manager: req.body.show_project_manager,
     creation_date: req.body.creation_date,
-    modification_date: null,
+    modification_date: req.body.modification_date,
     created_by: req.body.created_by,
   };
   let sql = "INSERT INTO quote SET ?";

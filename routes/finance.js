@@ -147,8 +147,7 @@ app.get('/getOrders', (req, res, next) => {
   FROM orders o 
   LEFT JOIN (company c) ON (c.company_id=o.company_id)    
 
-  WHERE o.order_id !=''
-  AND NOT EXISTS (SELECT 1 FROM receipt r WHERE r.order_id = o.order_id)`,
+  WHERE o.order_id !=''`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -260,6 +259,199 @@ WHERE c.company_id != ''`,
     }
   );
 });
+app.get('/getProjectSalesOrder', (req, res, next) => {
+  db.query(`SELECT o.project_order_id
+  ,o.order_date
+  ,o.project_enquiry_id
+  ,o.project_type
+  ,q.project_enquiry_id
+  ,opt.office_ref_no
+  ,c.company_id
+  ,c.company_name
+  ,c.company_name_arb
+  ,o.creation_date
+  ,o.order_status
+  ,o.order_status_arb
+  ,o.invoice_terms
+  ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
+  ,o.notes
+  ,o.order_code
+  ,o.shipping_first_name
+  ,o.cust_address1 AS shipping_address1
+  ,o.shipping_address2
+  ,o.shipping_address_country
+  ,o.shipping_address_po_code 
+  ,q.quote_code 
+  ,q.quote_code_arb
+  ,(select(sum(poi.cost_price)))as netAmount
+  ,q.project_quote_id
+  FROM project_orders o 
+  LEFT JOIN project_quote q ON o.project_quote_id = q.project_quote_id 
+  LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id) 
+  LEFT JOIN project_order_item poi ON (o.project_order_id = poi.project_order_id) 
+  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.project_order_id !=''
+  GROUP BY o.project_order_id 
+  ORDER BY o.project_order_id DESC`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+app.delete('/deleteorder_item/:quoteId', (req, res) => {
+  const quoteId = req.params.quoteId;
+
+  // Construct and execute the SQL query to delete old order items by quote_id
+  const sql = "DELETE FROM project_order_item WHERE project_quote_id = ?";
+  db.query(sql, [quoteId], (err, result) => {
+    if (err) {
+      console.error('Error deleting order items:', err);
+      return res.status(500).json({
+        error: 'Failed to delete order items',
+      });
+    }
+
+    console.log(`Deleted old order items with quote_id ${quoteId}`);
+    return res.status(200).json({
+      message: 'Order items deleted successfully',
+    });
+  });
+});
+app.post('/getQuoteLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+            qt.* 
+            FROM project_quote_items qt 
+             WHERE qt.project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      }else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+app.post('/getProjectOrderById', (req, res, next) => {
+  db.query(`SELECT o.project_order_id
+  ,o.order_date
+  ,o.project_enquiry_id
+  ,o.project_type
+  ,q.project_enquiry_id
+  ,opt.office_ref_no
+  ,c.company_id
+  ,c.company_name
+  ,c.company_name_arb
+  ,o.creation_date
+  ,o.order_status
+  ,o.order_status_arb
+  ,o.invoice_terms
+  ,o.modification_date
+  ,o.created_by
+  ,o.modified_by
+  ,o.notes
+  ,o.order_code
+  ,o.shipping_first_name
+  ,o.cust_address1 AS shipping_address1
+  ,o.shipping_address2
+  ,o.shipping_address_country
+  ,o.shipping_address_po_code 
+  ,q.quote_code 
+  ,q.quote_code_arb
+  ,(select(sum(poi.cost_price)))as netAmount
+  FROM project_orders o 
+  LEFT JOIN project_quote q ON o.project_quote_id = q.project_quote_id 
+  LEFT JOIN project_enquiry opt ON (opt.project_enquiry_id = q.project_enquiry_id) 
+  LEFT JOIN project_order_item poi ON (o.project_order_id = poi.project_order_id) 
+  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.project_order_id = ${db.escape(req.body.project_order_id)} `,
+    (err, result) => {
+      if (err) {
+         return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result[0],
+              msg:'Success'
+            });
+
+      }
+
+  }
+ );
+});
+app.post('/insertorder_item', (req, res, next) => {
+
+  let data = {qty: req.body.qty,
+              unit_price: req.body.unit_price,
+              project_order_id: req.body.project_order_id,
+              item_title: req.body.item_title,
+              model: req.body.model,
+              module: req.body.module,
+              cost_price: req.body.cost_price,
+              discount_percentage: req.body.discount_percentage,
+              mark_up: req.body.mark_up,
+              qty_for_invoice: req.body.qty_for_invoice,
+              mark_up_type: req.body.mark_up_type,
+              item_code: req.body.item_code,
+              price_from_supplier: req.body.price_from_supplier,
+              ref_code: req.body.ref_code,
+              discount_type: req.body.discount_type,
+              vat: req.body.vat,
+              quote_items_id: req.body.quote_items_id,
+              item_code_backup: req.body.item_code_backup,
+              unit: req.body.unit,
+              description: req.body.description,
+              remarks: req.body.remarks,
+              month: req.body.month,
+              year: req.body.year,
+              ot_hourly_rate: req.body.ot_hourly_rate,
+              ph_hourly_rate: req.body.ph_hourly_rate,
+              employee_ot_hours: req.body.employee_ot_hours,
+              employee_ph_hours: req.body.employee_ph_hours,
+              part_no: req.body.part_no,
+              admin_charges: req.body.admin_charges,
+              transport_charges: req.body.transport_charges,
+              project_quote_id: req.body.project_quote_id,
+              drawing_number: req.body.drawing_number,
+              drawing_title: req.body.drawing_title,
+              drawing_revision: req.body.drawing_revision,
+            
+            };
+
+  let sql = "INSERT INTO project_order_item SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 app.post('/editSalesReturn', (req, res, next) => {
   db.query(`UPDATE sales_return
             SET return_date = ${db.escape(req.body.return_date)}
@@ -267,7 +459,6 @@ app.post('/editSalesReturn', (req, res, next) => {
             ,modified_by = ${db.escape(req.body.modified_by)}
             ,status=${db.escape(req.body.status)}
             ,status_arb=${db.escape(req.body.status_arb)}
-
              WHERE sales_return_id =  ${db.escape(req.body.sales_return_id)}`,
     (err, result) => {
       if (err) {
