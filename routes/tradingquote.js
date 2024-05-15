@@ -282,7 +282,7 @@ app.post("/inserttradingquote", (req, res, next) => {
     intro_drawing_quote: req.body.intro_drawing_quote,
     show_project_manager: req.body.show_project_manager,
     creation_date: req.body.creation_date,
-    modification_date: null,
+    modification_date: req.body.modification_date,
     created_by: req.body.created_by,
   };
   let sql = "INSERT INTO quote SET ?";
