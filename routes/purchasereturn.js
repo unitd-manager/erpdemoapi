@@ -170,7 +170,14 @@ app.post('/getProjectquoteById', (req, res, next) => {
               data: err,
               msg: 'failed',
             });
-          } else {
+          } 
+          else {
+            if (invoiceItems.length < 1) {
+              return res.status(401).send({
+                data: invoiceItems,
+                msg: 'No invoice items to Return',
+              });
+            } 
             // Insert retrieved invoice_items into sales_return_history_item table
             let salesReturnHistoryItemId = result.insertId; // Assuming you have an auto-incremented primary key in sales_return_history
             let salesReturnHistoryItemData = invoiceItems.map((item) => ({
@@ -183,10 +190,10 @@ app.post('/getProjectquoteById', (req, res, next) => {
               total_cost:item.total_cost
               // Add more fields as needed
             }));
-  
+  console.log('salesReturnHistoryItemData',salesReturnHistoryItemData);
             let insertItemsQuery =
-            "INSERT INTO purchase_return_items (purchase_return_id, item_title, ordered_quantity,unit,cost_price,total_cost) VALUES ?,?,?,?,?,?";
-          let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id,item.cost_price,item.total_cost, item.unit,item.item_title, item.ordered_quantity]);
+            "INSERT INTO purchase_return_items (`purchase_return_id`, `item_title`, `ordered_quantity`,`unit`,`cost_price`,`total_cost`) VALUES ?";
+          let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id,item.item_title, item.ordered_quantity,item.unit,item.cost_price,item.total_cost]);
           
           db.query(insertItemsQuery, [values], (err, itemResult) => {
           
