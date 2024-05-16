@@ -69,20 +69,23 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
        LEFT JOIN (goods_delivery_item gi) ON (gi.goods_delivery_id = gd.goods_delivery_id)  
        WHERE gd.goods_delivery_id = ${db.escape(req.body.goods_delivery_id)}
        GROUP BY gd.goods_delivery_id`,
-    (err, result) => {
-      if (result.length == 0) {
-        return res.status(400).send({
-          msg: "No result found",
-        });
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: "Success",
-        });
-      }
+       (err, result) => {
+        if (err) {
+          console.log('error: ', err)
+          return res.status(400).send({
+            data: err,
+            msg: 'failed',
+          })
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: 'Success',
+    })
     }
-  );
-});
+      }
+    );
+    });
+    
 app.get('/getTranslationforTradingGoods', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingGoods%'`,
   (err, result) => {
@@ -356,7 +359,8 @@ app.post("/edit-goodsdeliveryitem", (req, res, next) => {
               SET 
                goods_delivery_id=${db.escape(req.body.goods_delivery_id)}
               ,quantity =${db.escape(req.body.quantity)}
-              ,delivery_qty=${db.escape(req.body.delivery_qty)}  
+              ,delivery_qty=${db.escape(req.body.delivery_qty)} 
+              ,amount=${db.escape(req.body.amount)} 
               WHERE goods_delivery_item_id =  ${db.escape(req.body.goods_delivery_item_id)}`,
     (err, result) => {
       if (err) {
