@@ -1192,7 +1192,7 @@ app.post('/getInvoiceById', (req, res, next) => {
   i.project_invoice_terms,
   i.company_id,
   o.project_order_id,
-  o.project_order_code,
+  o.order_code,
   g.project_goods_delivery_id,
   g.project_goods_delivery_code,
   SUM(it.total_cost) AS InvoiceAmount
@@ -1304,7 +1304,7 @@ app.get('/getCustomerDropdown', (req, res, next) => {
 app.post('/getSalesOrderDropdown', (req, res, next) => {
   db.query(`SELECT 
   o.project_order_id 
-  ,o.project_order_code
+  ,o.order_code
   ,c.company_name
   ,c.company_name_arb
   FROM project_orders o

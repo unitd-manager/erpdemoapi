@@ -59,6 +59,7 @@ app.get('/getProjectTask', (req, res, next) => {
   ,e.first_name
   ,e.first_name_arb
   ,e.employee_id
+  ,jo.job_title
   FROM project_task pt
   LEFT JOIN project p ON p.project_id = pt.project_id
   LEFT JOIN employee e ON e.employee_id = pt.employee_id
@@ -266,7 +267,7 @@ app.post('/getProjectTaskById', (req, res, next) => {
     db.query(`SELECT
     pt.project_timesheet_id 
     ,pt.timesheet_title
-    ,pt.date
+    ,pt.from_date
     ,pt.project_id
     ,pt.employee_id
     ,pt.status
