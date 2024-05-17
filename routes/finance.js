@@ -398,7 +398,7 @@ app.post('/getProjectOrderById', (req, res, next) => {
   }
  );
 });
-app.post('/insertorder_item', (req, res, next) => {
+app.post('/insertprojectorder_item', (req, res, next) => {
 
   let data = {qty: req.body.qty,
               unit_price: req.body.unit_price,
