@@ -97,6 +97,26 @@ app.get('/getTranslationforTradingGoods', (req, res, next) => {
   }
 );
 });
+
+app.post('/deleteGoodsDeliveryItems', (req, res, next) => {
+
+  let data = {project_goods_delivery_id: req.body.project_goods_delivery_id};
+  let sql = "DELETE FROM project_goods_delivery_item WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
+
 app.get('/checkDeliveryItems', (req, res, next) => {
   db.query(
     `SELECT project_order_item_id FROM project_goods_delivery_item`,
@@ -398,7 +418,6 @@ app.post("/insertgoodsdeliveryitem", (req, res, next) => {
     amount: req.body.amount,
     quantity: req.body.quantity,
     description: req.body.description,
-    description: req.body.description_arb,
     project_goods_delivery_id: req.body.project_goods_delivery_id,
     project_order_id: req.body.project_order_id,
     project_order_item_id: req.body.project_order_item_id,

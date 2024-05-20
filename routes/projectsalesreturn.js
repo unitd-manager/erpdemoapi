@@ -18,14 +18,45 @@ app.use(fileUpload({
 }));
 
 
+app.post('/getSalesReturnId', (req, res, next) => {
+  db.query(`SELECT o.proj_sales_return_id  
+  ,o.return_date
+  , o.creation_date
+  ,o.modification_date
+  ,o.project_invoice_id
+  ,i.project_invoice_code
+  ,o.status
+  ,i.project_invoice_code
+  ,(select sum(total_cost)) as InvoiceAmount
+  ,o.created_by
+  ,o.modified_by
+  from proj_sales_return o
+  LEFT JOIN project_invoice i ON i.project_invoice_id = o.project_invoice_id
+  LEFT JOIN project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
+   WHERE o.proj_sales_return_id !=''${db.escape(req.body.proj_sales_return_id)}`,
+          (err, result) => {
+       
+      if (result.length === 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    } 
+  );
+});
 app.get('/getSalesReturns', (req, res, next) => {
-    db.query(`SELECT o.proj_sales_return_id 
+    db.query(`SELECT o.proj_sales_return_id  
     ,o.return_date
     , o.creation_date
     ,o.modification_date
     ,o.project_invoice_id
     ,i.project_invoice_code
-    ,o.order_id
     ,o.status
     ,i.project_invoice_code
     ,(select sum(total_cost)) as InvoiceAmount
@@ -178,11 +209,10 @@ app.get('/getSalesReturns', (req, res, next) => {
   it.qty_returned,
   it.unit_price,
   it.remarks,
-  it.remarks_arb,
-  o.order_id
+  o.project_order_id
   FROM project_invoice_item it
   LEFT JOIN (project_invoice i) ON (i.project_invoice_id=it.project_invoice_id)
-  LEFT JOIN (orders o) ON (o.order_id=i.project_invoice_source_id)
+  LEFT JOIN (project_orders o) ON (o.project_order_id=i.project_invoice_source_id)
   WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
             (err, result) => {
          
@@ -201,7 +231,7 @@ app.get('/getSalesReturns', (req, res, next) => {
     );
   });
 
-  app.post('/getReturnInvoiceItemsById', (req, res, next) => {
+ app.post('/getReturnInvoiceItemsById', (req, res, next) => {
     db.query(`SELECT it.proj_sales_return_history_id ,
     it.return_date,
   i.project_invoice_id,
@@ -209,14 +239,13 @@ app.get('/getSalesReturns', (req, res, next) => {
   it.price,
   it.notes,
   it.qty_return,
-  it.order_id,
+  it.project_order_id,
   iv.item_title,
   iv.item_title_arb
-  
   FROM proj_sales_return_history it
   LEFT JOIN (proj_sales_return i) ON (i.project_invoice_id=it.project_invoice_id)
   LEFT JOIN (project_invoice_item iv) ON (iv.project_invoice_item_id=it.project_invoice_item_id)
-  WHERE i.project_invoice_id = ${db.escape(req.body.project_invoice_id)}`,
+  WHERE i.project_invoice_id =${db.escape(req.body.project_invoice_id)}`,
             (err, result) => {
          
               if (err) {
@@ -245,7 +274,7 @@ app.get('/getSalesReturns', (req, res, next) => {
       , creation_date: req.body.creation_date
       , modification_date: req.body.modification_date
       , project_invoice_id: req.body.project_invoice_id
-      ,order_id: req.body.order_id
+      ,project_order_id: req.body.project_order_id
       ,status: req.body.status
       ,created_by: req.body.created_by
    };
@@ -307,89 +336,85 @@ app.get('/getSalesReturns', (req, res, next) => {
       }
     );
   });
+app.post('/insertSalesReturnHistory', (req, res, next) => {
+  let data = {
+    proj_sales_return_history_id: req.body.proj_sales_return_history_id,
+    return_date: req.body.return_date,
+    creation_date: req.body.creation_date,
+    modification_date: req.body.modification_date,
+    project_invoice_id: req.body.project_invoice_id,
+    project_order_id: req.body.project_order_id,
+    status: req.body.status,
+    project_invoice_item_id: req.body.project_invoice_item_id,
+    price: req.body.unit_price,
+    notes: req.body.notes,
+    qty_return: req.body.qty_return,
+  };
 
-  app.post('/insertSalesReturnHistory', (req, res, next) => {
-    let data = {
-        // proj_sales_return_history_id: req.body.proj_sales_return_history_id,
-      return_date: req.body.return_date,
-      creation_date: req.body.creation_date,
-      modification_date: req.body.modification_date,
-      project_invoice_id: req.body.project_invoice_id,
-      order_id: req.body.order_id,
-      status: req.body.status,
-      status: req.body.status_arb,
-  
-      project_invoice_item_id: req.body.project_invoice_item_id,
-      price: req.body.unit_price,
-      notes: req.body.notes,
-      notes: req.body.notes_arb,
-  
-      qty_return: req.body.qty_return,
-    };
-  
-    // Update the invoice_item table to subtract the returned quantity
-    let updateInvoiceItemSql = `
-      UPDATE project_invoice_item 
-      SET qty = qty - ${req.body.qty_return},
-      total_cost = (qty) * ${req.body.price},
-      invoice_qty= ${req.body.qty_return},
-      qty_returned = qty_returned + ${req.body.qty_return}
-      WHERE project_invoice_item_id = ${req.body.project_invoice_item_id}
-    `;
-  
-    // Insert the sales_return_history record
-    let insertSalesReturnHistorySql = "INSERT INTO proj_sales_return_history SET ?";
-  
-    // Run both SQL queries in a transaction
-    db.beginTransaction(function (err) {
-      if (err) {
-        return res.status(400).send({
-          data: err,
-          msg: 'Transaction start failed',
+  // Update the invoice_item table to subtract the returned quantity
+  let updateInvoiceItemSql = `
+    UPDATE project_invoice_item 
+    SET qty = qty - ${req.body.qty_return},
+    total_cost = (qty) * ${req.body.price},
+    project_invoice_qty= ${req.body.qty_return},
+    qty_returned = qty_returned + ${req.body.qty_return}
+    WHERE project_invoice_item_id = ${req.body.project_invoice_item_id}
+  `;
+
+  // Insert the sales_return_history record
+  let insertSalesReturnHistorySql = "INSERT INTO proj_sales_return_history SET ?";
+
+  // Run both SQL queries in a transaction
+  db.beginTransaction(function (err) {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: 'Transaction start failed',
+      });
+    }
+
+    // Update invoice_item
+    db.query(updateInvoiceItemSql, function (error, result) {
+      if (error) {
+        return db.rollback(function () {
+          return res.status(400).send({
+            data: error,
+            msg: 'Failed to update invoice_item',
+          });
         });
       }
-  
-      // Update invoice_item
-      db.query(updateInvoiceItemSql, function (error, result) {
-        if (error) {
+
+      // Insert into sales_return_history
+      db.query(insertSalesReturnHistorySql, data, function (err, result) {
+        if (err) {
           return db.rollback(function () {
             return res.status(400).send({
-              data: error,
-              msg: 'Failed to update invoice_item',
+              data: err,
+              msg: 'Failed to insert into sales_return_history',
             });
           });
         }
-  
-        // Insert into sales_return_history
-        db.query(insertSalesReturnHistorySql, data, function (err, result) {
+
+        db.commit(function (err) {
           if (err) {
             return db.rollback(function () {
               return res.status(400).send({
                 data: err,
-                msg: 'Failed to insert into proj_sales_return_history',
+                msg: 'Transaction commit failed',
               });
             });
           }
-  
-          db.commit(function (err) {
-            if (err) {
-              return db.rollback(function () {
-                return res.status(400).send({
-                  data: err,
-                  msg: 'Transaction commit failed',
-                });
-              });
-            }
-  
-            return res.status(200).send({
-              data: result,
-              msg: 'Success',
-            });
+
+          return res.status(200).send({
+            data: result,
+            msg: 'Success',
           });
         });
       });
     });
   });
+});
+
   app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
     console.log(req.userData);
     res.send('This is the secret content. Only logged in users can see that!');

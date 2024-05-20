@@ -147,8 +147,8 @@ app.post("/insertTimesheetEmployee", (req, res, next) => {
 app.post("/getTimesheetStaffById", (req, res, next) => {
   db.query(
     `SELECT * FROM employee_timesheet et 
-    INNER JOIN employee e ON e.employee_id = et.employee_id 
-    INNER JOIN project p ON p.project_id = et.project_id
+    Left JOIN employee e ON e.employee_id = et.employee_id 
+    Left JOIN project p ON p.project_id = et.project_id
     WHERE et.project_id = ${db.escape(req.body.project_id)}`,
     (err, result) => {
       if (err) {
