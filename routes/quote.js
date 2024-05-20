@@ -165,7 +165,9 @@ app.post('/getPurchaseQuoteById', (req, res, next) => {
     q.rq_code,
     q.rq_code_arb,
     q.creation_date,
-    q.modification_date
+    q.modification_date,
+    q.created_by,
+    q.modified_by
 FROM purchase_quote q 
 LEFT JOIN purchase_quote_items qr ON qr.purchase_quote_id = q.purchase_quote_id
 LEFT JOIN purchase_request p ON p.purchase_request_id=q.purchase_request_id
@@ -269,9 +271,8 @@ app.post('/editPurchseQuote', (req, res, next) => {
               ,supplier_id=${db.escape(req.body.supplier_id)}
               ,payment_method=${db.escape(req.body.payment_method)}
               ,creation_date=${db.escape(req.body.creation_date)}
-              ,modification_date=${db.escape(
-                new Date().toISOString().slice(0, 19).replace('T', ' '),
-              )}
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
               WHERE  purchase_quote_id =${db.escape(req.body.purchase_quote_id)}`,
       (err, result) => {
        
@@ -346,7 +347,8 @@ app.post('/insertQuote', (req, res, next) => {
       , supplier_id: req.body.supplier_id
       ,rq_code: req.body.rq_code
       ,purchase_request_id:req.body.purchase_request_id
-      ,creation_date: new Date().toISOString().slice(0, 19).replace('T', ' ')
+      ,creation_date: req.body.creation_date
+      ,created_by: req.body.created_by
       ,modification_date: req.body.modification_date
     };
     let sql = "INSERT INTO purchase_quote SET ?";

@@ -39,7 +39,9 @@ app.post('/getSubconById', (req, res, next) => {
   ,s.phone
   ,s.phone_arb
   ,s.creation_date
+  ,s.created_by
   ,s.modification_date
+  ,s.modified_by
   ,gc.name AS country_name 
   FROM sub_con s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.sub_con_id=${db.escape(req.body.sub_con_id)}`,
   (err, result) => {
@@ -137,7 +139,8 @@ app.post('/edit-Subcon', (req, res, next) => {
             ,address_state=${db.escape(req.body.address_state)}
             ,address_state_arb=${db.escape(req.body.address_state_arb)}
             ,address_country=${db.escape(req.body.address_country)}
-            ,modification_date=${db.escape(new Date())}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             WHERE sub_con_id =  ${db.escape(req.body.sub_con_id)}`,
             (err, result) => {
               if (err) {
