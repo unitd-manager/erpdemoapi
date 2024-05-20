@@ -401,7 +401,6 @@ app.post('/insertQuote', (req, res, next) => {
                ,purchase_request_id=${db.escape(req.body.purchase_request_id)}
                ,purchase_quote_id=${db.escape(req.body.purchase_quote_id)}
                ,total_cost=${db.escape(req.body.total_cost)}
-               ,product_id=${db.escape(req.body.total_cost)}
               WHERE purchase_quote_items_id = ${db.escape(req.body.purchase_quote_items_id)}`,
       (err, result) => {
        
@@ -474,11 +473,13 @@ app.post('/RequestLineItemById', (req, res, next) => {
     ,pq.purchase_quote_items_id
     ,pq.description
     ,q.rq_code
-    
+    ,s.company_name
+    ,s.supplier_id
     FROM purchase_quote q
     LEFT JOIN (purchase_request r) ON (r.purchase_request_id = q.purchase_request_id) 
     LEFT JOIN (purchase_quote_items pq) ON (pq.purchase_quote_id = q.purchase_quote_id) 
         LEFT JOIN (product p) ON (p.product_id = pq.product_id) 
+        LEFT JOIN (supplier s) ON (s.supplier_id = q.supplier_id) 
     WHERE q.purchase_quote_id=${db.escape(req.body.purchase_quote_id)};`,
   (err, result) => {
     if (err) {
