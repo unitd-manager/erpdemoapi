@@ -173,6 +173,8 @@ app.post('/getLabourRequestById', (req, res, next) => {
             ,lr.department_arb
   ,lr.creation_date
   ,lr.modification_date
+  ,lr.created_by
+  ,lr.modified_by
   ,p.title AS proj_title
   ,p.project_code
   From labour_request lr

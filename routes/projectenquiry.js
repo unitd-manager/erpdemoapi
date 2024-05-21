@@ -51,14 +51,17 @@ app.get('/getProjectEnquiry', (req, res, next) => {
 
 app.post('/getProjectQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
-            qt.title,
-            qt.description,
-            qt.quantity, 
-            qt.unit_price,
-            qt.amount,
-            qt.project_enquiry_id
-            FROM project_quote_items qt 
-            WHERE qt.project_enquiry_id =  ${db.escape(req.body.project_enquiry_id)}`,
+  q.project_quote_id,
+              qt.title,
+              qt.description,
+              qt.quantity, 
+              qt.unit_price,
+              qt.amount,
+              qt.project_enquiry_id
+              FROM project_quote q
+              LEFT JOIN project_enquiry p ON q.project_enquiry_id = p.project_enquiry_id
+              LEFT JOIN project_quote_items qt ON q.project_quote_id=qt.project_quote_id
+              WHERE q.project_enquiry_id =  ${db.escape(req.body.project_enquiry_id)}`,
           (err, result) => {
        
       if (result.length == 0) {
@@ -312,6 +315,8 @@ app.post('/insertProjectEnquiry', (req, res, next) => {
    ,status:"Approved"
    ,creation_date: req.body.creation_date
    ,created_by: req.body.created_by
+   ,title	: req.body.title
+
    };
   let sql = "INSERT INTO project_enquiry SET ?";
   let query = db.query(sql, data,(err, result) => {

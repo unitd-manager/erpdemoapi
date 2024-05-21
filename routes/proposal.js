@@ -328,7 +328,7 @@ app.post("/getMaterialLineItemsById", (req, res, next) => {
 
 app.post("/getEmployeeById", (req, res, next) => {
   db.query(
-    `SELECT * FROM proposal_employee et 
+    `SELECT e.employee_id,e.employee_name AS first_name FROM proposal_employee et 
     INNER JOIN employee e ON e.employee_id = et.employee_id 
     INNER JOIN proposal pr ON pr.proposal_id = et.proposal_id
     WHERE et.proposal_id = ${db.escape(req.body.proposal_id)}`,
@@ -376,7 +376,7 @@ app.post("/getEmployeeId", (req, res, next) => {
 
 app.get("/getEmployeeName", (req, res, next) => {
   db.query(
-    `SELECT employee_id,first_name
+    `SELECT employee_id,employee_name AS first_name
   FROM employee`,
     (err, result) => {
       if (err) {

@@ -407,6 +407,28 @@ app.post("/insertQuoteItems", (req, res, next) => {
     }
   });
 });
+app.post('/getCompanyId', (req, res, next) => {
+  db.query(`SELECT
+  company_id
+  FROM opportunity
+  WHERE opportunity_id=${db.escape(req.body.opportunity_id)}`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get("/secret-route", userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send("This is the secret content. Only logged in users can see that!");

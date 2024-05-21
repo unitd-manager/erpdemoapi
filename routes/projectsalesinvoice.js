@@ -1192,7 +1192,7 @@ app.post('/getInvoiceById', (req, res, next) => {
   i.project_invoice_terms,
   i.company_id,
   o.project_order_id,
-  o.project_order_code,
+  o.order_code,
   g.project_goods_delivery_id,
   g.project_goods_delivery_code,
   SUM(it.total_cost) AS InvoiceAmount
@@ -1304,7 +1304,7 @@ app.get('/getCustomerDropdown', (req, res, next) => {
 app.post('/getSalesOrderDropdown', (req, res, next) => {
   db.query(`SELECT 
   o.project_order_id 
-  ,o.project_order_code
+  ,o.order_code
   ,c.company_name
   ,c.company_name_arb
   FROM project_orders o
@@ -1359,7 +1359,6 @@ app.get('/getProjectInvoices', (req, res, next) => {
   i.project_invoice_source_id,
   i.source_type,
   i.project_invoice_code,
-  co.company_name,
   i.status,
   i.project_invoice_date,
   i.project_invoice_due_date,
@@ -1370,6 +1369,8 @@ app.get('/getProjectInvoices', (req, res, next) => {
   i.modification_date,
   i.project_invoice_terms,
   o.order_id,
+  i.company_id,
+  co.company_name,
   o.order_code AS source_code,
   g.goods_delivery_id,
   g.goods_delivery_code AS source_code,
@@ -1383,12 +1384,12 @@ LEFT JOIN
 LEFT JOIN
   project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
 LEFT JOIN
-  company co ON co.company_id = o.company_id
+  company co ON i.company_id = co.company_id
 WHERE
   i.project_invoice_id != ''
 GROUP BY
   i.project_invoice_id
-  ORDER BY i.project_invoice_id DESC;`,
+  ORDER BY i.project_invoice_id DESC`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -2676,6 +2677,7 @@ app.post('/insertInvoiceItem', (req, res, next) => {
        ,project_invoice_source_id: req.body.project_invoice_source_id
        ,source_type: req.body.source_type
        ,project_order_id: req.body.project_order_id
+       ,qty_returned: 0
        ,project_order_item_id: req.body.project_order_item_id
        ,project_goods_delivery_id: req.body.project_goods_delivery_id
        ,project_goods_delivery_item_id: req.body.project_goods_delivery_item_id

@@ -1654,7 +1654,7 @@ app.post('/insertreceipthistory', (req, res, next) => {
 
   let data = {
               amount: req.body.amount,
-              invoice_id: req.body.project_invoice_id,
+              invoice_id: req.body.invoice_id,
               receipt_id: req.body.receipt_id,
           };
 
@@ -2584,13 +2584,9 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
     invoice_id: req.body.invoice_id,
     order_id: req.body.order_id,
     status: req.body.status,
-    status: req.body.status_arb,
-
     invoice_item_id: req.body.invoice_item_id,
     price: req.body.unit_price,
     notes: req.body.notes,
-    notes: req.body.notes_arb,
-
     qty_return: req.body.qty_return,
   };
 
