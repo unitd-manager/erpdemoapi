@@ -122,8 +122,12 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
 // });
 // })
 app.get('/getPurchaseRequest', (req, res, next) => {
-  db.query(`SELECT * 
-   FROM purchase_request `,
+  db.query(`SELECT pr.purchase_request_id,
+  pr.purchase_request_code
+   FROM purchase_request pr
+   LEFT JOIN purchase_quote pq ON pq.purchase_request_id=pr.purchase_request_id 
+   WHERE pr.purchase_request_id !=''
+  AND pq.purchase_request_id IS NULL`,
   (err, result) => {
        
     if (err) {
@@ -376,6 +380,7 @@ app.post('/insertQuote', (req, res, next) => {
       ,total_cost:req.body.total_cost
       ,product_id:req.body.product_id
       ,unit:req.body.unit
+      ,purchase_request_items_id: req.body.purchase_request_items_id
     };
     let sql = "INSERT INTO purchase_quote_items SET ?";
     let query = db.query(sql, data,(err, result) => {
@@ -581,7 +586,7 @@ app.post("/getCodeValue", (req, res, next) => {
 });
 app.get('/checkQuoteItems', (req, res, next) => {
   db.query(
-    `SELECT purchase_request_id FROM purchase_quote_items`,
+    `SELECT purchase_request_items_id FROM purchase_quote_items`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -589,7 +594,7 @@ app.get('/checkQuoteItems', (req, res, next) => {
           msg: 'Failed'
         });
       } else {
-        const quoteItemsIds = result.map((row) => row.purchase_request_id);
+        const quoteItemsIds = result.map((row) => row.purchase_request_items_id);
         return res.status(200).send({
           data: quoteItemsIds,
           msg: 'Success'

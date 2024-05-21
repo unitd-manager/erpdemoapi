@@ -564,3 +564,5 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 ALTER TABLE `project_goods_delivery_item` CHANGE `goods_delivery_item_id` `project_goods_delivery_item_id` INT(11) NOT NULL AUTO_INCREMENT; 
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdTradingSalesInvoice.Status', 'Invoice Status', 'حالة الفاتورة', 'GoodsDelivery Invoice Status', NULL, NULL, NULL, NULL, NULL, '0'); 
+ALTER TABLE `purchase_quote` ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`; 
+ALTER TABLE `purchase_quote_items` ADD `purchase_request_items_id` INT(11) NULL DEFAULT NULL AFTER `purchase_request_id`; 
