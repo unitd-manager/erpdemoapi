@@ -109,7 +109,7 @@ app.get("/getTraining", (req, res, next) => {
 
 app.get("/getEmployeeName", (req, res, next) => {
   db.query(
-    `SELECT employee_id,first_name,employee_name
+    `SELECT employee_id,employee_name AS first_name
   FROM employee`,
     (err, result) => {
       if (err) {
