@@ -415,6 +415,7 @@ app.post('/TabPurchaseOrderLineItemById', (req, res, next) => {
   ,(po.qty_arb-po.qty_delivered_arb) AS qty_balance_arb
   ,po.gst
   ,po.qty
+  ,po.quantity
   ,(po.cost_price*po.qty_delivered) AS actual_value 
   ,(po.cost_price_arb*po.qty_delivered_arb) AS actual_value_arb
   ,po.price
@@ -1408,6 +1409,114 @@ app.get('/getPurchaseGstReport', (req, res, next) => {
   );
   });
 
+  app.delete('/deleteorder_item/:PurchaseQuoteId', (req, res) => {
+    const PurchaseQuoteId = req.params.PurchaseQuoteId;
+  
+    // Construct and execute the SQL query to delete old order items by quote_id
+    const sql = "DELETE FROM po_product WHERE purchase_quote_id = ?";
+    db.query(sql, [PurchaseQuoteId], (err, result) => {
+      if (err) {
+        console.error('Error deleting order items:', err);
+        return res.status(500).json({
+          error: 'Failed to delete order items',
+        });
+      }
+  
+      console.log(`Deleted old order items with quote_id ${PurchaseQuoteId}`);
+      return res.status(200).json({
+        message: 'Order items deleted successfully',
+      });
+    });
+  });
+
+
+  app.post('/getQuoteLineItemsById', (req, res, next) => {
+    db.query(`SELECT
+              pqt.* 
+              FROM purchase_quote_items pqt 
+               WHERE pqt.purchase_quote_id =  ${db.escape(req.body.purchase_quote_id)}`,
+      (err, result) => {
+        if (err) {
+          return res.status(400).send({
+            msg: 'No result found'
+          });
+        }else {
+              return res.status(200).send({
+                data: result,
+                msg:'Success'
+              });
+          }
+   
+      }
+    );
+  });
+
+  app.post('/insertPurchaseQuote_item', (req, res, next) => {
+
+    let data = {
+                purchase_order_id: req.body.purchase_order_id,
+                item_title: req.body.item_title,
+                quantity: req.body.quantity,
+                unit: req.body.unit,
+                amount: req.body.amount,
+                description: req.body.description,
+                creation_date: req.body.creation_date,
+                modification_date: req.body.modification_date,
+                created_by: req.body.created_by,
+                modified_by: req.body.modified_by,
+                status: req.body.status,
+                cost_price: req.body.cost_price,
+                selling_price: req.body.selling_price,
+                qty_updated: req.body.qty_updated,
+                qty: req.body.qty,
+                product_id: req.body.product_id,
+                supplier_id: req.body.supplier_id,
+                gst: req.body.gst,
+                damage_qty: req.body.damage_qty,
+                brand: req.body.brand,
+                qty_requested: req.body.qty_requested,
+                qty_delivered: req.body.qty_delivered,
+                price: req.body.price,
+                purchase_quote_id: req.body.purchase_quote_id,
+                purchase_quote_items_id: req.body.purchase_quote_items_id
+              };
+  
+    let sql = "INSERT INTO po_product SET ?";
+    let query = db.query(sql, data,(err, result) => {
+      if (err) {
+        return res.status(400).send({
+                data: err,
+                msg:'failed'
+              });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+    });
+  });
+
+  app.get('/checkQuoteItems', (req, res, next) => {
+    db.query(
+      `SELECT purchase_quote_id FROM po_product WHERE purchase_quote_id !=''`,
+      (err, result) => {
+        if (err) {
+          return res.status(400).send({
+            data: err,
+            msg: 'Failed'
+          });
+        } else {
+          const quoteItemsIds = result.map((row) => row.purchase_quote_id);
+          return res.status(200).send({
+            data: quoteItemsIds,
+            msg: 'Success'
+          });
+        }
+      }
+    );
+  });
+  
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
