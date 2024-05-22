@@ -79,6 +79,9 @@ app.get('/getFinances', (req, res, next) => {
   ,o.shipping_address_country
   ,o.shipping_address_po_code 
   ,q.quote_code 
+  ,(SELECT (SUM(oi.unit_price * oi.qty))
+  FROM order_item oi
+  WHERE oi.order_id = o.order_id) AS order_amount
   FROM orders o 
   LEFT JOIN quote q ON o.quote_id = q.quote_id 
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
@@ -742,7 +745,7 @@ app.post('/getInvoiceById', (req, res, next) => {
   LEFT JOIN orders o ON (o.order_id = i.order_id) 
    LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
   LEFT JOIN company co ON (co.company_id = o.company_id) 
-  WHERE i.order_id = ${db.escape(req.body.order_id)} 
+  WHERE i.invoice_source_id = ${db.escape(req.body.order_id)} 
   Group by i.invoice_id`,
     (err, result) => {
 
@@ -778,10 +781,11 @@ app.post('/getReceiptByIds', (req, res, next) => {
   ,r.created_by
   ,r.modification_date
   ,r.modified_by 
+  ,i.invoice_code
   FROM receipt r  
   LEFT JOIN invoice_receipt_history ih ON (ih.receipt_id = r.receipt_id) 
    LEFT JOIN invoice i ON (i.invoice_id = ih.invoice_id) 
- LEFT JOIN orders o ON (o.order_id = i.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
+ LEFT JOIN orders o ON (o.order_id = i.invoice_source_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
     (err, result) => {
 
       if (err) {
