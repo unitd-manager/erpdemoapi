@@ -64,7 +64,8 @@ app.get('/getProjectTask', (req, res, next) => {
   LEFT JOIN project p ON p.project_id = pt.project_id
   LEFT JOIN employee e ON e.employee_id = pt.employee_id
   LEFT JOIN project_job jo ON p.project_id = jo.project_id
-  Where pt.project_task_id !=''`,
+  Where pt.project_task_id !=''
+  group by pt.project_task_id`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -217,9 +218,9 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,pt.modification_date
     ,pt.created_by
     ,pt.modified_by
-    ,e.first_name
     ,e.first_name_arb
     ,e.employee_id
+    ,e.employee_name AS first_name
     FROM project_timesheet pt
     LEFT JOIN project_task pa ON pt.project_task_id = pa.project_task_id
     LEFT JOIN project p ON p.project_id = pt.project_id
@@ -658,7 +659,7 @@ app.post('/insertProjectTimesheet', (req, res, next) => {
 app.get('/getEmployeeName', (req, res, next) => {
     db.query(`SELECT 
     e.employee_id
-   ,e.first_name
+   ,e.employee_name AS first_name
    ,e.nric_no
    ,e.fin_no
    ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count

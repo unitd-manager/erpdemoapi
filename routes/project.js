@@ -122,7 +122,10 @@ app.get('/getProjectInErp', (req, res, next) => {
 
 app.post("/getTimesheetStaffById", (req, res, next) => {
   db.query(
-    `SELECT * FROM employee_timesheet et 
+    `SELECT et.* ,
+    e.employee_id,
+    e.employee_name AS first_name
+    FROM employee_timesheet et 
     INNER JOIN employee e ON e.employee_id = et.employee_id 
     INNER JOIN project p ON p.project_id = et.project_id
     WHERE et.project_id = ${db.escape(req.body.project_id)}`,
