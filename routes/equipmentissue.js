@@ -106,7 +106,7 @@ app.post('/getEquipmentIssuesById', (req, res, next) => {
   From equipment_issue lr
   LEFT JOIN (project p)   ON (p.project_id   = lr.project_id) 
   LEFT JOIN (equipment_request mr)   ON (mr.equipment_request_id   = lr.equipment_request_id) 
-  LEFT JOIN (equipment_request_item mri)   ON (mr.equipment_request_id   = mri.equipment_request_item_id) 
+  LEFT JOIN (equipment_request_item mri)   ON (mr.equipment_request_id   = mri.equipment_request_id) 
   LEFT JOIN (product pd)   ON (pd.product_id   = mri.product_id) 
             LEFT JOIN (supplier sr)   ON (sr.supplier_id   = mri.supplier_id) 
             where lr.equipment_issue_id = ${db.escape(req.body.equipment_issue_id)}`,
