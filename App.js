@@ -35,6 +35,7 @@ app.use(
 );
 
 const project = require('./routes/project.js');
+const projectreceipts = require('./routes/projectreceipts.js');
 const Arouter = require('./routes/attachment.js');
 const Auth = require('./routes/auth.js');
 const tender = require('./routes/tender.js');
@@ -124,7 +125,9 @@ const milestone = require("./routes/milestone.js");
 const creditnote = require('./routes/creditnote.js');
 const debitnote = require('./routes/debitnote.js');
 const stats = require("./routes/stats.js");
+const projectgoodsdelivery = require('./routes/projectgoodsdelivery.js');
 
+app.use('/projectgoodsdelivery', projectgoodsdelivery);
 app.use('/debitnote', debitnote);
 app.use('/creditnote', creditnote);
 app.use('/supplierpricelistitem', supplierpricelistitem);
@@ -135,7 +138,7 @@ app.use('/bank', bank);
 app.use('/jobinformation', jobinformation);
 app.use('/finance', finance);
 app.use('/training', training);
-//app.use('/projectsalesorder', projectsalesorder);
+app.use('/projectsalesorder', projectsalesorder);
 app.use('/geocountry', geocountry);
 app.use('/support', support);
 app.use('/setting', setting);
@@ -150,6 +153,7 @@ app.use('/payrollmanagement', payrollmanagement);
 //app.use('/employeeModule',employeeModule);
 app.use('/product', product);
 app.use('/project', project);
+app.use('/projectreceipts', projectreceipts);
 app.use('/attachment', Arouter);
 app.use('/api', Auth);
 app.use('/tender', tender);

@@ -471,7 +471,7 @@ app.post('/getTabQuotelogById', (req, res, next) => {
 });
 
 app.get('/projectIncharge', (req, res, next) => {
-  db.query(`select first_name,first_name_arb, employee_id from employee`,
+  db.query(`select employee_name AS first_name,first_name_arb, employee_id from employee`,
     (err, result) => {
      
       if (result.length == 0) {

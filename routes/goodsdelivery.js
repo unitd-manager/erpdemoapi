@@ -21,7 +21,7 @@ app.use(
 
 app.post("/getgoodsdeliveryById", (req, res, next) => {
   db.query(
-    ` SELECT 
+    `SELECT 
     gd.goods_delivery_id
     ,gd.delivery_no
     ,gd.goods_delivery_date
@@ -67,21 +67,25 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
        LEFT JOIN (company c) ON (c.company_id=opt.company_id)    
        LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id)   
        LEFT JOIN (goods_delivery_item gi) ON (gi.goods_delivery_id = gd.goods_delivery_id)  
-       WHERE gd.goods_delivery_id = ${db.escape(req.body.goods_delivery_id)}`,
-    (err, result) => {
-      if (result.length == 0) {
-        return res.status(400).send({
-          msg: "No result found",
-        });
-      } else {
-        return res.status(200).send({
-          data: result,
-          msg: "Success",
-        });
-      }
+       WHERE gd.goods_delivery_id = ${db.escape(req.body.goods_delivery_id)}
+       GROUP BY gd.goods_delivery_id`,
+       (err, result) => {
+        if (err) {
+          console.log('error: ', err)
+          return res.status(400).send({
+            data: err,
+            msg: 'failed',
+          })
+        } else {
+          return res.status(200).send({
+            data: result,
+            msg: 'Success',
+    })
     }
-  );
-});
+      }
+    );
+    });
+    
 app.get('/getTranslationforTradingGoods', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdTradingGoods%'`,
   (err, result) => {
@@ -220,7 +224,6 @@ app.post("/getOrdersById", (req, res, next) => {
     ` SELECT o.order_id
     ,oi.order_item_id
     ,oi.description
-    ,oi.description_arb
     ,oi.item_title
     ,oi.item_title_arb
     ,oi.qty
@@ -356,7 +359,8 @@ app.post("/edit-goodsdeliveryitem", (req, res, next) => {
               SET 
                goods_delivery_id=${db.escape(req.body.goods_delivery_id)}
               ,quantity =${db.escape(req.body.quantity)}
-              ,delivery_qty=${db.escape(req.body.delivery_qty)}  
+              ,delivery_qty=${db.escape(req.body.delivery_qty)} 
+              ,amount=${db.escape(req.body.amount)} 
               WHERE goods_delivery_item_id =  ${db.escape(req.body.goods_delivery_item_id)}`,
     (err, result) => {
       if (err) {
@@ -375,7 +379,6 @@ app.post("/edit-goodsdeliveryitem", (req, res, next) => {
 app.post("/insertgoodsdeliveryitem", (req, res, next) => {
   let data = {
     title: req.body.title,
-    title: req.body.title_arb,
     unit: req.body.unit,
     unit_price: req.body.unit_price,
     amount: req.body.amount,

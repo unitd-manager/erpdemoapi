@@ -48,6 +48,38 @@ app.get('/getProjectEnquiry', (req, res, next) => {
     }
   );
 });
+
+app.post('/getProjectQuoteLineItemsById', (req, res, next) => {
+  db.query(`SELECT
+  q.project_quote_id,
+              qt.title,
+              qt.description,
+              qt.quantity, 
+              qt.unit_price,
+              qt.amount,
+              qt.project_enquiry_id
+              FROM project_quote q
+              LEFT JOIN project_enquiry p ON q.project_enquiry_id = p.project_enquiry_id
+              LEFT JOIN project_quote_items qt ON q.project_quote_id=qt.project_quote_id
+              WHERE q.project_enquiry_id =  ${db.escape(req.body.project_enquiry_id)}`,
+          (err, result) => {
+       
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
+
 app.post('/getTendersById', (req, res, next) => {
   db.query(`SELECT 
   o.*
@@ -228,6 +260,7 @@ app.post('/edit-Tenders', (req, res, next) => {
   db.query(`UPDATE project_enquiry 
   SET office_ref_no=${db.escape(req.body.office_ref_no)}
   ,office_ref_no_arb=${db.escape(req.body.office_ref_no_arb)}
+  ,title=${db.escape(req.body.title)}
   ,company_id=${db.escape(req.body.company_id)}  
   ,services=${db.escape(req.body.services)}
   ,services_arb=${db.escape(req.body.services_arb)}
@@ -282,6 +315,8 @@ app.post('/insertProjectEnquiry', (req, res, next) => {
    ,status:"Approved"
    ,creation_date: req.body.creation_date
    ,created_by: req.body.created_by
+   ,title	: req.body.title
+
    };
   let sql = "INSERT INTO project_enquiry SET ?";
   let query = db.query(sql, data,(err, result) => {

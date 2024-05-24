@@ -59,11 +59,13 @@ app.get('/getProjectTask', (req, res, next) => {
   ,e.first_name
   ,e.first_name_arb
   ,e.employee_id
+  ,jo.job_title
   FROM project_task pt
   LEFT JOIN project p ON p.project_id = pt.project_id
   LEFT JOIN employee e ON e.employee_id = pt.employee_id
   LEFT JOIN project_job jo ON p.project_id = jo.project_id
-  Where pt.project_task_id !=''`,
+  Where pt.project_task_id !=''
+  group by pt.project_task_id`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -175,12 +177,13 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,e.first_name
     ,e.first_name_arb
     ,e.employee_id
-
-
+    ,jo.project_job_id
+    ,jo.job_title
+    ,jo.job_code
     FROM project_task pt
     LEFT JOIN project p ON p.project_id = pt.project_id
     LEFT JOIN employee e ON e.employee_id = pt.employee_id
-    LEFT JOIN project_job jo ON p.project_id = jo.project_id
+    LEFT JOIN project_job jo ON pt.project_job_id = jo.project_job_id
     Where pt.project_task_id = ${db.escape(req.body.project_task_id)}`,
     (err, result) => {
       if (err) {
@@ -203,7 +206,7 @@ app.post('/getProjectTaskById', (req, res, next) => {
     db.query(`SELECT
     pt.project_timesheet_id 
     ,pt.timesheet_title
-    ,pt.date
+    ,pt.from_date
     ,pt.project_id
     ,pt.employee_id
     ,pt.status
@@ -215,9 +218,9 @@ app.post('/getProjectTaskById', (req, res, next) => {
     ,pt.modification_date
     ,pt.created_by
     ,pt.modified_by
-    ,e.first_name
     ,e.first_name_arb
     ,e.employee_id
+    ,e.employee_name AS first_name
     FROM project_timesheet pt
     LEFT JOIN project_task pa ON pt.project_task_id = pa.project_task_id
     LEFT JOIN project p ON p.project_id = pt.project_id
@@ -265,7 +268,7 @@ app.post('/getProjectTaskById', (req, res, next) => {
     db.query(`SELECT
     pt.project_timesheet_id 
     ,pt.timesheet_title
-    ,pt.date
+    ,pt.from_date
     ,pt.project_id
     ,pt.employee_id
     ,pt.status
@@ -552,7 +555,7 @@ app.get("/getProjectTitle", (req, res, next) => {
           app.post('/editProjectTimesheet', (req, res, next) => {
             db.query(`UPDATE project_timesheet
                       SET timesheet_title=${db.escape(req.body.timesheet_title)}
-                      ,date=${db.escape(req.body.date)}
+                      ,from_date=${db.escape(req.body.from_date)}
                       ,project_id=${db.escape(req.body.project_id)}
                       ,employee_id=${db.escape(req.body.employee_id)}
                       ,status=${db.escape(req.body.status)}
@@ -622,7 +625,7 @@ app.post('/insertProjectTimesheet', (req, res, next) => {
   let data = {
     project_timesheet_id 	: req.body.project_timesheet_id 
     , timesheet_title	: req.body.timesheet_title
-    , date: req.body.date
+    , from_date: req.body.from_date
     , project_id: req.body.project_id
     , employee_id	: req.body.employee_id
     , status: req.body.status
@@ -656,7 +659,7 @@ app.post('/insertProjectTimesheet', (req, res, next) => {
 app.get('/getEmployeeName', (req, res, next) => {
     db.query(`SELECT 
     e.employee_id
-   ,e.first_name
+   ,e.employee_name AS first_name
    ,e.nric_no
    ,e.fin_no
    ,(SELECT COUNT(*) FROM job_information ji WHERE ji.employee_id=e.employee_id AND ji.status='current') AS e_count

@@ -21,6 +21,7 @@ app.get('/getSupplier', (req, res, next) => {
   db.query(`SELECT s.company_name
   ,s.supplier_id
   ,s.email
+  ,s.website
   ,s.fax
   ,s.supplier_id
   ,s.mobile
@@ -67,6 +68,7 @@ app.post('/get-SupplierById', (req, res, next) => {
   db.query(`SELECT s.company_name
   ,s.supplier_id
   ,s.email
+  ,s.website
   ,s.fax
   ,s.mobile
   ,s.status
@@ -152,6 +154,7 @@ app.post('/edit-Supplier', (req, res, next) => {
   db.query(`UPDATE supplier 
             SET company_name=${db.escape(req.body.company_name)}
             ,email=${db.escape(req.body.email)}
+            ,website=${db.escape(req.body.website)}
             ,fax=${db.escape(req.body.fax)}
             ,mobile=${db.escape(req.body.mobile)}
             ,status=${db.escape(req.body.status)}

@@ -114,6 +114,8 @@ app.post('/getEquipmentRequestById', (req, res, next) => {
             ,lr.delivery_terms_arb
             ,lr.request_by
             ,lr.request_by_arb
+            ,lr.created_by
+            ,lr.modified_by
   ,lr.creation_date
   ,lr.modification_date
   ,p.title AS proj_title

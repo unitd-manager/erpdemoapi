@@ -28,7 +28,7 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
       ,gd.project_order_id
       ,gd.project_goods_delivery_code
     ,o.order_code
-    ,gd.goods_ref_no
+    ,gd.project_goods_ref_no
     ,c.company_id
     ,c.company_name
     ,c.company_name_arb
@@ -97,6 +97,26 @@ app.get('/getTranslationforTradingGoods', (req, res, next) => {
   }
 );
 });
+
+app.post('/deleteGoodsDeliveryItems', (req, res, next) => {
+
+  let data = {project_goods_delivery_id: req.body.project_goods_delivery_id};
+  let sql = "DELETE FROM project_goods_delivery_item WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+     return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
+
 app.get('/checkDeliveryItems', (req, res, next) => {
   db.query(
     `SELECT project_order_item_id FROM project_goods_delivery_item`,
@@ -119,7 +139,7 @@ app.get('/checkDeliveryItems', (req, res, next) => {
 
 app.get("/getOrderCode", (req, res, next) => {
   db.query(`SELECT 
-  o.project_order_code,
+  o.order_code,
   o.project_order_id ,
   c.company_name,
   c.company_id
@@ -188,28 +208,6 @@ app.get("/getgoodsdelivery", (req, res, next) => {
   );
 });
 
-
-app.get("/getOrderCode", (req, res, next) => {
-  db.query(`  SELECT 
-  o.order_code,
-  o.order_id 
-  from orders o   
-  LEFT JOIN (goods_delivery gd) ON o.order_id = gd.order_id
-  WHERE
-  o.order_id != '' 
-  AND gd.order_id IS NULL`, (err, result) => {
-    if (result.length == 0) {
-      return res.status(400).send({
-        msg: "No result found",
-      });
-    } else {
-      return res.status(200).send({
-        data: result,
-        msg: "Success",
-      });
-    }
-  });
-});
 
 app.post("/getgoodsdeliveryitemById", (req, res, next) => {
   db.query(
@@ -336,7 +334,7 @@ app.post("/edit-goodsdelivery", (req, res, next) => {
                delivery_no=${db.escape(req.body.delivery_no)}
               ,project_goods_delivery_date=${db.escape(req.body.project_goods_delivery_date)}
               ,project_order_id=${db.escape(req.body.project_order_id)}
-              ,goods_ref_no=${db.escape(req.body.goods_ref_no)}
+              ,project_goods_ref_no=${db.escape(req.body.project_goods_ref_no)}
               ,company_id=${db.escape(req.body.company_id)}
               ,contact_id=${db.escape(req.body.contact_id)}
               ,project_goods_delivery_status=${db.escape(req.body.project_goods_delivery_status)}
@@ -420,7 +418,6 @@ app.post("/insertgoodsdeliveryitem", (req, res, next) => {
     amount: req.body.amount,
     quantity: req.body.quantity,
     description: req.body.description,
-    description: req.body.description_arb,
     project_goods_delivery_id: req.body.project_goods_delivery_id,
     project_order_id: req.body.project_order_id,
     project_order_item_id: req.body.project_order_item_id,

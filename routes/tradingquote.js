@@ -158,8 +158,7 @@ app.get("/getEnquiryCode", (req, res, next) => {
   LEFT JOIN (company c) on o.company_id = c.company_id
   LEFT JOIN (quote q) ON o.opportunity_id = q.opportunity_id
   WHERE
-  o.opportunity_id != '' 
-  `,
+  q.opportunity_id IS NULL`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -283,7 +282,7 @@ app.post("/inserttradingquote", (req, res, next) => {
     intro_drawing_quote: req.body.intro_drawing_quote,
     show_project_manager: req.body.show_project_manager,
     creation_date: req.body.creation_date,
-    modification_date: null,
+    modification_date: req.body.modification_date,
     created_by: req.body.created_by,
   };
   let sql = "INSERT INTO quote SET ?";
@@ -408,6 +407,28 @@ app.post("/insertQuoteItems", (req, res, next) => {
     }
   });
 });
+app.post('/getCompanyId', (req, res, next) => {
+  db.query(`SELECT
+  company_id
+  FROM opportunity
+  WHERE opportunity_id=${db.escape(req.body.opportunity_id)}`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
 app.get("/secret-route", userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send("This is the secret content. Only logged in users can see that!");

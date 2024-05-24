@@ -252,3 +252,14 @@ ALTER TABLE `po_product` ADD `quantity_arb` VARCHAR(55) NULL DEFAULT NULL AFTER 
 ALTER TABLE `product` ADD `product_code_arb` VARCHAR(55) NULL DEFAULT NULL AFTER `product_code`; 
 ALTER TABLE `job_information` ADD `termination_reason_arb` VARCHAR(255) NULL DEFAULT NULL AFTER `hourly_pay`; 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPurchaseOrder.Unit', 'Unit', 'وحدة', '', '', '', NULL, '', '0', NULL); 
+
+********************************(08/05/2024 Project Invoice)**********************************
+ALTER TABLE `project_invoice` CHANGE `order_id` `project_order_id` INT(11) NULL DEFAULT NULL; 
+ALTER TABLE `invoice_receipt_history` CHANGE `invoice_id` `project_invoice_id` INT(11) NULL DEFAULT NULL; 
+ALTER TABLE `invoice_receipt_history` CHANGE `receipt_id` `project_receipt_id` INT(11) NULL DEFAULT NULL; 
+
+********************************(11/05/2024 Project Task)**********************************
+ALTER TABLE `project_timesheet` CHANGE `date` `from_date` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL; 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdProject.Project Code', 'Project Code', 'رمز المشروع', 'Arabic company Name in project module', '2023-08-10T16:32:47.036Z', '2024-03-17T15:09:50.890Z', NULL, 'Text', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdProject.Proposal Code', 'Proposal Code', 'رمز الاقتراح', 'Arabic company Name in Project module', '2023-08-10T16:32:47.036Z', '2024-03-17T15:09:50.890Z', NULL, 'Text', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobOrder.Titles', 'Titles', 'أمر العمل', 'Arabic company Name in job order module', '2023-08-10T16:32:47.036Z', '2024-03-17T15:09:50.890Z', NULL, 'Text', '0', NULL); 

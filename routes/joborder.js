@@ -249,6 +249,7 @@ app.post('/getJobOrderById', (req, res, next) => {
       , intro_drawing_job: req.body.intro_drawing_job
       , show_project_manager: req.body.show_project_manager
       , creation_date: req.body.creation_date
+      , company_id: req.body.company_id
       , modification_date: null
       , created_by: req.body.created_by
     };

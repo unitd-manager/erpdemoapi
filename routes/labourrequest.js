@@ -173,6 +173,8 @@ app.post('/getLabourRequestById', (req, res, next) => {
             ,lr.department_arb
   ,lr.creation_date
   ,lr.modification_date
+  ,lr.created_by
+  ,lr.modified_by
   ,p.title AS proj_title
   ,p.project_code
   From labour_request lr
@@ -589,7 +591,8 @@ app.get('/getProjecttitle', (req, res, next) => {
   ,p.company_id
   ,p.project_code
   ,CONCAT_WS('/', p.title, p.project_code,c.company_name)  AS project_title
- 
+ ,c.company_id
+ ,c.company_name
   FROM project p
   LEFT JOIN (company c) ON p.company_id=c.company_id `,
     (err, result) => {
