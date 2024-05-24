@@ -1329,17 +1329,14 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
 
 app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   db.query(`SELECT 
-  g.project_goods_delivery_id ,
-  g.project_goods_delivery_code,
-  g.project_goods_delivery_code_arb,
-  c.company_name,
-  c.company_name_arb
-  FROM project_goods_delivery g
-  LEFT JOIN (project_invoice i) ON i.project_invoice_source_id = g.project_goods_delivery_id
-  LEFT JOIN (company c) on g.company_id = c.company_id
-  WHERE
-  g.project_goods_delivery_id != '' 
-  AND i.project_invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
+  o.project_order_id 
+  ,o.order_code
+  ,c.company_name
+  ,c.company_name_arb
+  FROM project_orders o
+  LEFT JOIN (project_invoice i) ON i.project_invoice_source_id = o.project_order_id 
+  LEFT JOIN (company c) on o.company_id = c.company_id
+  WHERE o.project_order_id != '' AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({
