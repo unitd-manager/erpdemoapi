@@ -333,3 +333,13 @@ CREATE TABLE `proj_sales_return_history` (
   `qty_returned` varchar(255) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobInformation.S Pass No', 'S Pass No', 'رقم المرور S', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobInformation.Length of Probation', 'Length of Probation', 'طول فترة الاختبار', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobInformation.Probation Start Date', 'Probation Start Date', 'تاريخ بدء الاختبار', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobInformation.Probation End Date', 'Probation End Date', 'تاريخ انتهاء الاختبار', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobInformation.Over Time Rate', 'Over Time Rate', 'معدل مرور الوقت', NULL, NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdPayrollManagement.Plase create Job information records for the below employees to make them appear in payroll', 'Plase create Job information records for the below employees to make them appear in payroll', 'يرجى إنشاء سجلات معلومات الوظيفة للموظفين أدناه لجعلهم يظهرون في كشوف المرتبات', NULL, NULL, NULL, NULL, NULL, NULL, '0');

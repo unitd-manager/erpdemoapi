@@ -207,8 +207,8 @@ app.post("/getCodeValue", (req, res, next) => {
             newvalue = parseInt(codeObject[0]?.value) + 1
         }else{
          
-            finalText = result[0].value
-            newvalue = parseInt(result[0].value) + 1
+            finalText = result[0]?.value
+            newvalue = parseInt(result[0]?.value) + 1
         }
         
         newvalue = newvalue.toString()
