@@ -1424,7 +1424,7 @@ WHERE
     }
   });
 });
-app.get('/getInvoices', (req, res, next) => {
+app.get('/getInvoicesold', (req, res, next) => {
   db.query(`SELECT
   i.invoice_id,
   i.invoice_source_id,
@@ -1457,6 +1457,61 @@ LEFT JOIN
   company co ON co.company_id = o.company_id
 WHERE
   i.invoice_id != ''
+GROUP BY
+  i.invoice_id
+  ORDER BY i.invoice_id DESC;`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'Failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
+app.get('/getInvoices', (req, res, next) => {
+  db.query(`SELECT
+  i.invoice_id,
+  i.invoice_source_id,
+  i.source_type,
+  i.invoice_code,
+  i.invoice_due_date,
+  co.company_name,
+  i.status,
+  i.invoice_date,
+  i.invoice_amount,
+  i.invoice_due_date,
+  i.created_by,
+  i.creation_date,
+  i.modified_by,
+  i.modification_date,
+  i.invoice_terms,
+  i.company_id,
+  o.order_id,
+  o.order_code,
+  g.goods_delivery_id,
+  g.goods_delivery_code,
+  SUM(it.total_cost) AS InvoiceAmount
+FROM
+  invoice i
+LEFT JOIN
+  orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
+LEFT JOIN
+  goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
+LEFT JOIN
+  invoice_item it ON it.invoice_id = i.invoice_id
+LEFT JOIN
+  company co ON co.company_id = i.company_id
+WHERE i.invoice_id !=''
 GROUP BY
   i.invoice_id
   ORDER BY i.invoice_id DESC;`,

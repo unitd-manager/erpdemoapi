@@ -606,7 +606,7 @@ app.get('/checkQuoteItems', (req, res, next) => {
 
 app.post('/SupplierQuote', (req, res, next) => {
   db.query(
-    `SELECT supplier_id,rq_code FROM purchase_quote
+    `SELECT supplier_id,rq_code, purchase_quote_id FROM purchase_quote
     WHERE supplier_id=${db.escape(req.body.supplier_id)}`,
     (err, result) => {
       if (err) {
