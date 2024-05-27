@@ -29,7 +29,7 @@ app.get("/getLoanOld", (req, res, next) => {
   ,l.notes
   ,l.loan_start_date
   ,l.date
-  ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+  ,e.employee_name
   FROM loan l
   LEFT JOIN (employee e) ON (e.employee_id = l.employee_id)
   WHERE l.loan_id !=''`,
@@ -77,7 +77,7 @@ app.get("/getLoan", (req, res, next) => {
   ,l.notes
   ,l.loan_start_date
   ,l.date
-  ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+  ,e.employee_name
   ,(SELECT SUM(loan_repayment_amount_per_month) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS total_repaid_amount
   ,(SELECT (amount- SUM(loan_repayment_amount_per_month)) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS amount_payable
   FROM loan l
@@ -107,7 +107,11 @@ app.post("/getLoanById", (req, res, next) => {
   ,l.notes
   ,l.loan_start_date
   ,l.date
-  ,CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name
+  ,l.creation_date
+  ,l.modification_date
+  ,l.created_by
+  ,l.modified_by
+  ,e.employee_name
   ,sum(loan_repayment_amount_per_month) AS total_repaid_amount
   ,(SELECT (amount- SUM(loan_repayment_amount_per_month)) FROM loan_repayment_history WHERE loan_id=l.loan_id) AS amount_payable
   FROM loan l
@@ -130,7 +134,7 @@ app.post("/getLoanById", (req, res, next) => {
 
 app.get("/TabEmployee", (req, res, next) => {
   db.query(
-    `SELECT CONCAT_WS(' ', e.first_name, e.last_name) AS employee_name,employee_id FROM employee e;`,
+    `SELECT employee_name,employee_id FROM employee `,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -174,6 +178,8 @@ app.post("/edit-Loan", (req, res, next) => {
             ,status=${db.escape(req.body.status)}
             ,notes=${db.escape(req.body.notes)}
             ,date=${db.escape(req.body.date)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,type=${db.escape(req.body.type)}
             ,employee_id=${db.escape(req.body.employee_id)}
             WHERE loan_id = ${db.escape(req.body.loan_id)}`,
