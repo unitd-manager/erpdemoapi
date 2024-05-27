@@ -161,10 +161,13 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.modification_date
     ,q.created_by
     ,q.modified_by
+    ,(select sum(it.amount)) as InvoiceAmount
     FROM project_job q  
+    LEFT JOIN (project_job_items it) ON (it.project_job_id = q.project_job_id)
     LEFT JOIN (company c) ON (c.company_id = q.company_id)
     LEFT JOIN (sub_con s) ON q.sub_con_id = s.sub_con_id
-    WHERE q.project_job_id != '' 
+    WHERE q.project_job_id != ''
+    GROUP BY q.project_job_id
     `,
       (err, result) => {
        
