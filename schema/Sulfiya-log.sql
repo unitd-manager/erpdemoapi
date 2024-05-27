@@ -262,4 +262,10 @@ ALTER TABLE `invoice_receipt_history` CHANGE `receipt_id` `project_receipt_id` I
 ALTER TABLE `project_timesheet` CHANGE `date` `from_date` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL; 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdProject.Project Code', 'Project Code', 'رمز المشروع', 'Arabic company Name in project module', '2023-08-10T16:32:47.036Z', '2024-03-17T15:09:50.890Z', NULL, 'Text', '0', NULL); 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdProject.Proposal Code', 'Proposal Code', 'رمز الاقتراح', 'Arabic company Name in Project module', '2023-08-10T16:32:47.036Z', '2024-03-17T15:09:50.890Z', NULL, 'Text', '0', NULL); 
-INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobOrder.Titles', 'Titles', 'أمر العمل', 'Arabic company Name in job order module', '2023-08-10T16:32:47.036Z', '2024-03-17T15:09:50.890Z', NULL, 'Text', '0', NULL); 
+INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdJobOrder.Titles', 'Titles', 'أمر العمل', 'Arabic company Name in job order module', '2023-08-10T16:32:47.036Z', '2024-03-17T15:09:50.890Z', NULL, 'Text', '0', NULL);
+
+
+
+ALTER TABLE `employee` CHANGE `creation_date` `creation_date` VARCHAR(55) NULL DEFAULT NULL; 
+ALTER TABLE `employee` CHANGE `modification_date` `modification_date` VARCHAR(55) NULL DEFAULT NULL;  
+ALTER TABLE `employee` ADD `login_email` VARCHAR(200) NULL DEFAULT NULL AFTER `team_leader_arb`; 
