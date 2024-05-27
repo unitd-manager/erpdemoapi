@@ -246,17 +246,26 @@ app.post('/getProjectquoteById', (req, res, next) => {
   });
 
   app.get('/getPurchaseReturn', (req, res, next) => {
-    db.query(` SELECT 
+    db.query(`  SELECT 
     q.purchase_return_id
+    ,q.purchase_return_code
+    ,q.purchase_order_id
     ,q.purchase_return_date
     ,q.purchase_invoice_id
-   ,q.status
-   ,q.status_arb
+    ,q.status
+    ,q.status_arb
     ,pi.purchase_invoice_date
     ,pi.purchase_invoice_code
+    ,pi.purchase_invoice_code_arb
+    ,po.po_code
+    ,q.creation_date
+    ,q.created_by
+    ,q.modification_date
+    ,q.modified_by
     FROM purchase_return q  
     LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
-    WHERE q.purchase_return_id != '' 
+    LEFT JOIN (purchase_order po) ON (po.purchase_order_id=q.purchase_order_id)
+    WHERE q.purchase_return_id!= '' 
     `,
       (err, result) => {
        
