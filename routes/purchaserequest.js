@@ -40,7 +40,8 @@ app.get('/getPurchaseRequest', (req, res, next) => {
   c.company_id
   FROM purchase_request pr
   LEFT join company c on c.company_id=pr.company_id
-  Where pr.purchase_request_id !=''`,
+  Where pr.purchase_request_id !=''
+  ORDER BY pr.purchase_request_id DESC`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)

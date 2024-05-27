@@ -142,92 +142,130 @@ app.post('/getProjectquoteById', (req, res, next) => {
     );
   });
 
+  // app.post('/insertPurchaseReturn', (req, res, next) => {
+  //   let data = {
+  //     purchase_return_id: req.body.purchase_return_id,
+  //     creation_date: req.body.creation_date,
+  //     modification_date: req.body.modification_date,
+  //     purchase_invoice_id: req.body.purchase_invoice_id,
+  //     purchase_order_id: req.body.purchase_order_id,
+  //     status: req.body.status
+  //   };
+  
+  //   // Insert data into sales_return_history table
+  //   let sql = "INSERT INTO purchase_return SET ?";
+  //   db.query(sql, data, (err, result) => {
+  //     if (err) {
+  //       return res.status(400).send({
+  //         data: err,
+  //         msg: 'failed',
+  //       });
+  //     } else {
+  //       // Retrieve records from invoice_item table based on invoice_id
+  //       let invoiceItemId = req.body.purchase_invoice_id; // Assuming this is the field that contains invoice_id
+  //       let selectQuery = "SELECT * FROM purchase_invoice_items WHERE purchase_invoice_id = ?";
+  //       db.query(selectQuery, [invoiceItemId], (err, invoiceItems) => {
+  //         if (err) {
+  //           return res.status(400).send({
+  //             data: err,
+  //             msg: 'failed',
+  //           });
+  //         } 
+  //         else {
+  //           if (invoiceItems.length < 1) {
+  //             return res.status(401).send({
+  //               data: invoiceItems,
+  //               msg: 'No invoice items to Return',
+  //             });
+  //           } 
+  //           // Insert retrieved invoice_items into sales_return_history_item table
+  //           let salesReturnHistoryItemId = result.insertId; // Assuming you have an auto-incremented primary key in sales_return_history
+  //           let salesReturnHistoryItemData = invoiceItems.map((item) => ({
+  //             purchase_return_id: salesReturnHistoryItemId,
+  //             // Add other fields from invoice_item as needed
+  //             item_title: item.item_title,
+  //             ordered_quantity: item.ordered_quantity,
+  //             unit:item.unit,
+  //             cost_price:item.cost_price,
+  //             total_cost:item.total_cost
+  //             // Add more fields as needed
+  //           }));
+  // console.log('salesReturnHistoryItemData',salesReturnHistoryItemData);
+  //           let insertItemsQuery =
+  //           "INSERT INTO purchase_return_items (`purchase_return_id`, `item_title`, `ordered_quantity`,`unit`,`cost_price`,`total_cost`) VALUES ?";
+  //         let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id,item.item_title, item.ordered_quantity,item.unit,item.cost_price,item.total_cost]);
+          
+  //         db.query(insertItemsQuery, [values], (err, itemResult) => {
+          
+  //             if (err) {
+  //               return res.status(400).send({
+  //                 data: err,
+  //                 msg: 'failed',
+  //               });
+  //             } else {
+  //               return res.status(200).send({
+  //                 data: result,
+  //                 msg: 'Success',
+  //               });
+  //             }
+  //           });
+  //         }
+  //       });
+  //     }
+  //   });
+  // });
+  
+
   app.post('/insertPurchaseReturn', (req, res, next) => {
+
     let data = {
       purchase_return_id: req.body.purchase_return_id,
+      purchase_return_code: req.body.purchase_return_code,
       creation_date: req.body.creation_date,
       modification_date: req.body.modification_date,
-      purchase_invoice_id: req.body.purchase_invoice_id,
       purchase_order_id: req.body.purchase_order_id,
-      status: req.body.status
-    };
-  
-    // Insert data into sales_return_history table
+      supplier_id: req.body.supplier_id,
+      status: req.body.status,
+      created_by: req.body.created_by,
+      modified_by: req.body.modified_by
+   };
     let sql = "INSERT INTO purchase_return SET ?";
-    db.query(sql, data, (err, result) => {
+    let query = db.query(sql, data,(err, result) => {
       if (err) {
         return res.status(400).send({
           data: err,
-          msg: 'failed',
         });
       } else {
-        // Retrieve records from invoice_item table based on invoice_id
-        let invoiceItemId = req.body.purchase_invoice_id; // Assuming this is the field that contains invoice_id
-        let selectQuery = "SELECT * FROM purchase_invoice_items WHERE purchase_invoice_id = ?";
-        db.query(selectQuery, [invoiceItemId], (err, invoiceItems) => {
-          if (err) {
-            return res.status(400).send({
-              data: err,
-              msg: 'failed',
-            });
-          } 
-          else {
-            if (invoiceItems.length < 1) {
-              return res.status(401).send({
-                data: invoiceItems,
-                msg: 'No invoice items to Return',
-              });
-            } 
-            // Insert retrieved invoice_items into sales_return_history_item table
-            let salesReturnHistoryItemId = result.insertId; // Assuming you have an auto-incremented primary key in sales_return_history
-            let salesReturnHistoryItemData = invoiceItems.map((item) => ({
-              purchase_return_id: salesReturnHistoryItemId,
-              // Add other fields from invoice_item as needed
-              item_title: item.item_title,
-              ordered_quantity: item.ordered_quantity,
-              unit:item.unit,
-              cost_price:item.cost_price,
-              total_cost:item.total_cost
-              // Add more fields as needed
-            }));
-  console.log('salesReturnHistoryItemData',salesReturnHistoryItemData);
-            let insertItemsQuery =
-            "INSERT INTO purchase_return_items (`purchase_return_id`, `item_title`, `ordered_quantity`,`unit`,`cost_price`,`total_cost`) VALUES ?";
-          let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id,item.item_title, item.ordered_quantity,item.unit,item.cost_price,item.total_cost]);
-          
-          db.query(insertItemsQuery, [values], (err, itemResult) => {
-          
-              if (err) {
-                return res.status(400).send({
-                  data: err,
-                  msg: 'failed',
-                });
-              } else {
-                return res.status(200).send({
-                  data: result,
-                  msg: 'Success',
-                });
-              }
-            });
-          }
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
         });
       }
-    });
+    }
+  );
   });
-  
 
   app.get('/getPurchaseReturn', (req, res, next) => {
-    db.query(` SELECT 
+    db.query(`  SELECT 
     q.purchase_return_id
+    ,q.purchase_return_code
+    ,q.purchase_order_id
     ,q.purchase_return_date
     ,q.purchase_invoice_id
-   ,q.status
-   ,q.status_arb
+    ,q.status
+    ,q.status_arb
     ,pi.purchase_invoice_date
     ,pi.purchase_invoice_code
+    ,pi.purchase_invoice_code_arb
+    ,po.po_code
+    ,q.creation_date
+    ,q.created_by
+    ,q.modification_date
+    ,q.modified_by
     FROM purchase_return q  
     LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
-    WHERE q.purchase_return_id != '' 
+    LEFT JOIN (purchase_order po) ON (po.purchase_order_id=q.purchase_order_id)
+    WHERE q.purchase_return_id!= '' 
     `,
       (err, result) => {
        
@@ -248,15 +286,23 @@ app.post('/getProjectquoteById', (req, res, next) => {
   app.post('/getPurchaseReturnById', (req, res, next) => {
     db.query(` SELECT 
     q.purchase_return_id
+    ,q.purchase_return_code
+    ,q.purchase_order_id
     ,q.purchase_return_date
     ,q.purchase_invoice_id
-   ,q.status
-   ,q.status_arb
+    ,q.status
+    ,q.status_arb
     ,pi.purchase_invoice_date
     ,pi.purchase_invoice_code
     ,pi.purchase_invoice_code_arb
+    ,po.po_code
+    ,q.creation_date
+    ,q.created_by
+    ,q.modification_date
+    ,q.modified_by
     FROM purchase_return q  
     LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
+    LEFT JOIN (purchase_order po) ON (po.purchase_order_id=q.purchase_order_id)
     WHERE q.purchase_return_id =  ${db.escape(req.body.purchase_return_id)}`,
     
       (err, result) => {
@@ -497,6 +543,164 @@ app.post('/getProjectquoteById', (req, res, next) => {
   );
   });
   
+
+  app.get('/getSupplier', (req, res, next) => {
+    db.query(`SELECT 
+    e.supplier_id
+   ,e.company_name
+   ,e.company_name_arb
+    FROM supplier e 
+    `,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.post('/getOrdersBySupplierId', (req, res, next) => {
+  db.query(`SELECT 
+po_code,
+po_code_arb,
+supplier_id,
+purchase_order_id 
+FROM purchase_order WHERE supplier_id =${db.escape(req.body.supplier_id)}`, 
+  (err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+      });
+    }
+  });
+});
+
+app.post('/getOrderedItemsById', (req, res, next) => {
+  db.query(`SELECT 
+  pp.po_product_id ,
+  pp.purchase_order_id,
+  pp.quantity,
+  pp.quantity_arb,
+  pp.return_qty,
+  p.title,
+  pr.purchase_return_id
+  FROM po_product pp 
+  LEFT JOIN product p ON p.product_id=pp.product_id
+  LEFT JOIN purchase_return pr ON pr.purchase_order_id=pp.purchase_order_id
+  WHERE pp.purchase_order_id= ${db.escape(req.body.purchase_order_id)}`,
+          (err, result) => {
+       
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+      }
+ 
+    }
+  );
+});
+
+app.post('/insertPurchasereturnHistory', (req, res, next) => {
+
+  let data = {
+    purchase_return_history_id: req.body.purchase_return_history_id,
+    purchase_return_id: req.body.purchase_return_id,
+    purchase_order_id: req.body.purchase_order_id,
+    po_product_id: req.body.po_product_id,
+    purchase_return_qty: req.body.purchase_return_qty,
+    creation_date: req.body.creation_date,
+    modification_date: req.body.modification_date,
+    created_by: req.body.created_by,
+    modified_by: req.body.modified_by
+ };
+  let sql = "INSERT INTO purchase_return_history SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      return res.status(400).send({
+        data: err,
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
+
+
+app.post('/updatePoProduct', (req, res, next) => {
+  db.query(`UPDATE po_product 
+            SET return_qty=${db.escape(req.body.return_qty)}
+            ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
+            WHERE po_product_id =  ${db.escape(req.body.po_product_id)}`,
+            (err, result) =>{
+              if (err) {
+                console.log("error: ", err);
+                return;
+              } else {
+                    return res.status(200).send({
+                      data: result,
+                      msg:'Success'
+                    });
+              }
+             }
+          );
+        });
+
+        app.post('/getPurchaseReturmItemsById', (req, res, next) => {
+          db.query(`SELECT
+          prh.purchase_return_history_id,
+          prh.purchase_return_id,
+          prh.purchase_order_id,
+          prh.purchase_return_qty,
+          prh.creation_date,
+          prh.created_by,
+          prh.po_product_id,
+          po.return_qty
+          FROM purchase_return_history prh
+          LEFT JOIN po_product po ON po.po_product_id=prh.po_product_id
+          WHERE prh.po_product_id = ${db.escape(
+                req.body.po_product_id,
+              )} ORDER BY prh.purchase_return_history_id  DESC `,
+            (err, result) => {
+               
+              if (err) {
+                console.log('error: ', err)
+                return res.status(400).send({
+                  data: err,
+                  msg: 'failed',
+                })
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: 'Success',
+                    });
+              }
+            }
+          );
+        });
+
+
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
