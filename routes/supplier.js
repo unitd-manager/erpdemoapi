@@ -539,7 +539,7 @@ app.post('/getPurchaseOrderLinkedss', (req, res, next) => {
   db.query(`SELECT p.*
   
     ,(
-    SELECT SUM(pop.cost_price*pop.qty) AS po_value
+    SELECT SUM(pop.cost_price*pop.quantity) AS po_value
     FROM po_product pop
     WHERE pop.purchase_order_id =  p.purchase_order_id) as po_value
     ,(SELECT SUM(supHist.amount) AS prev_sum 
