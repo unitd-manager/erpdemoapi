@@ -426,7 +426,7 @@ app.post('/insertEmployee', (req, res, next) => {
     , known_as_name: req.body.known_as_name
     , address_street1: req.body.address_street1
     , address_town1 : req.body. address_town1 
-    , address_country1: "Singapore"
+    , address_country1: req.body. address_country1 
     , flag: req.body.flag
     , sex: req.body.sex
     , date_of_birth: new Date(req.body.date_of_birth)
@@ -472,7 +472,7 @@ app.post('/insertEmployee', (req, res, next) => {
     , foreign_addrs_area: req.body.foreign_addrs_area
     ,  foreign_addrs_city : req.body. foreign_addrs_city 
     , foreign_addrs_postal_code: req.body.foreign_addrs_postal_code
-    , foreign_addrs_country : "Singapore"
+    , foreign_addrs_country : req.body.foreign_addrs_country
     , emergency_contact_name: req.body.emergency_contact_name
     , emergency_contact_phone: req.body.emergency_contact_phone
     , emergency_contact_phone2: req.body.emergency_contact_phone2
