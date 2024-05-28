@@ -236,26 +236,26 @@ app.post('/deleteSub_Con', (req, res, next) => {
   }
 );
 });
-// app.get('/getTabWorkOrder', (req, res, next) => {
-//   db.query(`SELECT p.sub_con_work_order_id
-//   FROM sub_con_work_order p 
-//             WHERE p.sub_con_id != '' AND (p.status != 'Cancelled' OR p.status IS NULL)`,
-//             (err, result) => {
-//               if (err) {
-//                 console.log('error: ', err)
-//                 return res.status(400).send({
-//                   data: err,
-//                   msg: 'failed',
-//                 })
-//               } else {
-//                 return res.status(200).send({
-//                   data: result,
-//                   msg: 'Success',
-//           })
-//         }
-//             }
-//           );
-//         });
+app.get('/getTabWorkOrder', (req, res, next) => {
+  db.query(`SELECT p.sub_con_work_order_id
+  FROM sub_con_work_order p 
+            WHERE p.sub_con_id != '' AND (p.status != 'Cancelled' OR p.status IS NULL)`,
+            (err, result) => {
+              if (err) {
+                console.log('error: ', err)
+                return res.status(400).send({
+                  data: err,
+                  msg: 'failed',
+                })
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: 'Success',
+          })
+        }
+            }
+          );
+        });
 app.post('/insertsub_con_work_order', (req, res, next) => {
 
   let data = {sub_con_worker_code: req.body.sub_con_worker_code,
