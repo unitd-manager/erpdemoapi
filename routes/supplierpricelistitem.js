@@ -22,7 +22,8 @@ app.get('/getPriceList', (req, res, next) => {
   ,sr.company_name_arb AS customer_name_arb
             From supplier_price_list spl
             LEFT JOIN (supplier sr)   ON (sr.supplier_id   = spl.supplier_id) 
-            where spl.supplier_price_list_id  !=''`,
+            where spl.supplier_price_list_id  !=''
+            ORDER BY spl.supplier_price_list_id DESC`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)

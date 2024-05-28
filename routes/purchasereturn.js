@@ -266,7 +266,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     LEFT JOIN (purchase_invoice pi) ON (pi.purchase_invoice_id=q.purchase_invoice_id)
     LEFT JOIN (purchase_order po) ON (po.purchase_order_id=q.purchase_order_id)
     WHERE q.purchase_return_id!= '' 
-    `,
+    ORDER BY q.purchase_return_id DESC`,
       (err, result) => {
        
         if (err) {
