@@ -47,7 +47,8 @@ app.get('/getSupplier', (req, res, next) => {
   ,s.terms_arb
   ,s.phone
   ,gc.name AS country_name 
-  FROM supplier s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.supplier_id != ''`,
+  FROM supplier s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.supplier_id != ''
+  ORDER BY s.supplier_id DESC `,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -539,7 +540,7 @@ app.post('/getPurchaseOrderLinkedss', (req, res, next) => {
   db.query(`SELECT p.*
   
     ,(
-    SELECT SUM(pop.cost_price*pop.qty) AS po_value
+    SELECT SUM(pop.cost_price*pop.quantity) AS po_value
     FROM po_product pop
     WHERE pop.purchase_order_id =  p.purchase_order_id) as po_value
     ,(SELECT SUM(supHist.amount) AS prev_sum 

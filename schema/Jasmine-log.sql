@@ -28,6 +28,9 @@ INSERT INTO `valuelist` (`valuelist_id`, `key_text`,`value`, `value_arb`, `chi_v
 INSERT INTO `valuelist` (`valuelist_id`, `key_text`,`value`, `value_arb`, `chi_value`, `creation_date`, `modification_date`, `sort_order`, `flag`, `code`) VALUES
  (NULL, 'Account Category', 'SUNDRY CREDITORS', 'المدينون المتنوعون', NULL, '20-03-2024 14:46:31', '20-03-2024 14:46:31', NULL, NULL, NULL);
 
+INSERT   INTO `translation` 
+(`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) 
+VALUES (NULL, 'mdAccMap.TitleArb', 'TitleArb', 'العنوان عربي', NULL, NULL, NULL, NULL, NULL, NULL, '0');
 
 
 INSERT   INTO `translation` 

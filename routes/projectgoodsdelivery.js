@@ -54,7 +54,7 @@ app.post("/getgoodsdeliveryById", (req, res, next) => {
     ,gd.modification_date
     ,gd.created_by
     ,gd.modified_by
-    ,gi.goods_delivery_item_id  
+    ,gi.project_goods_delivery_item_id  
     ,gi.item_title
     ,gi.description  
        FROM project_goods_delivery gd  
@@ -366,7 +366,7 @@ app.post("/getQuoteLineItemsByIdss", (req, res, next) => {
     `SELECT
               qt.* 
               ,qt.project_goods_delivery_id
-              ,qt.goods_delivery_item_id
+              ,qt.project_goods_delivery_item_id
               ,qt.creation_date
               ,qt.modification_date
               ,qt.created_by
@@ -395,7 +395,7 @@ app.post("/edit-goodsdeliveryitem", (req, res, next) => {
                project_goods_delivery_id=${db.escape(req.body.project_goods_delivery_id)}
               ,quantity =${db.escape(req.body.quantity)}
               ,delivery_qty=${db.escape(req.body.delivery_qty)}  
-              WHERE goods_delivery_item_id =  ${db.escape(req.body.goods_delivery_item_id)}`,
+              WHERE project_goods_delivery_item_id =  ${db.escape(req.body.project_goods_delivery_item_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);

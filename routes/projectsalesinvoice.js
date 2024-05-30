@@ -479,9 +479,10 @@ app.post('/getGoodsLineItemsById', (req, res, next) => {
   db.query(`SELECT
   qt.*,
   os.project_quote_id
+  ,os.project_order_id
   FROM project_goods_delivery_item qt 
   LEFT JOIN project_orders os ON os.project_order_id=qt.project_order_id
-  WHERE qt.project_goods_delivery_id =  ${db.escape(req.body.project_goods_delivery_id)}`,
+  WHERE qt.project_goods_delivery_id = ${db.escape(req.body.project_goods_delivery_id)}`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -1329,17 +1330,14 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
 
 app.post('/getGoodsDeliveryDropdown', (req, res, next) => {
   db.query(`SELECT 
-  g.project_goods_delivery_id ,
-  g.project_goods_delivery_code,
-  g.project_goods_delivery_code_arb,
-  c.company_name,
-  c.company_name_arb
-  FROM project_goods_delivery g
-  LEFT JOIN (project_invoice i) ON i.project_invoice_source_id = g.project_goods_delivery_id
-  LEFT JOIN (company c) on g.company_id = c.company_id
-  WHERE
-  g.project_goods_delivery_id != '' 
-  AND i.project_invoice_source_id IS NULL AND g.company_id=${db.escape(req.body.company_id)}`, 
+  o.project_goods_delivery_id
+  ,o.project_goods_delivery_code
+  ,c.company_name
+  ,c.company_name_arb
+  FROM project_goods_delivery o
+  LEFT JOIN (project_invoice i) ON i.project_invoice_source_id = o.project_order_id 
+  LEFT JOIN (company c) on o.company_id = c.company_id
+  WHERE o.project_goods_delivery_id != '' AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({

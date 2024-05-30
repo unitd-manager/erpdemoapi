@@ -17,8 +17,48 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
-
-
+// app.get("/timesheettopayroll", (req, res, next) => {
+//   const currentDate = new Date();
+// db.query(
+//   `SELECT SUM(t.employee_ot_hours) AS total_ot_hours,SUM(t.employee_ph_hours) AS total_ph_hours,SUM(t.normal_hours) AS total_normal_hours,j.*,t.employee_id FROM timesheet t
+//   LEFT JOIN job_information j ON t.employee_id = j.employee_id
+//   WHERE MONTH(t.entry_date) =  MONTH('${currentDate}' - INTERVAL 1 MONTH) GROUP BY t.employee_id;`,
+//   (err, result) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       return res.status(400).send({
+//         data: err,
+//         msg: "failed",
+//       });
+//     } else {
+//       return res.status(200).send({
+//         data: result,
+//         msg: "Success",
+//       });
+//     }
+//   }
+// );
+// });
+app.get("/timesheettopayroll", (req, res, next) => {
+  //const currentDate = new Date();
+db.query(
+  `SELECT SUM(t.employee_ot_hours) AS total_ot_hours,SUM(t.employee_ph_hours) AS total_ph_hours,SUM(t.normal_hours) AS total_normal_hours,t.employee_id FROM timesheet t GROUP BY t.employee_id;`,
+  (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return res.status(400).send({
+        data: err,
+        msg: "failed",
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: "Success",
+      });
+    }
+  }
+);
+});
 
 app.get('/getProjectTask', (req, res, next) => {
   db.query(`SELECT

@@ -36,11 +36,12 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.intro_drawing_job 
     ,q.total_amount
     ,q.company_id
-    ,q.contact_id
+    ,q.sub_con_id
     ,c.company_name
     ,c.company_name_arb
-    ,cont.first_name
-    ,cont.first_name_arb
+    ,s.sub_con_id
+    ,s.company_name AS sub_con_title
+    ,s.company_name_arb
     ,q.creation_date
     ,q.modification_date
     ,q.created_by
@@ -49,7 +50,7 @@ app.post('/getJobOrderById', (req, res, next) => {
     FROM project_job q  
     LEFT JOIN (project_job_items it) ON (it.project_job_id = q.project_job_id)
     LEFT JOIN (company c) ON (c.company_id = q.company_id)
-    LEFT JOIN (contact cont) ON (cont.contact_id = q.contact_id)   
+    LEFT JOIN (sub_con s) ON q.sub_con_id = s.sub_con_id
     WHERE q.project_job_id =${db.escape(req.body.project_job_id)}
     `,
       (err, result) => {
@@ -90,7 +91,7 @@ app.post('/getJobOrderById', (req, res, next) => {
   
 
   app.post('/getProjectJobOrderById', (req, res, next) => {
-    db.query(` SELECT q.job_date
+    db.query(`SELECT q.job_date
     ,q.Project_id
     ,q.project_job_id
     ,q.job_code
@@ -104,19 +105,15 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.intro_drawing_job 
     ,q.total_amount
     ,q.company_id
-    ,q.contact_id
-    ,c.company_name
-    ,cont.first_name
     ,q.creation_date
     ,q.modification_date
     ,q.created_by
     ,q.modified_by
-    ,(select sum(it.amount)) as InvoiceAmount
+    ,s.sub_con_id
+    ,s.company_name AS sub_con_title
     FROM project_job q  
-    LEFT JOIN (project_job_items it) ON (it.project_job_id = q.project_job_id)
-    LEFT JOIN (company c) ON (c.company_id = q.company_id)
-    LEFT JOIN (contact cont) ON (cont.contact_id = q.contact_id)   
-    WHERE q.project_id =${db.escape(req.body.project_id)}
+    LEFT JOIN sub_con s ON q.sub_con_id = s.sub_con_id
+    WHERE q.project_id = ${db.escape(req.body.project_id)}
     `,
       (err, result) => {
        
@@ -136,7 +133,7 @@ app.post('/getJobOrderById', (req, res, next) => {
   });
 
   app.get('/getJobOrder', (req, res, next) => {
-    db.query(` SELECT q.job_date
+    db.query(`SELECT q.job_date
     ,q.job_date_arb
     ,q.project_job_id
     ,q.job_code
@@ -144,9 +141,9 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.job_title
     ,q.job_title_arb
     ,q.job_status
+    ,q.job_status_arb
     ,q.ref_no_job
     ,q.ref_no_job_arb
-    ,q.job_status_arb
     ,q.project_location
     ,q.project_reference
     ,q.payment_method
@@ -154,15 +151,23 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.intro_drawing_job 
     ,q.total_amount
     ,q.company_id
-    ,q.contact_id
+    ,q.sub_con_id
     ,c.company_name
     ,c.company_name_arb
-    ,cont.first_name
-    ,cont.first_name_arb
+    ,s.sub_con_id
+    ,s.company_name AS sub_con_title
+    ,s.company_name_arb
+    ,q.creation_date
+    ,q.modification_date
+    ,q.created_by
+    ,q.modified_by
+    ,(select sum(it.amount)) as InvoiceAmount
     FROM project_job q  
-    LEFT JOIN (company c) ON (q.company_id=c.company_id)
-    LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
-    WHERE q.project_job_id != '' 
+    LEFT JOIN (project_job_items it) ON (it.project_job_id = q.project_job_id)
+    LEFT JOIN (company c) ON (c.company_id = q.company_id)
+    LEFT JOIN (sub_con s) ON q.sub_con_id = s.sub_con_id
+    WHERE q.project_job_id != ''
+    GROUP BY q.project_job_id
     `,
       (err, result) => {
        
@@ -198,15 +203,13 @@ app.post('/getJobOrderById', (req, res, next) => {
               ,revision=${db.escape(req.body.revision)}
               ,intro_drawing_job=${db.escape(req.body.intro_drawing_job)}
               ,job_condition=${db.escape(req.body.job_condition)}
-              ,show_project_manager=${db.escape(req.body.show_project_manager)}
               ,our_reference=${db.escape(req.body.our_reference)}
-              ,drawing_nos=${db.escape(req.body.drawing_nos)}
               ,ref_no_job=${db.escape(req.body.ref_no_job)}
               ,ref_no_job_arb=${db.escape(req.body.ref_no_job_arb)}
               ,discount=${db.escape(req.body.discount)}
               ,total_amount=${db.escape(req.body.total_amount)}
               ,company_id=${db.escape(req.body.company_id)}
-              ,contact_id=${db.escape(req.body.contact_id)}
+              ,sub_con_id=${db.escape(req.body.sub_con_id)}
               ,modification_date=${db.escape(req.body.modification_date)}
               ,modified_by=${db.escape(req.body.modified_by)}
               ,modified_by=${db.escape(req.body.modified_by)}

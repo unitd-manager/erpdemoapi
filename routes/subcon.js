@@ -102,7 +102,8 @@ app.get('/getSubcon', (req, res, next) => {
   ,s.phone
   ,s.phone_arb
   ,gc.name AS country_name 
-  FROM sub_con s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.sub_con_id != ''`,
+  FROM sub_con s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.sub_con_id != ''
+  ORDER BY s.sub_con_id DESC `,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
@@ -519,25 +520,21 @@ WHERE i.sub_con_id= ${db.escape(req.body.sub_con_id)};
 );
 });
 
-app.post('/getWorkOrderLinkedss', (req, res, next) => {
-  db.query(`SELECT p.sub_con_worker_code,
-  p.work_order_date,
-  p.status,
-  p.sub_con_work_order_id,
-  pr.project_id,
- pr.title
-    ,(
-    SELECT SUM(w.amount) AS amount
-    FROM work_order_line_items w
-    WHERE w.sub_con_work_order_id =  p.sub_con_work_order_id) as amount
-    ,(SELECT SUM(subHist.amount) AS prev_sum 
-  FROM sub_con_payments_history subHist 
-  LEFT JOIN sub_con_payments r ON (r.sub_con_payments_id = subHist.sub_con_payments_id) 
-  WHERE subHist.sub_con_work_order_id = p.sub_con_work_order_id AND r.status != 'Cancelled' ) as prev_amount 
-  FROM sub_con_work_order p
+app.post('/getJobWorkOrderLink', (req, res, next) => {
+  db.query(`SELECT p.project_job_id
+,p.project_id
+,p.job_code
+,p.job_code_arb
+,p.job_title
+,p.job_title_arb
+,p.job_status
+,p.job_status_arb
+,pr.title
+,p.project_id
+  FROM project_job p
   LEFT JOIN project pr ON (p.project_id = pr.project_id)
   LEFT JOIN sub_con o ON (p.sub_con_id = o.sub_con_id)
-  WHERE p.sub_con_id=${db.escape(req.body.sub_con_id)} ;`,
+  WHERE p.sub_con_id= ${db.escape(req.body.sub_con_id)} ;`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)

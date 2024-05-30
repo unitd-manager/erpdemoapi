@@ -281,8 +281,8 @@ app.post('/getEmployeeByID', (req, res, next) => {
   ,a.email_arb AS login_email_arb
   ,a.pass_word AS login_pass_word
   ,a.user_group_id AS staff_user_group_id
-  ,a.published AS staff_published
-  ,a.published_arb AS staff_published_arb
+  ,a.published 
+  ,a.published_arb
   ,j.act_join_date
   ,a.pay
   ,a.pay_arb
@@ -355,8 +355,8 @@ app.post('/edit-Employee', (req, res, next) => {
             ,pass_word=${db.escape(req.body.login_pass_word)}
             ,pass_word_arb=${db.escape(req.body.login_pass_word_arb)}
             ,user_group_id=${db.escape(req.body.staff_user_group_id)}
-            ,published =${db.escape(req.body.staff_published)}
-            ,published_arb =${db.escape(req.body.staff_published_arb)}
+            ,published =${db.escape(req.body.published)}
+            ,published_arb =${db.escape(req.body.published_arb)}
             ,notes =${db.escape(req.body.notes)}
             ,notes_arb =${db.escape(req.body.notes_arb)}
             ,pay =${db.escape(req.body.pay)}
@@ -409,7 +409,7 @@ app.post('/insertEmployee', (req, res, next) => {
     , address_area: req.body.address_area
     , address_town: req.body.address_town
     , address_state: req.body.address_state
-    , address_country: "Singapore"
+    , address_country: req.body.address_country
     , address_po_code: req.body.address_po_code
     , phone: req.body.phone
     , fax: req.body.fax
@@ -426,7 +426,7 @@ app.post('/insertEmployee', (req, res, next) => {
     , known_as_name: req.body.known_as_name
     , address_street1: req.body.address_street1
     , address_town1 : req.body. address_town1 
-    , address_country1: "Singapore"
+    , address_country1: req.body. address_country1 
     , flag: req.body.flag
     , sex: req.body.sex
     , date_of_birth: new Date(req.body.date_of_birth)
@@ -472,7 +472,7 @@ app.post('/insertEmployee', (req, res, next) => {
     , foreign_addrs_area: req.body.foreign_addrs_area
     ,  foreign_addrs_city : req.body. foreign_addrs_city 
     , foreign_addrs_postal_code: req.body.foreign_addrs_postal_code
-    , foreign_addrs_country : "Singapore"
+    , foreign_addrs_country : req.body.foreign_addrs_country
     , emergency_contact_name: req.body.emergency_contact_name
     , emergency_contact_phone: req.body.emergency_contact_phone
     , emergency_contact_phone2: req.body.emergency_contact_phone2

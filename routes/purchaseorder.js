@@ -59,7 +59,7 @@ app.get('/TabPurchaseOrder', (req, res, next) => {
   ,s.company_name
   FROM purchase_order po 
   LEFT JOIN purchase_quote rq ON po.purchase_quote_id = rq.purchase_quote_id
-  LEFT JOIN (supplier s) ON (po.supplier_id = s.supplier_id) WHERE po.purchase_order_id != ''  ORDER BY po.purchase_order_id ASC;`,
+  LEFT JOIN (supplier s) ON (po.supplier_id = s.supplier_id) WHERE po.purchase_order_id != ''  ORDER BY po.purchase_order_id DESC;`,
   (err, result) => {
     if (err) {
       return res.status(400).send({

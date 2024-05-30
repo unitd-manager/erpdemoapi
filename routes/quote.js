@@ -36,7 +36,8 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
     ,q.modification_date
      FROM purchase_quote q 
      LEFT JOIN purchase_request p ON p.purchase_request_id=q.purchase_request_id
-    WHERE q.purchase_quote_id !=''`,
+    WHERE q.purchase_quote_id !=''
+    ORDER BY q.purchase_quote_id DESC`,
     (err, result) => {
          
       if (err) {

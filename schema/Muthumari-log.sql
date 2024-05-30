@@ -561,9 +561,17 @@ INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdTradingEnq.Customer', 'Customer', 'عميل', 'Trading Enquiry Customer', NULL, NULL, NULL, NULL, NULL, '0'); 
 
 
+
+
 ALTER TABLE `project_goods_delivery_item` CHANGE `goods_delivery_item_id` `project_goods_delivery_item_id` INT(11) NOT NULL AUTO_INCREMENT; 
 
 INSERT INTO `translation` (`translation_id`, `key_text`, `value`, `arb_value`, `chi_value`, `creation_date`, `modification_date`, `group_name`, `is_html_text`, `show_to_user`, `flag`) VALUES (NULL, 'mdTradingSalesInvoice.Status', 'Invoice Status', 'حالة الفاتورة', 'GoodsDelivery Invoice Status', NULL, NULL, NULL, NULL, NULL, '0'); 
 ALTER TABLE `purchase_quote` ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `modification_date`; 
 ALTER TABLE `purchase_quote_items` ADD `purchase_request_items_id` INT(11) NULL DEFAULT NULL AFTER `purchase_request_id`; 
 ALTER TABLE `po_product` ADD `purchase_quote_id` INT(11) NULL DEFAULT NULL AFTER `price`, ADD `purchase_quote_items_id` INT(11) NULL DEFAULT NULL AFTER `purchase_quote_id`; 
+
+
+ALTER TABLE `purchase_return` ADD `created_by` VARCHAR(255) NULL DEFAULT NULL AFTER `status_arb`, ADD `modified_by` VARCHAR(255) NULL DEFAULT NULL AFTER `created_by`; 
+ALTER TABLE `purchase_return` ADD `supplier_id` INT(11) NULL DEFAULT NULL AFTER `purchase_order_id`; 
+ALTER TABLE `po_product` ADD `purchase_return_qty` VARCHAR(255) NOT NULL AFTER `purchase_quote_items_id`; 
+ALTER TABLE `po_product` CHANGE `purchase_return_qty` `return_qty` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL; 
