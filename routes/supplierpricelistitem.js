@@ -80,6 +80,7 @@ app.post('/editPriceList', (req, res, next) => {
             ,expiry_date=${db.escape(req.body.expiry_date)}
             ,effective_date=${db.escape(req.body.effective_date)}
             ,status=${db.escape(req.body.status)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             WHERE supplier_price_list_id = ${db.escape(req.body.supplier_price_list_id)}`,
     (err, result) => {
      
@@ -106,6 +107,7 @@ app.post('/insertPriceList', (req, res, next) => {
    , notes: req.notes
    , supplier_id: req.body.supplier_id
    , creation_date: req.body.creation_date
+   , created_by: req.body.created_by
    , modification_date: req.body.modification_date
    , expiry_date: req.body.expiry_date
    , effective_date	: req.body.effective_date
