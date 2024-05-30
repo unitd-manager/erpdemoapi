@@ -389,7 +389,7 @@ FROM
   LEFT JOIN project_invoice_item ii ON ii.project_invoice_id = i.project_invoice_id
   LEFT JOIN project_orders b ON b.project_order_id = i.project_invoice_source_id
 WHERE 
-  b.project_order_id = ${db.escape(req.body.project_order_id)} AND 
+ii.project_order_id  = ${db.escape(req.body.project_order_id)} AND 
   i.status != 'Paid' AND 
   ii.total_cost != '' AND
   i.project_invoice_id NOT IN (SELECT project_invoice_id FROM project_receipt_history)
