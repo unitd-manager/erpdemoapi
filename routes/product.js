@@ -461,7 +461,9 @@ app.post('/getProduct', (req, res, next) => {
   ,p.discount_amount
   ,p.discount_from_date
   ,p.discount_to_date
+  ,i.actual_stock
   FROM product p
+  LEFT JOIN inventory i ON i.product_id=p.product_id
   WHERE p.product_id = ${db.escape(req.body.product_id)} `,
     (err, result) => {
       if (err) {
