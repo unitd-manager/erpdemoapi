@@ -328,9 +328,9 @@ app.post("/getMaterialLineItemsById", (req, res, next) => {
 
 app.post("/getEmployeeById", (req, res, next) => {
   db.query(
-    `SELECT e.employee_id,e.employee_name AS first_name FROM proposal_employee et 
-    INNER JOIN employee e ON e.employee_id = et.employee_id 
-    INNER JOIN proposal pr ON pr.proposal_id = et.proposal_id
+    `SELECT et.proposal_employee_id,e.employee_id,e.employee_name AS first_name FROM proposal_employee et 
+    Left JOIN employee e ON e.employee_id = et.employee_id 
+    Left JOIN proposal pr ON pr.proposal_id = et.proposal_id
     WHERE et.proposal_id = ${db.escape(req.body.proposal_id)}`,
     (err, result) => {
       if (err) {
@@ -438,6 +438,26 @@ app.get('/checkEmployees', (req, res, next) => {
       }
     );
   });
+
+  app.post('/deleteEmployeeTime', (req, res, next) => {
+    let data = { proposal_employee_id: req.body.proposal_employee_id }
+    let sql = 'DELETE FROM proposal_employee WHERE ?'
+    let query = db.query(sql, data, (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Tender has been removed successfully',
+        })
+      }
+    })
+  })
+
 
 app.post("/insertEmployee", (req, res, next) => {
   let data = {

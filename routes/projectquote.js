@@ -18,7 +18,7 @@ app.use(fileUpload({
 }));
 
 app.post('/getProjectquoteById', (req, res, next) => {
-    db.query(` SELECT q.quote_date
+    db.query(`SELECT q.quote_date
     ,q.project_quote_id
     ,q.quote_code
     ,q.quote_status
@@ -29,7 +29,6 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.payment_method
     ,q.revision
     ,q.intro_drawing_quote
-    ,q.total_amount 
     ,SUM(qi.amount) AS total_amount
     ,q.total_amount_arb
     ,q.project_enquiry_id
@@ -47,7 +46,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     LEFT JOIN (company c) ON (c.company_id = o.company_id)
     LEFT JOIN (contact cont) ON (cont.contact_id = q.contact_id)   
     LEFT JOIN (project_quote_items qi) ON qi.project_quote_id = q.project_quote_id
-    WHERE q.project_quote_id =${db.escape(req.body.project_quote_id)}
+    WHERE q.project_quote_id = ${db.escape(req.body.project_quote_id)}
     `,
       (err, result) => {
        
@@ -189,7 +188,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,q.payment_method
     ,q.revision
     ,q.intro_drawing_quote 
-    ,q.total_amount
+    ,SUM(pq.amount) AS total_amount
     ,q.project_enquiry_id
     ,q.company_id
     ,q.contact_id
@@ -198,9 +197,11 @@ app.post('/getProjectquoteById', (req, res, next) => {
     ,cont.first_name
     FROM project_quote q  
     LEFT JOIN (project_enquiry o) ON (o.project_enquiry_id=q.project_enquiry_id)
+    LEFT JOIN (project_quote_items pq) ON (q.project_quote_id=pq.project_quote_id)
     LEFT JOIN (company c) ON (q.company_id=c.company_id)
     LEFT JOIN (contact cont) ON (q.contact_id = cont.contact_id) 
     WHERE q.project_quote_id != '' 
+    GROUP BY q.project_quote_id
     ORDER BY q.project_quote_id DESC
     `,
       (err, result) => {

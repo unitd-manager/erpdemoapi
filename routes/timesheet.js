@@ -168,30 +168,6 @@ app.post("/getTimesheetStaffById", (req, res, next) => {
   );
 });
 
-app.post("/getTimesheetLabourById", (req, res, next) => {
-  db.query(
-    `SELECT * ,e.first_name
-    FROM employee_timesheet et 
-    INNER JOIN employee e ON e.employee_id = et.employee_id 
-    INNER JOIN labour_request p ON p.labour_request_id = et.project_id
-    WHERE p.labour_request_id = ${db.escape(req.body.labour_request_id)}`,
-    (err, result) => {
-      if (err) {
-        console.log('error: ', err)
-        return res.status(400).send({
-          data: err,
-          msg: 'failed',
-        })
-      } else {
-        return res.status(200).send({
-           data: result,
-          msg: 'Success',
-        })
-      }
-
-    }
-  );
-});
 
 app.post("/getTimesheetLabourById", (req, res, next) => {
   db.query(
