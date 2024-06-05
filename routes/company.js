@@ -44,6 +44,41 @@ app.get('/getCompany', (req, res, next) => {
   );
 });
 
+
+app.get('/getCompanyDashboard', (req, res, next) => {
+  db.query(`
+    SELECT 
+      DATE_FORMAT(STR_TO_DATE(creation_date, '%d-%m-%Y %h:%i:%s %p'), '%M') AS month,
+      COUNT(*) AS companyCount
+    FROM 
+      company
+    WHERE
+      YEAR(STR_TO_DATE(creation_date, '%d-%m-%Y %h:%i:%s %p')) = YEAR(CURDATE())
+    GROUP BY 
+      MONTH(STR_TO_DATE(creation_date, '%d-%m-%Y %h:%i:%s %p'))
+    ORDER BY 
+      MONTH(STR_TO_DATE(creation_date, '%d-%m-%Y %h:%i:%s %p'))
+  `,
+  (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return res.status(500).send({
+        msg: 'Database error'
+      });
+    }
+    if (result.length == 0) {
+      return res.status(400).send({
+        msg: 'No result found'
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success'
+      });
+    }
+  });
+});
+
 app.get('/getNewCompanies', (req, res, next) => {
   const { selectedMonth } = req.query;
 
