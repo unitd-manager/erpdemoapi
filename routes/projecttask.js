@@ -17,32 +17,12 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
-// app.get("/timesheettopayroll", (req, res, next) => {
-//   const currentDate = new Date();
-// db.query(
-//   `SELECT SUM(t.employee_ot_hours) AS total_ot_hours,SUM(t.employee_ph_hours) AS total_ph_hours,SUM(t.normal_hours) AS total_normal_hours,j.*,t.employee_id FROM timesheet t
-//   LEFT JOIN job_information j ON t.employee_id = j.employee_id
-//   WHERE MONTH(t.entry_date) =  MONTH('${currentDate}' - INTERVAL 1 MONTH) GROUP BY t.employee_id;`,
-//   (err, result) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       return res.status(400).send({
-//         data: err,
-//         msg: "failed",
-//       });
-//     } else {
-//       return res.status(200).send({
-//         data: result,
-//         msg: "Success",
-//       });
-//     }
-//   }
-// );
-// });
 app.get("/timesheettopayroll", (req, res, next) => {
-  //const currentDate = new Date();
+ 
 db.query(
-  `SELECT SUM(t.employee_ot_hours) AS total_ot_hours,SUM(t.employee_ph_hours) AS total_ph_hours,SUM(t.normal_hours) AS total_normal_hours,t.employee_id FROM timesheet t GROUP BY t.employee_id;`,
+  `SELECT SUM(t.employee_ot_hours) AS total_ot_hours,SUM(t.employee_ph_hours) AS total_ph_hours,SUM(t.normal_hours) AS total_normal_hours,j.*,t.employee_id 
+  FROM timesheet t LEFT JOIN job_information j ON t.employee_id = j.employee_id 
+  WHERE MONTH(t.entry_date) = MONTH(CURDATE() - INTERVAL 1 MONTH) GROUP BY t.employee_id;`,
   (err, result) => {
     if (err) {
       console.log("error: ", err);
@@ -644,6 +624,140 @@ app.post('/insertProjectTask', (req, res, next) => {
     , modification_date:req.body.modification_date
  };
   let sql = "INSERT INTO project_task SET ?";
+  let query = db.query(sql, data, (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+
+app.post("/getTimesheetById", (req, res, next) => {
+  db.query(
+    `SELECT t.timesheet_id,
+    t.employee_id,
+    t.entry_date,
+    t.time_in,
+    t.time_out,
+    t.normal_hours,
+    e.first_name,
+    e.employee_name,
+    t.day,
+    t.on_leave,
+    t.leave_type,
+    t.employee_ot_hours,
+    t.employee_ph_hours
+   From timesheet t
+   LEFT JOIN (employee e) ON (t.employee_id = e.employee_id)
+  Where t.timesheet_id =${db.escape(req.body.timesheet_id)}
+  `,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+app.post('/editTimesheet', (req, res, next) => {
+  db.query(`UPDATE timesheet 
+            SET entry_date=${db.escape(req.body.entry_date)}
+            ,time_in=${db.escape(req.body.time_in)}
+            ,time_out=${db.escape(req.body.time_out)}
+            ,day=${db.escape(req.body.day)}
+             ,on_leave=${db.escape(req.body.on_leave)}
+              ,leave_type=${db.escape(req.body.leave_type)}
+            ,employee_ot_hours=${db.escape(req.body.employee_ot_hours)}
+            ,employee_ph_hours=${db.escape(req.body.employee_ph_hours)}
+            ,normal_hours=${db.escape(req.body.normal_hours)}
+            WHERE timesheet_id = ${db.escape(req.body.timesheet_id)}`,
+            (err, result) => {
+              if (err) {
+                console.log('error: ', err)
+                return res.status(400).send({
+                  data: err,
+                  msg: 'failed',
+                })
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: 'Success',
+          })
+        }
+            }
+          );
+        });
+
+        app.get("/getTimesheet", (req, res, next) => {
+          db.query(
+            `SELECT t.timesheet_id,
+            t.employee_id,
+            t.entry_date,
+            t.time_in,
+            t.time_out,
+            t.normal_hours,
+            e.first_name,
+            e.employee_name,
+            t.day,
+            t.on_leave,
+            t.leave_type,
+            t.employee_ot_hours,
+            t.employee_ph_hours
+           From timesheet t
+           LEFT JOIN (employee e) ON (t.employee_id = e.employee_id)
+          Where t.timesheet_id !=''
+          `,
+            (err, result) => {
+              if (err) {
+                console.log("error: ", err);
+                return res.status(400).send({
+                  data: err,
+                  msg: "failed",
+                });
+              } else {
+                return res.status(200).send({
+                  data: result,
+                  msg: "Success",
+                });
+              }
+            }
+          );
+        });
+
+app.post('/insertTimesheet', (req, res, next) => {
+
+  let data = {attendance_id:req.body.attendance_id_id
+    , employee_id: req.body.employee_id
+     , entry_date: req.body.date
+       , day: req.body.day
+     ,time_in:req.body.time_in
+    ,team_id:req.body.team_id
+     ,time_out:req.body.time_out
+    ,employee_ot_hours:req.body.ot_hours
+    ,normal_hours:req.body.normal_hours
+    ,employee_ph_hours:req.body.ph_hours
+    
+    };
+  let sql = "INSERT INTO timesheet SET ?";
   let query = db.query(sql, data, (err, result) => {
     if (err) {
       console.log('error: ', err)
