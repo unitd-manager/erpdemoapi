@@ -313,25 +313,25 @@ app.get('/getProjectSalesOrder', (req, res, next) => {
   }
 );
 });
-app.delete('/deleteorder_item/:quoteId', (req, res) => {
-  const quoteId = req.params.quoteId;
+// app.delete('/deleteorder_item/:quoteId', (req, res) => {
+//   const quoteId = req.params.quoteId;
 
-  // Construct and execute the SQL query to delete old order items by quote_id
-  const sql = "DELETE FROM project_order_item WHERE project_quote_id = ?";
-  db.query(sql, [quoteId], (err, result) => {
-    if (err) {
-      console.error('Error deleting order items:', err);
-      return res.status(500).json({
-        error: 'Failed to delete order items',
-      });
-    }
+//   // Construct and execute the SQL query to delete old order items by quote_id
+//   const sql = "DELETE FROM project_order_item WHERE project_quote_id = ?";
+//   db.query(sql, [quoteId], (err, result) => {
+//     if (err) {
+//       console.error('Error deleting order items:', err);
+//       return res.status(500).json({
+//         error: 'Failed to delete order items',
+//       });
+//     }
 
-    console.log(`Deleted old order items with quote_id ${quoteId}`);
-    return res.status(200).json({
-      message: 'Order items deleted successfully',
-    });
-  });
-});
+//     console.log(`Deleted old order items with quote_id ${quoteId}`);
+//     return res.status(200).json({
+//       message: 'Order items deleted successfully',
+//     });
+//   });
+// });
 app.post('/getQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
             qt.* 

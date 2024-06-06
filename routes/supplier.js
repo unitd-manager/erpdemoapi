@@ -47,7 +47,8 @@ app.get('/getSupplier', (req, res, next) => {
   ,s.terms_arb
   ,s.phone
   ,gc.name AS country_name 
-  FROM supplier s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.supplier_id != ''`,
+  FROM supplier s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.supplier_id != ''
+  ORDER BY s.supplier_id DESC `,
   (err, result) => {
     if (err) {
       console.log('error: ', err)

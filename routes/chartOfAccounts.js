@@ -67,6 +67,7 @@ app.post('/editChartAc', (req, res, next) => {
             ,code = ${db.escape(req.body.code)}
             ,title_arb =${db.escape(req.body.title_arb)}
             ,modification_date=${db.escape(req.body.modification_date)}
+            ,modified_by=${db.escape(req.body.modified_by)}
             ,acc_category_id = ${db.escape(req.body.acc_category_id)}
             ,acc_category_arb_id = ${db.escape(req.body.acc_category_arb_id)}
             WHERE acc_head_id = ${db.escape(req.body.acc_head_id)}`,
@@ -94,6 +95,7 @@ app.post('/insertChartAc', (req, res, next) => {
     title	: req.body.title	
     , title_arb	: req.body.title_arb	
    , creation_date: req.body.creation_date
+   , created_by: req.body.created_by
    , acc_category_id: req.body.acc_category_id
    , acc_category_arb_id: req.body.acc_category_arb_id
   };

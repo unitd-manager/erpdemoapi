@@ -169,6 +169,33 @@ app.post("/getTimesheetStaffById", (req, res, next) => {
 });
 
 
+app.post("/getTimesheetLabourById", (req, res, next) => {
+  db.query(
+    `SELECT et.* 
+    ,e.employee_id
+    ,e.employee_name
+    FROM employee_timesheet et 
+        Left JOIN employee e ON e.employee_id = et.employee_id 
+        Left JOIN project p ON p.project_id = et.project_id
+        left join labour_request l ON p.project_id = l.project_id
+        WHERE l.labour_request_id =${db.escape(req.body.labour_request_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+           data: result,
+          msg: 'Success',
+        })
+      }
+
+    }
+  );
+});
 app.post("/insertTimesheetRate", (req, res, next) => {
   let data = {
       project_id: req.body.project_id,

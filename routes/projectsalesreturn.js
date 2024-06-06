@@ -33,7 +33,7 @@ app.post('/getSalesReturnId', (req, res, next) => {
   from proj_sales_return o
   LEFT JOIN project_invoice i ON i.project_invoice_id = o.project_invoice_id
   LEFT JOIN project_invoice_item it ON it.project_invoice_id = i.project_invoice_id
-   WHERE o.proj_sales_return_id !=''${db.escape(req.body.proj_sales_return_id)}`,
+   WHERE o.proj_sales_return_id = ${db.escape(req.body.proj_sales_return_id)}`,
           (err, result) => {
        
       if (result.length === 0) {

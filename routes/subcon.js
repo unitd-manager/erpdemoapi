@@ -102,7 +102,8 @@ app.get('/getSubcon', (req, res, next) => {
   ,s.phone
   ,s.phone_arb
   ,gc.name AS country_name 
-  FROM sub_con s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.sub_con_id != ''`,
+  FROM sub_con s LEFT JOIN (geo_country gc) ON (s.address_country = gc.country_code) WHERE s.sub_con_id != ''
+  ORDER BY s.sub_con_id DESC `,
   (err, result) => {
     if (err) {
       console.log('error: ', err)
