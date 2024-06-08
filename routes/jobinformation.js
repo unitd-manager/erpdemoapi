@@ -234,6 +234,10 @@ app.post('/EditjobinformationById', (req, res, next) => {
             ,j.probation_start_date
             ,j.probation_end_date
             ,j.over_time_rate
+            ,j.creation_date
+            ,j.modification_date
+            ,j.created_by
+            ,j.modified_by
             ,e.emp_code
             ,e.employee_name
             ,e.first_name

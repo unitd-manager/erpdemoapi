@@ -423,8 +423,8 @@ app.post('/TabPurchaseOrderLineItemById', (req, res, next) => {
   ,po.damage_qty
   ,po.qty_delivered
   ,i.actual_stock AS stock
-  ,(po.cost_price*po.quantity) AS po_value 
-  ,(po.cost_price_arb*po.quantity_arb) AS po_value_arb
+  ,(po.cost_price*po.qty) AS po_value 
+  ,(po.cost_price_arb*po.qty_arb) AS po_value_arb
   FROM po_product po
   LEFT JOIN (product p) ON (po.product_id = p.product_id) 
   LEFT JOIN (inventory i) ON (i.inventory_id = p.product_id) 
@@ -838,7 +838,7 @@ app.post('/getDeliveryOrderHistory', (req, res, next) => {
   });
 app.post('/getProductsfromOtherSuppliers', (req, res, next) => {
   db.query(`SELECT p.product_id
-  ,pop.qty as po_QTY
+  ,pop.qty
   ,pop.item_title
   ,pop.unit
   ,pop.amount
