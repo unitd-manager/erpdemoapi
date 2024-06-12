@@ -488,6 +488,7 @@ app.post('/insert_project_order_item', (req, res, next) => {
               admin_charges: req.body.admin_charges,
               transport_charges: req.body.transport_charges,
               project_quote_id: req.body.project_quote_id,
+              project_quote_items_id: req.body.project_quote_items_id,
               drawing_number: req.body.drawing_number,
               drawing_title: req.body.drawing_title,
               drawing_revision: req.body.drawing_revision,

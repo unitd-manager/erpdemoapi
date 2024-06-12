@@ -19,6 +19,79 @@ app.use(
   })
 );
 
+app.post("/updategoodsdeliveryitem", (req, res, next) => {
+  db.query(
+    `UPDATE project_goods_delivery_item
+              SET 
+               project_goods_delivery_item_id =${db.escape(req.body.project_goods_delivery_item_id )}
+              ,project_goods_delivery_id=${db.escape(req.body.project_goods_delivery_id)}
+              ,item_title=${db.escape(req.body.item_title)}
+              ,description=${db.escape(req.body.description)}
+              ,quantity=${db.escape(req.body.quantity)}
+              ,amount=${db.escape(req.body.amount)}
+              ,unit_price=${db.escape(req.body.unit_price)}
+              ,unit=${db.escape(req.body.unit)}
+              ,creation_date=${db.escape(req.body.creation_date)}
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,created_by=${db.escape(req.body.created_by)}
+              ,modified_by=${db.escape(req.body.modified_by)}
+              ,project_order_id=${db.escape(req.body.project_order_id)}
+              ,project_order_item_id=${db.escape(req.body.project_order_item_id)}
+              ,delivery_qty=${db.escape(req.body.delivery_qty)}
+                  
+              WHERE project_goods_delivery_item_id =  ${db.escape(req.body.project_goods_delivery_item_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+
+app.post("/getGoodsDeliveryItems", (req, res, next) => {
+  db.query(
+    ` SELECT 
+    gd.project_goods_delivery_item_id 
+    ,gd.project_goods_delivery_id
+    ,gd.item_title
+      ,gd.description
+      ,gd.quantity
+    ,gd.amount
+    ,gd.unit_price
+    ,gd.unit
+    ,gd.creation_date
+    ,gd.modification_date
+    ,gd.created_by
+    ,gd.modified_by
+    ,gd.project_order_id
+    ,gd.project_order_item_id
+    ,gd.delivery_qty
+    FROM project_goods_delivery_item gd    
+     left join project_goods_delivery pg on gd.project_goods_delivery_id = pg.project_goods_delivery_id
+       WHERE gd.project_goods_delivery_id = ${db.escape(req.body.project_goods_delivery_id)}`,
+    (err, result) => {
+      if (result.length == 0) {
+        return res.status(400).send({
+          msg: "No result found",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
 app.post("/getgoodsdeliveryById", (req, res, next) => {
   db.query(
     ` SELECT 
@@ -247,7 +320,7 @@ app.post("/getOrdersById", (req, res, next) => {
     ,oi.quote_items_id
        FROM project_order_item oi 
        LEFT JOIN (project_orders o) ON o.project_order_id=oi.project_order_id 
-       WHERE o.project_order_id =${db.escape(req.body.project_order_id)}`,
+       WHERE o.project_order_id = ${db.escape(req.body.project_order_id)}`,
     (err, result) => {
       if (result.length == 0) {
         return res.status(400).send({
@@ -470,6 +543,102 @@ app.post("/insertgoodsdelivery", (req, res, next) => {
     }
   });
 });
+
+app.post('/getOrderItemsByOrderId', (req, res, next) => {
+  db.query(`SELECT
+              po.project_goods_delivery_item_id 
+              ,po.project_goods_delivery_id
+             ,po.quantity
+             ,po.unit_price
+             ,po.item_title
+             ,po.amount
+             ,po.unit
+             ,po.project_order_id
+             ,po.project_order_item_id
+             ,po.delivery_qty
+            FROM project_goods_delivery_item po 
+            left join project_goods_delivery p on po.project_goods_delivery_id = p.project_goods_delivery_id
+             WHERE po.project_goods_delivery_id = ${db.escape(req.body.project_goods_delivery_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      }else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+
+app.post('/update_project_order_item', (req, res, next) => {
+  const {
+    quantity,
+    unit_price,
+    item_title,
+    amount,
+    unit,
+    project_order_id,
+    project_order_item_id,
+  } = req.body;
+
+  console.log('Received update request with data:', req.body);
+
+  const query = `
+    UPDATE project_goods_delivery_item
+    SET 
+      quantity = ?,
+      unit_price = ?,
+      item_title = ?,
+      amount = ?,
+      unit = ?,
+      project_order_id = ?
+    WHERE 
+      project_order_item_id = ?
+  `;
+
+  const values = [
+    quantity,
+    unit_price,
+    item_title,
+    amount,
+    unit,
+    project_order_id,
+    project_order_item_id // Ensure this value is correctly set
+  ];
+
+  console.log('Executing query:', query);
+  console.log('With values:', values);
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(400).send({
+        data: err,
+        msg: 'Failed to update project order item'
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      console.warn('No matching project order item found to update for project_order_item_id:', project_order_item_id);
+      return res.status(404).send({
+        msg: 'No matching project order item found to update'
+      });
+    }
+
+    console.log('Update successful:', result);
+    return res.status(200).send({
+      data: result,
+      msg: 'Success'
+    });
+  });
+});
+
+
 
 app.get("/secret-route", userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
