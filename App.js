@@ -35,6 +35,7 @@ app.use(
 );
 
 const project = require('./routes/project.js');
+const pos = require('./routes/poss.js');
 const projectreceipts = require('./routes/projectreceipts.js');
 const Arouter = require('./routes/attachment.js');
 const Auth = require('./routes/auth.js');
@@ -137,6 +138,7 @@ app.use('/note', note);
 app.use('/bank', bank);
 app.use('/jobinformation', jobinformation);
 app.use('/finance', finance);
+app.use('/poss', pos);
 app.use('/training', training);
 app.use('/projectsalesorder', projectsalesorder);
 app.use('/geocountry', geocountry);
@@ -223,3 +225,7 @@ app.use(fileUpload({
     createParentPath: true
 }));
 module.exports = app;
+
+function newFunction() {
+  return './routes/pos.js';
+}

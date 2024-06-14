@@ -413,22 +413,17 @@ GROUP BY i.project_invoice_id`,
 
 app.post('/getInvoiceForSalesReceipt', (req, res, next) => {
   db.query(`
-  SELECT
-  i.invoice_code,
-  i.status,
-  i.invoice_id,
-  i.invoice_source_id,
-  SUM(ii.total_cost) AS invoice_amount
-FROM
-  invoice i
-  LEFT JOIN invoice_item ii ON ii.invoice_id = i.invoice_id
-  LEFT JOIN orders b ON b.order_id = i.invoice_source_id
-WHERE 
-  b.order_id = ${db.escape(req.body.order_id)} AND 
-  i.status != 'Paid' AND 
-  ii.total_cost != '' AND
-  i.invoice_id NOT IN (SELECT invoice_id FROM invoice_receipt_history)
-GROUP BY i.invoice_id`,
+ SELECT i.invoice_code 
+  ,i.status
+  ,i.invoice_id
+  ,i.invoice_amount
+  ,(SELECT SUM(invHist.amount) AS prev_sum 
+  FROM invoice_receipt_history invHist 
+  LEFT JOIN receipt r ON (r.receipt_id = invHist.receipt_id) 
+  WHERE invHist.invoice_id = i.invoice_id AND i.status != 'Cancelled' AND r.receipt_status !='cancelled') as prev_amount 
+  FROM invoice i
+  LEFT JOIN orders o ON (o.order_id = i.invoice_source_id) 
+  WHERE o.order_id = ${db.escape(req.body.order_id)} AND (i.status='due' OR i.status='Partial Payment')`,
     (err, result) => {
       if (err) {
         return res.status(400).send({

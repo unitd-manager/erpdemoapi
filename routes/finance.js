@@ -811,8 +811,12 @@ app.post('/getOrdersByIds', (req, res, next) => {
   ,r.record_id
   ,r.order_id
   ,o.order_code
+  ,o.gst_status
+  ,o.discount
+  ,o.shipping_charge
   ,r.qty
   ,r.unit_price
+  ,r.qty *r.unit_price AS TotalCost
   ,r.item_title
   ,r.item_title_arb
   ,r.model
@@ -824,6 +828,9 @@ app.post('/getOrdersByIds', (req, res, next) => {
   ,r.unit_arb
   ,r.quote_id
   ,r.order_id 
+  ,r.discounted_amount
+  ,r.discount_type
+  ,r.vat
   FROM order_item r  
  LEFT JOIN orders o ON (o.order_id = r.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
     (err, result) => {
