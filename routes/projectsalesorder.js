@@ -270,6 +270,79 @@ app.get('/checkOrderItems', (req, res, next) => {
   );
 });
 
+app.post('/update_project_order_item', (req, res, next) => {
+  const {
+    project_order_item_id,
+    qty,
+    unit_price,
+    item_title,
+    cost_price,
+    item_code,
+    project_quote_items_id,
+    unit,
+    description,
+    project_quote_id,
+    project_order_id
+  } = req.body;
+
+  console.log('Received update request with data:', req.body);
+
+  const query = `
+    UPDATE project_order_item
+    SET 
+      qty = ?,
+      unit_price = ?,
+      item_title = ?,
+      cost_price = ?,
+      item_code = ?,
+      unit = ?,
+      description = ?,
+      project_quote_id = ?,
+      project_order_id = ?
+    WHERE 
+      project_quote_items_id = ?
+  `;
+
+  const values = [
+    qty,
+    unit_price,
+    item_title,
+    cost_price,
+    item_code,
+    unit,
+    description,
+    project_quote_id,
+    project_order_id,
+    project_quote_items_id  // Ensure this value is correctly set
+  ];
+
+  console.log('Executing query:', query);
+  console.log('With values:', values);
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(400).send({
+        data: err,
+        msg: 'Failed to update project order item'
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      console.warn('No matching project order item found to update for project_quote_items_id:', project_quote_items_id);
+      return res.status(404).send({
+        msg: 'No matching project order item found to update'
+      });
+    }
+
+    console.log('Update successful:', result);
+    return res.status(200).send({
+      data: result,
+      msg: 'Success'
+    });
+  });
+});
+
 app.post('/editFinances', (req, res, next) => {
   db.query(`UPDATE project_orders
             SET invoice_terms=${db.escape(req.body.invoice_terms)}
@@ -484,6 +557,37 @@ app.post('/getQuoteLineItemsById', (req, res, next) => {
             qt.* 
             FROM project_quote_items qt 
              WHERE qt.project_quote_id =  ${db.escape(req.body.project_quote_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      }else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+
+app.post('/getOrderItemsByOrderId', (req, res, next) => {
+  db.query(`SELECT
+              po.project_order_item_id 
+             ,po.qty
+             ,po.unit_price
+             ,po.item_title
+             ,po.cost_price
+             ,po.quote_items_id
+             ,po.unit
+             ,po.project_order_id
+             ,po.project_quote_id
+             ,po.project_quote_items_id
+            FROM project_order_item po 
+            left join project_orders p on po.project_order_id = p.project_order_id
+             WHERE po.project_order_id =  ${db.escape(req.body.project_order_id)}`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
