@@ -411,6 +411,42 @@ GROUP BY i.project_invoice_id`,
   );
 });
 
+app.post('/getInvoiceForSalesReceiptOld', (req, res, next) => {
+  db.query(`
+  SELECT
+  i.invoice_code,
+  i.status,
+  i.invoice_id,
+  i.invoice_source_id,
+  SUM(ii.total_cost) AS invoice_amount
+FROM
+  invoice i
+  LEFT JOIN invoice_item ii ON ii.invoice_id = i.invoice_id
+  LEFT JOIN orders b ON b.order_id = i.invoice_source_id
+WHERE 
+  b.order_id = ${db.escape(req.body.order_id)} AND 
+  i.status != 'Paid' AND 
+  ii.total_cost != '' AND
+  i.invoice_id NOT IN (SELECT invoice_id FROM invoice_receipt_history)
+GROUP BY i.invoice_id`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'failed'
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
+
 app.post('/getInvoiceForSalesReceipt', (req, res, next) => {
   db.query(`
  SELECT i.invoice_code 
@@ -2078,6 +2114,8 @@ app.post('/getReceiptData', (req, res, next) => {
     }
   );
 });
+
+
 
 app.post('/getReceiptInvoiceData', (req, res, next) => {
   db.query(`select i.receipt_id
