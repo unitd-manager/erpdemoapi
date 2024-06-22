@@ -2387,6 +2387,165 @@ from project p
  );
 });
 
+app.post('/getOrderItemsByOrderId', (req, res, next) => {
+  db.query(`SELECT
+              po.order_item_id 
+             ,po.qty
+             ,po.unit_price
+             ,po.item_title
+             ,po.cost_price
+             ,po.quote_items_id
+             ,po.unit
+             ,po.order_id
+             ,po.quote_id
+             ,po.quote_items_id
+            FROM order_item po 
+            left join orders p on po.order_id = p.order_id
+             WHERE po.order_id =  ${db.escape(req.body.order_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      }else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+
+app.post('/insert_order_item', (req, res, next) => {
+
+  let data = {qty: req.body.qty,
+              unit_price: req.body.unit_price,
+              order_id: req.body.order_id,
+              item_title: req.body.item_title,
+              model: req.body.model,
+              module: req.body.module,
+              cost_price: req.body.cost_price,
+              discount_percentage: req.body.discount_percentage,
+              mark_up: req.body.mark_up,
+              qty_for_invoice: req.body.qty_for_invoice,
+              mark_up_type: req.body.mark_up_type,
+              item_code: req.body.item_code,
+              price_from_supplier: req.body.price_from_supplier,
+              ref_code: req.body.ref_code,
+              discount_type: req.body.discount_type,
+              vat: req.body.vat,
+              quote_items_id: req.body.quote_items_id,
+              item_code_backup: req.body.item_code_backup,
+              unit: req.body.unit,
+              description: req.body.description,
+              remarks: req.body.remarks,
+              month: req.body.month,
+              year: req.body.year,
+              ot_hourly_rate: req.body.ot_hourly_rate,
+              ph_hourly_rate: req.body.ph_hourly_rate,
+              employee_ot_hours: req.body.employee_ot_hours,
+              employee_ph_hours: req.body.employee_ph_hours,
+              part_no: req.body.part_no,
+              admin_charges: req.body.admin_charges,
+              transport_charges: req.body.transport_charges,
+              quote_id: req.body.quote_id,
+              drawing_number: req.body.drawing_number,
+              drawing_title: req.body.drawing_title,
+              drawing_revision: req.body.drawing_revision,
+            
+            };
+
+  let sql = "INSERT INTO order_item SET ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
+
+app.post('/update_order_item', (req, res, next) => {
+  const {
+    order_item_id,
+    qty,
+    unit_price,
+    item_title,
+    cost_price,
+    item_code,
+    quote_items_id,
+    unit,
+    description,
+    quote_id,
+    order_id
+  } = req.body;
+
+  console.log('Received update request with data:', req.body);
+
+  const query = `
+    UPDATE order_item
+    SET 
+      qty = ?,
+      unit_price = ?,
+      item_title = ?,
+      cost_price = ?,
+      item_code = ?,
+      unit = ?,
+      description = ?,
+      quote_id = ?,
+      order_id = ?
+    WHERE 
+      quote_items_id = ?
+  `;
+
+  const values = [
+    qty,
+    unit_price,
+    item_title,
+    cost_price,
+    item_code,
+    unit,
+    description,
+    quote_id,
+    order_id,
+    quote_items_id  // Ensure this value is correctly set
+  ];
+
+  console.log('Executing query:', query);
+  console.log('With values:', values);
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(400).send({
+        data: err,
+        msg: 'Failed to update project order item'
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      console.warn('No matching project order item found to update for quote_items_id:', quote_items_id);
+      return res.status(404).send({
+        msg: 'No matching project order item found to update'
+      });
+    }
+
+    console.log('Update successful:', result);
+    return res.status(200).send({
+      data: result,
+      msg: 'Success'
+    });
+  });
+});
+
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');

@@ -438,6 +438,101 @@ app.post("/insertgoodsdelivery", (req, res, next) => {
   });
 });
 
+app.post('/getGoodsDeliveryItemsByGoodsDeliveryId', (req, res, next) => {
+  db.query(`SELECT
+              po.goods_delivery_item_id 
+              ,po.goods_delivery_id
+             ,po.quantity
+             ,po.unit_price
+             ,po.title
+             ,po.amount
+             ,po.unit
+             ,po.order_id
+             ,po.order_item_id
+             ,po.delivery_qty
+            FROM goods_delivery_item po 
+            left join goods_delivery p on po.goods_delivery_id = p.goods_delivery_id
+             WHERE po.goods_delivery_id = ${db.escape(req.body.goods_delivery_id)}`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          msg: 'No result found'
+        });
+      }else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+        }
+ 
+    }
+  );
+});
+
+app.post('/update_Goods_Delivery_item', (req, res, next) => {
+  const {
+    quantity,
+    unit_price,
+    title,
+    amount,
+    unit,
+    order_id,
+    order_item_id,
+  } = req.body;
+
+  console.log('Received update request with data:', req.body);
+
+  const query = `
+    UPDATE goods_delivery_item
+    SET 
+      quantity = ?,
+      unit_price = ?,
+      item_title = ?,
+      amount = ?,
+      unit = ?,
+      order_id = ?
+    WHERE 
+      order_item_id = ?
+  `;
+
+  const values = [
+    quantity,
+    unit_price,
+    title,
+    amount,
+    unit,
+    order_id,
+    order_item_id // Ensure this value is correctly set
+  ];
+
+  console.log('Executing query:', query);
+  console.log('With values:', values);
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(400).send({
+        data: err,
+        msg: 'Failed to update project order item'
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      console.warn('No matching project order item found to update for order_item_id:', order_item_id);
+      return res.status(404).send({
+        msg: 'No matching project order item found to update'
+      });
+    }
+
+    console.log('Update successful:', result);
+    return res.status(200).send({
+      data: result,
+      msg: 'Success'
+    });
+  });
+});
+
+
 app.get("/secret-route", userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send("This is the secret content. Only logged in users can see that!");
