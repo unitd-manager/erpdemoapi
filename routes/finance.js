@@ -2553,6 +2553,45 @@ app.post('/update_order_item', (req, res, next) => {
   });
 });
 
+app.post('/getOrderItemsById', (req, res, next) => {
+  db.query(`SELECT DISTINCT r.order_item_id 
+  ,r.record_id
+  ,r.order_id
+  ,o.order_code
+  ,r.qty
+  ,r.unit_price
+  ,r.item_title
+  ,r.item_title_arb
+  ,r.model
+  ,r.module
+  ,r.supplier_id 
+  ,r.invoice_id 
+  ,r.cost_price
+  ,r.unit
+  ,r.unit_arb
+  ,r.quote_id
+  ,r.order_id 
+  FROM order_item r  
+ LEFT JOIN orders o ON (o.order_id = r.order_id) WHERE o.order_id = ${db.escape(req.body.order_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
+
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);
   res.send('This is the secret content. Only logged in users can see that!');

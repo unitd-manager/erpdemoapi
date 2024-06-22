@@ -487,7 +487,7 @@ app.post('/update_Goods_Delivery_item', (req, res, next) => {
     SET 
       quantity = ?,
       unit_price = ?,
-      item_title = ?,
+      title = ?,
       amount = ?,
       unit = ?,
       order_id = ?
