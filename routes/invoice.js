@@ -411,7 +411,7 @@ GROUP BY i.project_invoice_id`,
   );
 });
 
-app.post('/getInvoiceForSalesReceipt', (req, res, next) => {
+app.post('/getInvoiceForSalesReceiptOld', (req, res, next) => {
   db.query(`
   SELECT
   i.invoice_code,
@@ -429,6 +429,37 @@ WHERE
   ii.total_cost != '' AND
   i.invoice_id NOT IN (SELECT invoice_id FROM invoice_receipt_history)
 GROUP BY i.invoice_id`,
+    (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'failed'
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+
+          msg: 'Success'
+        });
+      }
+    }
+  );
+});
+
+
+app.post('/getInvoiceForSalesReceipt', (req, res, next) => {
+  db.query(`
+ SELECT i.invoice_code 
+  ,i.status
+  ,i.invoice_id
+  ,i.invoice_amount
+  ,(SELECT SUM(invHist.amount) AS prev_sum 
+  FROM invoice_receipt_history invHist 
+  LEFT JOIN receipt r ON (r.receipt_id = invHist.receipt_id) 
+  WHERE invHist.invoice_id = i.invoice_id AND i.status != 'Cancelled' AND r.receipt_status !='cancelled') as prev_amount 
+  FROM invoice i
+  LEFT JOIN orders o ON (o.order_id = i.invoice_source_id) 
+  WHERE o.order_id = ${db.escape(req.body.order_id)} AND (i.status='due' OR i.status='Partial Payment')`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
@@ -2083,6 +2114,8 @@ app.post('/getReceiptData', (req, res, next) => {
     }
   );
 });
+
+
 
 app.post('/getReceiptInvoiceData', (req, res, next) => {
   db.query(`select i.receipt_id
