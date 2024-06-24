@@ -446,6 +446,27 @@ GROUP BY i.invoice_id`,
   );
 });
 
+app.post("/updateInvoiceAmount", (req, res, next) => {
+  const invoice_amount = req.body.invoice_amount; // Assuming the new status is provided in the request body
+  const invoice_id = req.body.invoice_id;
+
+  // Construct the SQL query
+  let sql = "UPDATE `invoice` SET invoice_amount = ? WHERE invoice_id = ?";
+  let query = db.query(sql, [invoice_amount, invoice_id], (err, result) => {
+    if (err) {
+      console.log("Error updating order status:", err);
+      return res.status(500).send({ error: "Internal server error" });
+    } else {
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ error: "Enquiry not found" });
+      }
+      return res.status(200).send({
+        message: "Order status updated successfully",
+        data: result,
+      });
+    }
+  });
+});
 
 app.post('/getInvoiceForSalesReceipt', (req, res, next) => {
   db.query(`
