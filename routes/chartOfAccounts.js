@@ -18,6 +18,7 @@ app.get('/getChartOfAccounts', (req, res, next) => {
     FROM acc_head ah
     LEFT JOIN acc_category ac ON ac.acc_category_id  = ah.acc_category_id 
     WHERE ah.acc_category_id != ''
+     ORDER BY ah.acc_category_id DESC
     `,
       (err, result) => {
          
@@ -41,7 +42,8 @@ app.post('/getChartofACById', (req, res, next) => {
 db.query(`select ah.*, ac.title as category,ac.title_arb as category_arb
             From acc_head ah
             LEFT JOIN acc_category ac ON ac.acc_category_id = ah.acc_category_id
-            where acc_head_id = ${db.escape(req.body.acc_head_id)}`,
+            where acc_head_id = ${db.escape(req.body.acc_head_id)}
+             ORDER BY ah.acc_category_id DESC`,
     (err, result) => {
     if (err) {
         console.log('error: ', err)
