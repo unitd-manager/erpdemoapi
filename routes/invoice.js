@@ -1215,10 +1215,7 @@ app.post('/getInvoiceByOrderItemId', (req, res, next) => {
 app.post('/getInvoiceByIdold', (req, res, next) => {
   db.query(`select 
   i.invoice_id
-<<<<<<< HEAD
-=======
   ,i.invoice_id_arb
->>>>>>> deba6c0d9b718ddf75640259c9cdcb8db8eb35fd
   ,i.invoice_code  
   ,i.invoice_code_arb
   ,i.invoice_source
@@ -1266,11 +1263,8 @@ app.post('/getInvoiceByIdold', (req, res, next) => {
      ,g.goods_delivery_code
      ,g.goods_delivery_code_arb
      ,(select sum(it.total_cost)) as amount
-<<<<<<< HEAD
-=======
      ,(select sum(it.total_cost)) as amount_arb
->>>>>>> deba6c0d9b718ddf75640259c9cdcb8db8eb35fd
-
+     ,o.record_type
    from invoice i
   LEFT JOIN orders o ON o.order_id=i.order_id
   LEFT JOIN goods_delivery g ON g.goods_delivery_id=i.goods_delivery_id
@@ -1317,18 +1311,20 @@ app.post('/getInvoiceById', (req, res, next) => {
     o.order_code,
     g.goods_delivery_id,
     g.goods_delivery_code,
-    SUM(it.total_cost) AS InvoiceAmount
+    SUM(it.total_cost) AS InvoiceAmount,
+    o.record_type
   FROM
     invoice i
   LEFT JOIN
-    orders o ON o.order_id = i.invoice_source_id AND i.source_type = 'Sales_Order'
+    orders o ON o.order_id = i.invoice_source_id 
   LEFT JOIN
-    goods_delivery g ON g.goods_delivery_id = i.invoice_source_id AND i.source_type = 'Goods_Delivery'
+    goods_delivery g ON g.goods_delivery_id = i.invoice_source_id 
   LEFT JOIN
     invoice_item it ON it.invoice_id = i.invoice_id
   LEFT JOIN
     company co ON co.company_id = i.company_id
-  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}`,
+  WHERE i.invoice_id = ${db.escape(req.body.invoice_id)}
+`,
   (err, result) => {
     if (err) {
       return res.status(400).send({
@@ -2704,7 +2700,7 @@ app.post('/insertSalesReturnHistory', (req, res, next) => {
     UPDATE invoice_item 
     SET qty = qty - ${req.body.qty_return},
     total_cost = (qty) * ${req.body.price},
-    invoice_qty= ${req.body.qty_return},
+    invoice_qty= invoice_qty-${req.body.qty_return},
     qty_returned = qty_returned + ${req.body.qty_return}
     WHERE invoice_item_id = ${req.body.invoice_item_id}
   `;

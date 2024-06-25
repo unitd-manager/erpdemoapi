@@ -54,7 +54,7 @@ app.get('/createNewOrder', async (req, res) => {
       throw new Error('Failed to retrieve nextOrderCode value');
     }
 
-    const order_code = `ORD - ${receipt_code_result[0].value}`;
+    const order_code = `OR - ${receipt_code_result[0].value}`;
 
     const fa = {
       order_status: 'New',
@@ -130,6 +130,7 @@ app.get('/getOrders', (req, res, next) => {
 
     WHERE 
       o.order_id != ''
+      AND o.record_type='POS'
     ORDER BY 
       o.order_id DESC
     LIMIT 1
@@ -189,12 +190,24 @@ app.post("/cancelOrderandNew", async (req, res) => {
 
     const newBillNumber = (newOrderResult[0]?.bill_number || 0) + 1;
 
+    
+    await query('UPDATE setting SET value = (value + 1) WHERE key_text = "nextOrderCode"');
+
+    const receipt_code_result = await query('SELECT value FROM setting WHERE key_text = "nextOrderCode"');
+
+    if (!receipt_code_result || !receipt_code_result[0] || !receipt_code_result[0].value) {
+      throw new Error('Failed to retrieve nextOrderCode value');
+    }
+
+    const order_code = `ORD - ${receipt_code_result[0].value}`;
+
     const newOrderData = {
       order_status: 'New',
       record_type: 'POS',
       order_date: new Date().toISOString().split('T')[0],
       bill_number: newBillNumber,
       link_stock: 1,
+      order_code,
     };
 
     const insertResult = await query('INSERT INTO `orders` SET ?', newOrderData);
@@ -274,10 +287,11 @@ app.post('/insertorder_item', (req, res, next) => {
 
 app.post("/updateOrderItem", (req, res, next) => {
   const qty = req.body.qty; // Assuming the new status is provided in the request body
+  const cost_price = req.body.cost_price;
   const order_item_id = req.body.order_item_id;
   // Construct the SQL query
-  let sql = "UPDATE order_item SET qty = ? WHERE order_item_id = ?";
-  let query = db.query(sql, [qty, order_item_id], (err, result) => {
+  let sql = "UPDATE order_item SET qty = ?,cost_price = ? WHERE order_item_id = ?";
+  let query = db.query(sql, [qty,cost_price, order_item_id], (err, result) => {
     if (err) {
       console.log("Error updating order status:", err);
       return res.status(500).send({ error: "Internal server error" });
@@ -499,6 +513,17 @@ app.post('/generateBillAndCreateOrder', async (req, res) => {
 
     const bill_number = (newOrderResult[0]?.bill_number || 0) + 1;
 
+    
+    await query('UPDATE setting SET value = (value + 1) WHERE key_text = "nextOrderCode"');
+
+    const receipt_code_result = await query('SELECT value FROM setting WHERE key_text = "nextOrderCode"');
+
+    if (!receipt_code_result || !receipt_code_result[0] || !receipt_code_result[0].value) {
+      throw new Error('Failed to retrieve nextOrderCode value');
+    }
+
+    const order_code = `OR - ${receipt_code_result[0].value}`;
+
     const newOrder = {
       order_status: 'New',
       record_type: 'POS',
@@ -506,6 +531,7 @@ app.post('/generateBillAndCreateOrder', async (req, res) => {
       order_date: new Date().toISOString().split('T')[0],
       bill_number,
       link_stock: 1,
+      order_code,
     };
 
     const insertOrderResult = await queryDB('INSERT INTO `orders` SET ?', newOrder);
@@ -528,9 +554,16 @@ app.post('/generateBillAndCreateOrder', async (req, res) => {
       WHERE status != 'Cancelled'
     `;
 
-    const invoice_code_result = await queryDB(invoice_code_query);
-    let invoice_code = (invoice_code_result[0].invoice_code || 1000) + 1;
-    invoice_code = `INV - ${invoice_code.toString().padStart(3, '0')}`;
+  
+    await query('UPDATE setting SET value = (value + 1) WHERE key_text = "nextInvoiceCode"');
+
+    const invoice_code_result = await query('SELECT value FROM setting WHERE key_text = "nextInvoiceCode"');
+
+    if (!invoice_code_result || !invoice_code_result[0] || !invoice_code_result[0].value) {
+      throw new Error('Failed to retrieve nextInvoiceCode value');
+    }
+
+    const invoice_code = `INV/${invoice_code_result[0].value}`;
 
     let fa = {
       invoice_amount, // Set invoice_amount to subtotal_amount
@@ -569,18 +602,25 @@ const completeOrder = async (order_id, invoice_id, receipt_amount, invoice_amoun
   try {
     const items = await queryDB('SELECT * FROM order_item WHERE order_id = ?', [order_id]);
 
+       // Check if items is not iterable (null or undefined)
+       if (!items || !Array.isArray(items)) {
+        throw new Error(`No items found for order_id ${order_id}`);
+      }
+
     for (const item of items) {
       let fa = {
         invoice_id,
         record_id: item.record_id,
         qty: item.qty,
+        invoice_qty: item.qty,
         unit_price: item.unit_price,
-        cost_price: item.cost_price,
+        total_cost: item.cost_price,
         item_title: item.item_title,
         item_code: item.item_code,
         model: item.model,
         order_item_id: item.order_item_id,
         vat: item.vat,
+        source_type: 'POS',
         discount_type: item.discount_type,
         discount_percentage: item.discount_percentage,
       };
@@ -597,7 +637,7 @@ const completeOrder = async (order_id, invoice_id, receipt_amount, invoice_amoun
     if (receipt_amount > 0) {
       await queryDB('UPDATE setting SET value = (value + 1) WHERE key_text = "nextReceiptCode"');
       const receipt_code_result = await queryDB('SELECT value FROM setting WHERE key_text = "nextReceiptCode"');
-      let receipt_code = receipt_code_result[0].value;
+      let receipt_code = `REC - ${receipt_code_result[0].value}`;
 
       const existing_receipt = await queryDB('SELECT * FROM receipt WHERE order_id = ?', [order_id]);
 
@@ -618,9 +658,8 @@ const completeOrder = async (order_id, invoice_id, receipt_amount, invoice_amoun
         receipt_id = existing_receipt[0].receipt_id;
         await queryDB('UPDATE receipt SET ? WHERE order_id = ?', [fa, order_id]);
       } else {
-        fa.receipt_code = `RCPT - ${receipt_code}`;
-
-        const [result] = await queryDB('INSERT INTO receipt SET ?', [fa]);
+        fa.receipt_code = receipt_code;
+        const result = await queryDB('INSERT INTO receipt SET ?', [fa]);
         receipt_id = result.insertId;
       }
 
@@ -642,6 +681,7 @@ const completeOrder = async (order_id, invoice_id, receipt_amount, invoice_amoun
     await queryDB('UPDATE `orders` SET order_status = ?, order_date = ? WHERE order_id = ?', [orderStatus, new Date(), order_id]);
     res.send({ order_id });
   } catch (err) {
+    console.error('Error in generateBillAndCreateOrder:', err);
     res.status(500).send(err.toString());
   }
 };
