@@ -502,7 +502,7 @@ app.post('/getOrderCreditDebitNote', (req, res, next) => {
 });
 
 app.get('/getInvoice', (req, res, next) => {
-  db.query(`SELECT i.* FROM invoice i WHERE i.invoice_id !=' ' AND i.status !='Cancelled' AND i.invoice_source_id !='';`,
+  db.query(`SELECT i.* FROM invoice i WHERE i.invoice_id !=' ' AND i.status !='Cancelled' AND i.status !='paid' AND i.invoice_source_id !='';`,
     (err, result) => {
       if (err) {
         return res.status(400).send({
