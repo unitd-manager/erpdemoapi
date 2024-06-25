@@ -26,8 +26,8 @@ app.get('/getDocument', (req, res, next) => {
   ,d.project_id
   ,d.contact_id
   ,d.company_id
-  ,d.quote_id
-  ,d.budget
+  ,d.project_quote_id
+  ,pr.budget
   ,d.creation_date
   ,d.created_by
   ,d.modification_date
@@ -64,13 +64,14 @@ app.get('/getDocument', (req, res, next) => {
   ,co.address_country AS contact_address_country
   ,co.address_state AS contact_address_state
   ,co.address_po_code AS contact_address_po_code
-  ,q.quote_status
-  ,q.quote_id
+  ,q.project_quote_id
+  ,q.*
   FROM document d
   LEFT JOIN project p ON p.project_id=d.project_id
+    LEFT JOIN proposal pr ON p.proposal_id=pr.proposal_id
   LEFT JOIN company c ON c.company_id=d.company_id
   LEFT JOIN contact co ON co.contact_id=d.contact_id
-  LEFT JOIN quote q ON q.quote_id=d.quote_id
+  LEFT JOIN project_quote q ON q.project_quote_id=d.project_quote_id
   WHERE d.document_id !=''`,
   (err, result) => {
     if (err) {
@@ -117,13 +118,13 @@ app.post('/getDocumentById', (req, res, next) => {
   ,d.project_id
   ,d.contact_id
   ,d.company_id
-  ,d.quote_id
-  ,d.budget
+  ,d.project_quote_id
+  ,pr.budget
   ,d.creation_date
   ,d.created_by
   ,d.modification_date
   ,d.modified_by
-  ,p.title
+  ,p.title as project_title
   ,p.project_id
   ,p.contact_id
   ,p.start_date
@@ -155,14 +156,15 @@ app.post('/getDocumentById', (req, res, next) => {
   ,co.address_country AS contact_address_country
   ,co.address_state AS contact_address_state
   ,co.address_po_code AS contact_address_po_code
-  ,q.quote_status
-  ,q.quote_id
+  ,q.project_quote_id
+  ,q.*
   FROM document d
   LEFT JOIN project p ON p.project_id=d.project_id
+    LEFT JOIN proposal pr ON p.proposal_id=pr.proposal_id
   LEFT JOIN company c ON c.company_id=d.company_id
   LEFT JOIN contact co ON co.contact_id=d.contact_id
-  LEFT JOIN quote q ON q.quote_id=d.quote_id
-  WHERE d.document_id=${db.escape(req.body.document_id)}`,
+  LEFT JOIN project_quote q ON q.project_quote_id=d.project_quote_id
+  WHERE d.document_id= ${db.escape(req.body.document_id)}`,
   (err, result) => {
     if (err) {
       console.log('error: ', err)

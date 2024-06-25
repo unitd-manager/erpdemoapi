@@ -1313,7 +1313,7 @@ app.post('/getSalesOrderDropdown', (req, res, next) => {
   LEFT JOIN (company c) on o.company_id = c.company_id
   WHERE
   o.project_order_id != '' 
-  AND i.project_invoice_source_id IS NULL AND o.company_id=${db.escape(req.body.company_id)}`, 
+  AND o.company_id=${db.escape(req.body.company_id)}`, 
   (err, result) => {
     if (err) {
       return res.status(400).send({
