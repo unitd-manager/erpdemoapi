@@ -32,7 +32,7 @@ app.get('/getDocument', (req, res, next) => {
   ,d.created_by
   ,d.modification_date
   ,d.modified_by
-  ,p.title
+  ,p.title as project_title
   ,p.project_id
   ,p.contact_id
   ,p.start_date
