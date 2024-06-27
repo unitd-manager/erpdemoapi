@@ -227,6 +227,22 @@ app.post("/cancelOrderandNew", async (req, res) => {
   }
 });
 
+app.delete('/deleteOrderItem', (req, res, next) => {
+
+  let data = {order_item_id : req.body.order_item_id };
+  let sql = "DELETE FROM order_item WHERE ?";
+  let query = db.query(sql, data,(err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return;
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+    }
+  });
+});
 
 app.post('/insertorder_item', (req, res, next) => {
 
