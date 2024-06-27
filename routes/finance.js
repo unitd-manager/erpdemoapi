@@ -87,7 +87,7 @@ app.get('/getFinances', (req, res, next) => {
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id) 
   LEFT JOIN invoice i ON (i.order_id = o.order_id) 
   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
-  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id !=''
+  LEFT JOIN company c ON (c.company_id = o.company_id) WHERE o.order_id !=''
   GROUP BY o.order_id 
   ORDER BY o.order_id DESC`,
     (err, result) => {
@@ -954,7 +954,6 @@ app.get('/checkInvoiceItem', (req, res, next) => {
 app.get('/getQuote', (req, res, next) => {
   db.query(`SELECT q.quote_id,
        q.opportunity_id,
-       q.company_id,
        q.project_id,
        q.quote_code,
        q.quote_date,
@@ -964,6 +963,7 @@ app.get('/getQuote', (req, res, next) => {
        q.currency_item,
        q.note,
        c.company_name
+       ,c.company_id
 FROM quote q
 LEFT JOIN orders o ON o.quote_id = q.quote_id
 LEFT JOIN (company c) on q.company_id = c.company_id
@@ -1042,7 +1042,7 @@ app.post('/getFinanceById', (req, res, next) => {
   LEFT JOIN opportunity opt ON (opt.opportunity_id = q.opportunity_id)  
   LEFT JOIN invoice i ON (i.order_id = o.order_id) 
   LEFT JOIN invoice_item it ON (it.invoice_id = i.invoice_id) 
-  LEFT JOIN company c ON (c.company_id = opt.company_id) WHERE o.order_id = ${db.escape(req.body.order_id)} `,
+  LEFT JOIN company c ON (c.company_id = o.company_id) WHERE o.order_id = ${db.escape(req.body.order_id)} `,
     (err, result) => {
       if (err) {
          return res.status(400).send({
@@ -1647,85 +1647,113 @@ app.post('/editInvoiceItems', (req, res, next) => {
 
 
 app.post('/insertOrder', (req, res, next) => {
+  // Extract quote_id from request body
+  const quote_id = req.body.quote_id;
 
-  let data = {order_status: req.body.order_status,
-    payment_method: req.body.payment_method,
-    shipping_first_name: req.body.cust_company_name,
-    shipping_last_name: req.body.shipping_last_name,
-    shipping_email: req.body.shipping_email,
-    shipping_address1: req.body.cust_address1,
-    shipping_address2: req.body.cust_address2,
-    shipping_address_city: req.body.cust_address_city,
-    shipping_address_area: req.body.shipping_address_area,
-    shipping_address_state: req.body.cust_address_state,
-    shipping_address_country_code: req.body.shipping_address_country_code,
-    shipping_address_po_code: req.body.cust_address_po_code,
-    shipping_phone: req.body.shipping_phone,
-    cust_first_name: req.body.cust_first_name,
-    cust_last_name: req.body.cust_last_name,
-    cust_email: req.body.cust_email,
-    cust_address1: req.body.cust_address1,
-    cust_address2: req.body.cust_address2,
-    cust_address_city: req.body.cust_address_city,
-    cust_address_area: req.body.cust_address_area,
-    cust_address_state: req.body.cust_address_state,
-    cust_address_country: req.body.cust_address_country,
-    cust_address_po_code: req.body.cust_address_po_code,
-    cust_phone: req.body.cust_phone,
-    memo: req.body.memo,
-     quote_id: req.body.quote_id,
-    creation_date: req.body.creation_date,
-    modification_date: req.body.modification_date,
-    flag: req.body.flag,
-    record_type: req.body.record_type,
-    module: req.body.module,
-    currency: req.body.currency,
-    order_date: new Date().toISOString().split('T')[0],
-    order_code: req.body.order_code,
-    shipping_charge: req.body.shipping_charge,
-    add_gst_to_total: req.body.add_gst_to_total,
-    invoice_terms: req.body.invoice_terms,
-    notes: req.body.notes,
-    shipping_address_country: req.body.cust_address_country,
-    address_country: req.body.address_country,
-    delivery_to_text: req.body.delivery_to_text,
-    created_by: req.body.created_by,
-    modified_by: req.body.modified_by,
-    discount: req.body.discount,
-    name_of_company: req.body.name_of_company,
-    vat: req.body.vat,
-    cust_company_name: req.body.cust_company_name,
-    site_id: req.body.site_id,
-    manual_invoice: req.body.manual_invoice,
-    apply_general_vat: req.body.apply_general_vat,
-    link_stock: req.body.link_stock,
-    selling_company: req.body.selling_company,
-    link_account: req.body.link_account,
-    project_id: req.body.project_id,
-    start_date : req.body. start_date ,
-    end_date: req.body.end_date,
-    auto_create_invoice: req.body.auto_create_invoice,
-    delivery_date: req.body.delivery_date,
-    delivery_terms: req.body.delivery_terms,
-    quote_title: req.body.quote_title,
-    project_type: req.body.project_type,
-    cust_fax: req.body.cust_fax,
-    created_by: req.body.created_by,
-   shipping_fax: req.body.shipping_fax};
-
-  let sql = "INSERT INTO orders SET ?";
-  let query = db.query(sql, data,(err, result) => {
+  // First query to get company_id based on quote_id
+  let getCompanyIdSql = "SELECT company_id FROM quote WHERE quote_id = ?";
+  db.query(getCompanyIdSql, [quote_id], (err, result) => {
     if (err) {
-     return res.status(400).send({
-              data: err,
-              msg:'failed'
-            });
-    } else {
-          return res.status(200).send({
-            data: result,
-            msg:'Success'
-          });
+      return res.status(400).send({
+        data: err,
+        msg: 'Failed to retrieve company_id'
+      });
     }
+
+    // Check if a result was found
+    if (result.length === 0) {
+      return res.status(404).send({
+        data: null,
+        msg: 'No company_id found for the given quote_id'
+      });
+    }
+
+    // Get company_id from result
+    const company_id = result[0].company_id;
+
+    // Data to be inserted into orders table
+    let data = {
+      order_status: req.body.order_status,
+      payment_method: req.body.payment_method,
+      shipping_first_name: req.body.cust_company_name,
+      shipping_last_name: req.body.shipping_last_name,
+      shipping_email: req.body.shipping_email,
+      shipping_address1: req.body.cust_address1,
+      shipping_address2: req.body.cust_address2,
+      shipping_address_city: req.body.cust_address_city,
+      shipping_address_area: req.body.shipping_address_area,
+      shipping_address_state: req.body.cust_address_state,
+      shipping_address_country_code: req.body.shipping_address_country_code,
+      shipping_address_po_code: req.body.cust_address_po_code,
+      shipping_phone: req.body.shipping_phone,
+      cust_first_name: req.body.cust_first_name,
+      cust_last_name: req.body.cust_last_name,
+      cust_email: req.body.cust_email,
+      cust_address1: req.body.cust_address1,
+      cust_address2: req.body.cust_address2,
+      cust_address_city: req.body.cust_address_city,
+      cust_address_area: req.body.cust_address_area,
+      cust_address_state: req.body.cust_address_state,
+      cust_address_country: req.body.cust_address_country,
+      cust_address_po_code: req.body.cust_address_po_code,
+      cust_phone: req.body.cust_phone,
+      memo: req.body.memo,
+      quote_id: req.body.quote_id,
+      creation_date: req.body.creation_date,
+      modification_date: req.body.modification_date,
+      flag: req.body.flag,
+      record_type: req.body.record_type,
+      module: req.body.module,
+      currency: req.body.currency,
+      order_date: new Date().toISOString().split('T')[0],
+      order_code: req.body.order_code,
+      shipping_charge: req.body.shipping_charge,
+      add_gst_to_total: req.body.add_gst_to_total,
+      invoice_terms: req.body.invoice_terms,
+      notes: req.body.notes,
+      shipping_address_country: req.body.cust_address_country,
+      address_country: req.body.address_country,
+      delivery_to_text: req.body.delivery_to_text,
+      created_by: req.body.created_by,
+      modified_by: req.body.modified_by,
+      discount: req.body.discount,
+      name_of_company: req.body.name_of_company,
+      vat: req.body.vat,
+      cust_company_name: req.body.cust_company_name,
+      site_id: req.body.site_id,
+      manual_invoice: req.body.manual_invoice,
+      apply_general_vat: req.body.apply_general_vat,
+      link_stock: req.body.link_stock,
+      selling_company: req.body.selling_company,
+      link_account: req.body.link_account,
+      project_id: req.body.project_id,
+      start_date: req.body.start_date,
+      end_date: req.body.end_date,
+      auto_create_invoice: req.body.auto_create_invoice,
+      delivery_date: req.body.delivery_date,
+      delivery_terms: req.body.delivery_terms,
+      quote_title: req.body.quote_title,
+      project_type: req.body.project_type,
+      cust_fax: req.body.cust_fax,
+      shipping_fax: req.body.shipping_fax,
+      company_id: company_id // Add company_id to the data object
+    };
+
+    // Second query to insert data into orders table
+    let insertOrderSql = "INSERT INTO orders SET ?";
+    db.query(insertOrderSql, data, (err, result) => {
+      if (err) {
+        return res.status(400).send({
+          data: err,
+          msg: 'Failed to insert order'
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success'
+        });
+      }
+    });
   });
 });
 
