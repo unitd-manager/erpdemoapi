@@ -36,8 +36,7 @@ FROM inventory i
 LEFT JOIN (product p) ON (p.product_id = i.product_id)
 LEFT JOIN (product_company pc) ON (pc.product_id = p.product_id)
 LEFT JOIN (supplier c) ON (c.supplier_id = pc.company_id)
-WHERE i.inventory_id != ''
-ORDER BY i.inventory_id DESC `,
+WHERE i.inventory_id != '' `,
     (err, result) => {
        
       if (err) {

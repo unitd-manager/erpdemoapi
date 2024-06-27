@@ -54,6 +54,27 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
     }
   );
 });
+app.get('/getQuoteStats', (req, res, next) => {
+  db.query(`SELECT q.quote_id,
+q.quote_status
+from quote q
+where q.quote_id !=''`,
+  (err, result) => {
+       
+    if (err) {
+      console.log("error: ", err);
+      return;
+    } else {
+          return res.status(200).send({
+            data: result,
+            msg:'Success'
+          });
+
+      }
+
+  }
+);
+});
 // app.get('/getQuotationCounts', (req, res, next) => {
 //   db.query(
 //     `SELECT COUNT(*) AS quotation_count
