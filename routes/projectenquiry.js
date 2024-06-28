@@ -49,6 +49,41 @@ app.get('/getProjectEnquiry', (req, res, next) => {
   );
 });
 
+app.get('/getProjectEnquiryStats', (req, res, next) => {
+  const { companyId } = req.query; // Assuming companyId is passed as a query parameter
+
+  // SQL query to fetch enquiry stats by status for the selected company
+  db.query(`
+    SELECT 
+      status,
+      COUNT(*) as count
+    FROM 
+      project_enquiry
+    WHERE 
+      company_id = ?
+    GROUP BY 
+      status
+    ORDER BY 
+      FIELD(status, 'In Progress', 'Quotation Sent', 'Cancelled', 'OnHold')
+  `, [companyId], (err, result) => {
+    if (err) {
+      console.log('Error fetching data: ', err);
+      return res.status(500).send({
+        msg: 'Database error'
+      });
+    }
+    if (result.length === 0) {
+      return res.status(404).send({
+        msg: 'No data found for the selected company'
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success'
+      });
+    }
+  });
+});
 app.post('/getProjectQuoteLineItemsById', (req, res, next) => {
   db.query(`SELECT
   q.project_quote_id,

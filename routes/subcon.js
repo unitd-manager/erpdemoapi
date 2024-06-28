@@ -121,6 +121,62 @@ app.get('/getSubcon', (req, res, next) => {
 );
 });
 
+app.get('/getSubconChart', (req, res, next) => {
+  db.query(`SELECT s.company_name
+  ,s.sub_con_id
+  ,s.email
+  ,s.status
+  FROM sub_con s WHERE s.sub_con_id != '' AND s.status = "current"
+  ORDER BY s.sub_con_id DESC`,
+  (err, result) => {
+    if (err) {
+      console.log('error: ', err)
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      })
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+})
+}
+  }
+);
+});
+app.get('/getJobOrderChart', (req, res, next) => {
+  const subConId = req.query.sub_con_id; // Get the subcontractor ID from the query parameters
+
+  db.query(`
+    SELECT 
+      s.project_job_id,
+      s.job_title,
+      s.job_date,
+      s.job_status,
+      s.sub_con_id
+    FROM 
+      project_job s
+    LEFT JOIN 
+      sub_con sc ON s.sub_con_id = sc.sub_con_id
+    WHERE 
+      s.sub_con_id = ?`,
+    [subConId],
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err);
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+        });
+      }
+    }
+  );
+});
 app.post('/edit-Subcon', (req, res, next) => {
   db.query(`UPDATE sub_con 
             SET company_name=${db.escape(req.body.company_name)}

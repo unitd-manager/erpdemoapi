@@ -54,6 +54,46 @@ app.get('/getTabPurcahseQuote', (req, res, next) => {
     }
   );
 });
+
+app.get('/getQuotationDashboard', (req, res, next) => {
+  const companyId = req.query.company;  // Get company id from query parameters
+  const companyFilter = companyId ? `AND pq.company_id = ${companyId}` : '';
+
+  db.query(`
+    SELECT 
+      DATE_FORMAT(STR_TO_DATE(pq.creation_date, '%d-%m-%Y %h:%i:%s %p'), '%M') AS month,
+      COUNT(*) AS quotationCount
+    FROM 
+      project_quote pq
+      LEFT JOIN company c ON pq.company_id = c.company_id
+    WHERE
+      YEAR(STR_TO_DATE(pq.creation_date, '%d-%m-%Y %h:%i:%s %p')) = YEAR(CURDATE())
+      ${companyFilter}
+    GROUP BY 
+      MONTH(STR_TO_DATE(pq.creation_date, '%d-%m-%Y %h:%i:%s %p'))
+    ORDER BY 
+      MONTH(STR_TO_DATE(pq.creation_date, '%d-%m-%Y %h:%i:%s %p'))`,
+  (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return res.status(500).send({
+        msg: 'Database error'
+      });
+    }
+    if (result.length == 0) {
+      return res.status(400).send({
+        msg: 'No result found'
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success'
+      });
+    }
+  });
+});
+
+
 app.get('/getQuoteStats', (req, res, next) => {
   db.query(`SELECT q.quote_id,
 q.quote_status

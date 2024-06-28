@@ -103,17 +103,18 @@ app.post('/getJobOrderById', (req, res, next) => {
     ,q.payment_method
     ,q.revision
     ,q.intro_drawing_job 
-    ,q.total_amount
     ,q.company_id
     ,q.creation_date
     ,q.modification_date
     ,q.created_by
     ,q.modified_by
+    ,pj.amount
     ,s.sub_con_id
     ,s.company_name AS sub_con_title
     FROM project_job q  
     LEFT JOIN sub_con s ON q.sub_con_id = s.sub_con_id
-    WHERE q.project_id = ${db.escape(req.body.project_id)}
+    LEFT JOIN project_job_items pj ON q.project_job_id = pj.project_job_id
+    WHERE q.project_id =  ${db.escape(req.body.project_id)}
     `,
       (err, result) => {
        

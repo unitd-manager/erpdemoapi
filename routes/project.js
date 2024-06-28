@@ -63,6 +63,44 @@ app.get('/getProject', (req, res, next) => {
   );
 });
 
+app.get('/getProjectChart', (req, res, next) => {
+  const company = req.query.company;
+  let query = `
+    SELECT 
+      p.title, p.category, p.status, p.contact_id, p.start_date, 
+      p.estimated_finish_date, p.description, p.project_manager_id, 
+      p.project_id, p.project_code, c.company_name, p.company_id
+    FROM 
+      project p
+    LEFT JOIN 
+      company c ON p.company_id = c.company_id
+    WHERE 
+      p.project_id != ''`;
+
+  if (company) {
+    query += ` AND p.company_id = ${db.escape(company)}`;
+  }
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      return res.status(500).send({
+        msg: 'Database error'
+      });
+    }
+    if (result.length == 0) {
+      return res.status(400).send({
+        msg: 'No result found'
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success'
+      });
+    }
+  });
+});
+
 app.get('/getTranslationForProject', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdProject%'`,
   (err, result) => {
