@@ -124,6 +124,7 @@ app.get('/getOrders', (req, res, next) => {
       o.*
    
      ,co.company_name
+     ,co.company_id
     FROM 
       orders o 
   LEFT JOIN (company co) ON (co.company_id = o.company_id)
@@ -439,6 +440,28 @@ app.post("/updateDiscountCharge", (req, res, next) => {
   });
 });
 
+app.post('/getCompanyById', (req, res, next) => {
+  db.query(`select i.*
+   from company i
+ WHERE i.company_id= ${db.escape(req.body.company_id)}`,
+    (err, result) => {
+
+      if (err) {
+        return res.status(400).send({
+              data: err,
+              msg:'failed'
+            });
+      } else {
+            return res.status(200).send({
+              data: result,
+              msg:'Success'
+            });
+
+      }
+
+    }
+  );
+});
 
 app.get("/getClientsByName", (req, res, next) => {
   const { keyword } = req.query; // Extract query parameters
@@ -447,8 +470,12 @@ app.get("/getClientsByName", (req, res, next) => {
     `SELECT p.company_id
  
   ,p.company_name
-  
-
+  ,p.address_street
+  ,p.address_country
+  ,p.address_state
+  ,p.address_po_code
+  ,p.email
+  ,p.phone
   FROM company p 
 
     where p.company_name LIKE CONCAT('%',  ${db.escape(keyword)}, '%')
