@@ -352,7 +352,8 @@ app.post('/edit-SupplierReceipt', (req, res, next) => {
             }
           );
         });
-
+      
+        
 app.post('/deleteSupplier', (req, res, next) => {
 
   let data = {supplier_id : req.body.supplier_id  };
@@ -471,7 +472,7 @@ app.post('/getMakePayment', (req, res, next) => {
   i.supplier_id,
   i.payment_status,
   o.company_name
-  ,(SELECT SUM(pop.cost_price*pop.quantity) AS prev_sum 
+  ,(SELECT SUM(pop.cost_price*pop.qty) AS prev_sum 
     FROM po_product pop
     WHERE pop.purchase_order_id =  i.purchase_order_id) as prev_inv_amount
     ,(SELECT SUM(supHist.amount) AS prev_sum 
