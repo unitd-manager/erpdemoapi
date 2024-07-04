@@ -189,7 +189,7 @@ app.post('/editDocument', (req, res, next) => {
             ,document_title_arb=${db.escape(req.body.document_title_arb)}
             ,contact_id=${db.escape(req.body.contact_id)}
             ,company_id=${db.escape(req.body.company_id)}
-            ,quote_id=${db.escape(req.body.quote_id)}
+            ,project_quote_id=${db.escape(req.body.project_quote_id)}
             ,budget=${db.escape(req.body.budget)}
             ,creation_date=${db.escape(req.body.creation_date)}
             ,created_by=${db.escape(req.body.created_by)}
@@ -222,7 +222,7 @@ app.post('/insertDocument', (req, res, next) => {
     , project_id	: req.body.project_id
     , contact_id: req.body.contact_id
     , company_id: req.body.company_id
-    , quote_id	: req.body.quote_id
+    , project_quote_id	: req.body.project_quote_id
     , budget : req.body.budget
     , creation_date : req.body.creation_date
     , created_by : req.body.created_by
@@ -254,7 +254,7 @@ app.post('/getProjectById', (req, res, next) => {
   ,contact_id
   ,project_code
   ,company_id
-  ,quote_id
+  ,project_quote_id
   ,budget_inhouse
   FROM project
   WHERE project_id=${db.escape(req.body.project_id)}`,

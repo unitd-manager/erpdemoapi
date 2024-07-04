@@ -19,7 +19,7 @@ app.use(fileUpload({
 
 app.post('/getProjectquoteById', (req, res, next) => {
     db.query(` SELECT q.quote_date
-    ,q.project_quote_id
+    ,q.project_quote_idgetOrderedItemsById
     ,q.quote_code
     ,q.quote_status
     ,q.ref_no_quote
@@ -192,7 +192,7 @@ app.post('/getProjectquoteById', (req, res, next) => {
   //           }));
   // console.log('salesReturnHistoryItemData',salesReturnHistoryItemData);
   //           let insertItemsQuery =
-  //           "INSERT INTO purchase_return_items (`purchase_return_id`, `item_title`, `ordered_quantity`,`unit`,`cost_price`,`total_cost`) VALUES ?";
+  //           "INSERT INTO purchase_return_items (purchase_return_id, item_title, ordered_quantity,unit,cost_price,total_cost) VALUES ?";
   //         let values = salesReturnHistoryItemData.map(item => [item.purchase_return_id,item.item_title, item.ordered_quantity,item.unit,item.cost_price,item.total_cost]);
           
   //         db.query(insertItemsQuery, [values], (err, itemResult) => {
@@ -590,11 +590,13 @@ FROM purchase_order WHERE supplier_id =${db.escape(req.body.supplier_id)}`,
 app.post('/getOrderedItemsById', (req, res, next) => {
   db.query(`SELECT 
   pp.po_product_id ,
+  pp.product_id ,
   pp.purchase_order_id,
   pp.quantity,
   pp.quantity_arb,
-  pp.return_qty,
+  (SELECT SUM(ph.purchase_return_qty) FROM purchase_return_history ph WHERE ph.po_product_id=pp.po_product_id ) AS return_qty,
   p.title,
+  p.qty_in_stock,
   pr.purchase_return_id
   FROM po_product pp 
   LEFT JOIN product p ON p.product_id=pp.product_id
@@ -624,6 +626,8 @@ app.post('/insertPurchasereturnHistory', (req, res, next) => {
     purchase_return_id: req.body.purchase_return_id,
     purchase_order_id: req.body.purchase_order_id,
     po_product_id: req.body.po_product_id,
+    product_id: req.body.product_id,
+    status: req.body.status,
     purchase_return_qty: req.body.purchase_return_qty,
     creation_date: req.body.creation_date,
     modification_date: req.body.modification_date,
@@ -676,9 +680,16 @@ app.post('/updatePoProduct', (req, res, next) => {
           prh.creation_date,
           prh.created_by,
           prh.po_product_id,
-          po.return_qty
+          prh.product_id,
+          prh.status,
+          po.return_qty,
+          po.quantity,
+          p.qty_in_stock,
+          i.actual_stock
           FROM purchase_return_history prh
           LEFT JOIN po_product po ON po.po_product_id=prh.po_product_id
+          LEFT JOIN product p ON p.product_id=prh.product_id
+          LEFT JOIN inventory i ON i.product_id=prh.product_id
           WHERE prh.po_product_id = ${db.escape(
                 req.body.po_product_id,
               )} ORDER BY prh.purchase_return_history_id  DESC `,
@@ -700,7 +711,25 @@ app.post('/updatePoProduct', (req, res, next) => {
           );
         });
 
-
+ app.post('/editpurchasereturnhistory', (req, res, next) => {
+    db.query(`UPDATE purchase_return_history 
+              SET status=${db.escape(req.body.status)}
+              ,modification_date=${db.escape(req.body.modification_date)}
+              ,modified_by=${db.escape(req.body.modified_by)}
+              WHERE purchase_return_history_id =  ${db.escape(req.body.purchase_return_history_id)}`,
+              (err, result) =>{
+                if (err) {
+                  console.log("error: ", err);
+                  return;
+                } else {
+                      return res.status(200).send({
+                        data: result,
+                        msg:'Success'
+                      });
+                }
+               }
+            );
+          });
 
 app.get('/secret-route', userMiddleware.isLoggedIn, (req, res, next) => {
   console.log(req.userData);

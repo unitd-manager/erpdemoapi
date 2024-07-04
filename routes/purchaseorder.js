@@ -456,6 +456,7 @@ app.post('/editTabPurchaseOrderLineItem', (req, res, next) => {
             ,gst=${db.escape(req.body.gst)}
             ,unit=${db.escape(req.body.unit)}
             ,qty=${db.escape(req.body.qty)}
+             ,quantity=${db.escape(req.body.quantity)}
             ,creation_date=${db.escape(req.body.creation_date)}
             ,modification_date=${db.escape(req.body.modification_date)}
             ,created_by=${db.escape(req.body.created_by)}
@@ -1422,7 +1423,6 @@ app.get('/getPurchaseGstReport', (req, res, next) => {
         });
       }
   
-      console.log(`Deleted old order items with quote_id ${PurchaseQuoteId}`);
       return res.status(200).json({
         message: 'Order items deleted successfully',
       });
