@@ -68,6 +68,51 @@ app.get('/getProjectSalesOrder', (req, res, next) => {
   }
 );
 });
+
+
+app.get('/getProjectOrderStats', (req, res, next) => {
+  const { company_id } = req.query;
+
+  let sqlQuery = `
+    SELECT 
+      o.project_order_id,
+      o.company_id,
+      c.company_name,
+      o.order_status,
+      o.order_status_arb
+      FROM 
+      project_orders o
+       LEFT JOIN 
+      company c ON o.company_id = c.company_id
+    WHERE 
+      o.project_order_id != ''`;
+
+  if (company_id) {
+    sqlQuery += ` AND c.company_id = ?`;
+  }
+
+  sqlQuery += `
+    GROUP BY 
+      o.project_order_id
+    ORDER BY 
+      o.project_order_id DESC`;
+
+  db.query(sqlQuery, [company_id], (err, result) => {
+    if (err) {
+      console.log('error: ', err);
+      return res.status(400).send({
+        data: err,
+        msg: 'failed',
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+      });
+    }
+  });
+});
+
 app.post('/getOrdersByIds', (req, res, next) => {
   db.query(`SELECT DISTINCT r.project_order_item_id 
   ,r.record_id
