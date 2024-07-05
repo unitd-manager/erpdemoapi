@@ -42,49 +42,53 @@ db.query(
 
 app.get('/getProjectTask', (req, res, next) => {
   db.query(`SELECT
-  pt.project_task_id
-  ,pt.project_id
-  ,pt.company_id
-  ,pt.employee_id
-  ,pt.start_date
-  ,pt.end_date
-  ,pt.end_date_arb
-  ,pt.completion
-  ,pt.completion_arb
-  ,pt.task_title
-  ,pt.task_title_arb
-  ,pt.status
-  ,pt.status_arb
-  ,pt.media_id
-  ,pt.description
-  ,pt.description_arb
-  ,pt.project_job_id
-  ,pt.estimated_hours
-  ,pt.estimated_hours_arb
-  ,pt.description_arb
-  ,pt.actual_hours
-  ,pt.actual_hours_arb
-  ,pt.actual_completed_date
-  ,pt.actual_completed_date_arb
-  ,pt.task_type
-  ,pt.task_type_arb
-  ,pt.priority
-  ,pt.priority_arb
-  ,pt.creation_date
-  ,pt.created_by
-  ,pt.modification_date
-  ,pt.modified_by
-  ,p.title
-  ,p.title_arb
-  ,e.first_name
-  ,e.first_name_arb
-  ,e.employee_id
-  ,jo.job_title
-  FROM project_task pt
-  LEFT JOIN project p ON p.project_id = pt.project_id
-  LEFT JOIN employee e ON e.employee_id = pt.employee_id
-  LEFT JOIN project_job jo ON p.project_id = jo.project_id
-  Where pt.project_task_id !=''
+    pt.project_task_id
+    ,pt.project_id
+    ,pt.company_id
+    ,pt.employee_id
+    ,pt.start_date
+    ,pt.end_date
+    ,pt.end_date_arb
+    ,pt.completion
+    ,pt.completion_arb
+    ,pt.task_title
+    ,pt.task_title_arb
+    ,pt.status
+    ,pt.status_arb
+    ,pt.media_id
+    ,pt.description
+    ,pt.description_arb
+    ,pt.project_job_id
+    ,pt.estimated_hours
+    ,pt.estimated_hours_arb
+    ,pt.description_arb
+    ,pt.actual_hours
+    ,pt.actual_hours_arb
+    ,pt.actual_completed_date
+    ,pt.actual_completed_date_arb
+    ,pt.task_type
+    ,pt.task_type_arb
+    ,pt.priority
+    ,pt.priority_arb
+    ,pt.creation_date
+    ,pt.created_by
+    ,pt.modification_date
+    ,pt.modified_by
+    ,p.project_id
+    ,p.title
+    ,p.title_arb
+    ,e.first_name
+    ,e.employee_name
+    ,e.first_name_arb
+    ,e.employee_id
+    ,jo.project_job_id
+    ,jo.job_title
+    ,jo.job_code
+    FROM project_task pt
+    LEFT JOIN project p ON p.project_id = pt.project_id
+    LEFT JOIN employee e ON e.employee_id = pt.employee_id
+    LEFT JOIN project_job jo ON pt.project_job_id = jo.project_job_id
+    Where pt.project_task_id !=''
   group by pt.project_task_id`,
   (err, result) => {
     if (err) {

@@ -97,13 +97,11 @@ app.post("/getProposalById", (req, res, next) => {
     ,pr.title_arb
     ,pr.proposal_code
     ,pr.proposal_date
-   
-  ,pr.project_quote_id
+    ,pr.project_quote_id
    ,q.quote_code
    ,q.company_id
-   ,q.contact_id
+   ,pr.contact_id
    ,c.company_name 
-   
    ,cont.first_name
    ,pr.status
    ,pr.status_arb
@@ -398,9 +396,9 @@ app.get("/getEmployeeName", (req, res, next) => {
 
 app.get("/getProjectManager", (req, res, next) => {
   db.query(
-    `SELECT employee_id,first_name,position
+    `SELECT employee_id,first_name,position, employee_name
   FROM employee
-  Where position ='Manager'`,
+  Where project_manager = "1"`,
     (err, result) => {
       if (err) {
         console.log('error: ', err)
