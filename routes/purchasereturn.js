@@ -593,6 +593,7 @@ app.post('/getOrderedItemsById', (req, res, next) => {
   pp.product_id ,
   pp.purchase_order_id,
   pp.quantity,
+  pp.qty,
   pp.quantity_arb,
   (SELECT SUM(ph.purchase_return_qty) FROM purchase_return_history ph WHERE ph.po_product_id=pp.po_product_id ) AS return_qty,
   p.title,
