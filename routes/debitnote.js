@@ -1951,7 +1951,7 @@ app.post('/insertdebitnote', (req, res, next) => {
     bank_name: req.body.bank_name,
     site_id: req.body.site_id,
     cheque_no: req.body.cheque_no,
-     project_id: req.body.project_id,
+     invoice_id: req.body.invoice_id,
 };
 
 

@@ -478,6 +478,9 @@ app.post('/getInvoiceForSalesReceipt', (req, res, next) => {
   FROM invoice_receipt_history invHist 
   LEFT JOIN receipt r ON (r.receipt_id = invHist.receipt_id) 
   WHERE invHist.invoice_id = i.invoice_id AND i.status != 'Cancelled' AND r.receipt_status !='cancelled') as prev_amount 
+    ,(SELECT SUM(cr.amount) AS prev_sum 
+  FROM credit_note cr 
+  WHERE cr.invoice_id = i.invoice_id AND i.status != 'Cancelled' ) as credit_amount 
   FROM invoice i
   LEFT JOIN orders o ON (o.order_id = i.invoice_source_id) 
   WHERE o.order_id = ${db.escape(req.body.order_id)} AND (i.status='due' OR i.status='Partial Payment')`,
