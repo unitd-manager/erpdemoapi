@@ -2865,6 +2865,7 @@ app.post('/insertInvoiceItem', (req, res, next) => {
     ,quote_id: req.body.quote_id
     ,unit_price: req.body.unit_price
     ,unit: req.body.unit
+    ,record_id: req.body.record_id
 
  };
   let sql = "INSERT INTO invoice_item SET ?";

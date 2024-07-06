@@ -233,6 +233,7 @@ app.post("/getOrdersById", (req, res, next) => {
     ,oi.unit_arb
     ,oi.quote_id
     ,oi.quote_items_id
+    ,oi.record_id
      
        FROM order_item oi 
        LEFT JOIN (orders o) ON o.order_id=oi.order_id 
@@ -388,6 +389,7 @@ app.post("/insertgoodsdeliveryitem", (req, res, next) => {
     goods_delivery_id: req.body.goods_delivery_id,
     order_id: req.body.order_id,
     order_item_id: req.body.order_item_id,
+    record_id: req.body.record_id,
   };
   let sql = "INSERT INTO goods_delivery_item SET ?";
   let query = db.query(sql, data, (err, result) => {
@@ -478,6 +480,7 @@ app.post('/update_Goods_Delivery_item', (req, res, next) => {
     unit,
     order_id,
     order_item_id,
+    record_id,
   } = req.body;
 
   console.log('Received update request with data:', req.body);
@@ -491,6 +494,7 @@ app.post('/update_Goods_Delivery_item', (req, res, next) => {
       amount = ?,
       unit = ?,
       order_id = ?
+      record_id = ?
     WHERE 
       order_item_id = ?
   `;
@@ -502,7 +506,8 @@ app.post('/update_Goods_Delivery_item', (req, res, next) => {
     amount,
     unit,
     order_id,
-    order_item_id // Ensure this value is correctly set
+    order_item_id,// Ensure this value is correctly set
+    record_id,
   ];
 
   console.log('Executing query:', query);

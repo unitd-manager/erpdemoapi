@@ -2467,6 +2467,7 @@ app.post('/insert_order_item', (req, res, next) => {
               qty_for_invoice: req.body.qty_for_invoice,
               mark_up_type: req.body.mark_up_type,
               item_code: req.body.item_code,
+              record_id: req.body.record_id,
               price_from_supplier: req.body.price_from_supplier,
               ref_code: req.body.ref_code,
               discount_type: req.body.discount_type,
@@ -2520,7 +2521,8 @@ app.post('/update_order_item', (req, res, next) => {
     unit,
     description,
     quote_id,
-    order_id
+    order_id,
+    record_id
   } = req.body;
 
   console.log('Received update request with data:', req.body);
@@ -2536,7 +2538,8 @@ app.post('/update_order_item', (req, res, next) => {
       unit = ?,
       description = ?,
       quote_id = ?,
-      order_id = ?
+      order_id = ?,
+      record_id = ?
     WHERE 
       quote_items_id = ?
   `;
@@ -2551,7 +2554,8 @@ app.post('/update_order_item', (req, res, next) => {
     description,
     quote_id,
     order_id,
-    quote_items_id  // Ensure this value is correctly set
+    quote_items_id,
+    record_id  // Ensure this value is correctly set
   ];
 
   console.log('Executing query:', query);

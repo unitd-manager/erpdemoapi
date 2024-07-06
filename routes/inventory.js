@@ -452,7 +452,7 @@ WHERE pop.product_id != ''`,
   );
 });
 
-app.post('/gettabPurchaseOrderLinkedById', (req, res, next) => {
+app.post('/gettabPurchaseOrderLinkedByIdBasedProject', (req, res, next) => {
   db.query(`SELECT pop.cost_price
   ,pop.qty
   ,com.company_name AS supplier_name
@@ -467,6 +467,42 @@ FROM po_product pop
 LEFT JOIN purchase_order po ON po.purchase_order_id = pop.purchase_order_id
 LEFT JOIN project p ON p.project_id = po.project_id
 LEFT JOIN company c ON c.company_id = p.company_id
+LEFT JOIN supplier com ON pop.supplier_id = com.supplier_id
+LEFT JOIN site st ON st.site_id = po.site_id
+WHERE pop.product_id = ${db.escape(req.body.product_id)}`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+ 
+    }
+  );
+});
+
+app.post('/gettabPurchaseOrderLinkedById', (req, res, next) => {
+  db.query(`SELECT pop.cost_price
+  ,pop.qty
+  ,com.company_name AS supplier_name
+  ,po.po_code
+  ,po.purchase_order_date
+  ,po.purchase_order_id
+  ,po.creation_date
+  ,c.company_name
+  ,st.title as site_title
+FROM po_product pop
+LEFT JOIN purchase_order po ON po.purchase_order_id = pop.purchase_order_id
+LEFT JOIN quote q ON q.quote_id=po.purchase_quote_id
+LEFT JOIN company c ON c.company_id = q.company_id
 LEFT JOIN supplier com ON pop.supplier_id = com.supplier_id
 LEFT JOIN site st ON st.site_id = po.site_id
 WHERE pop.product_id = ${db.escape(req.body.product_id)}`,
@@ -518,7 +554,7 @@ app.get('/getTabProjectLinked', (req, res, next) => {
   );
 });
 
-app.post('/getTabProjectLinkedById', (req, res, next) => {
+app.post('/getTabProjectLinkedByIdBasedProject', (req, res, next) => {
   db.query(`SELECT DISTINCT p.project_id
            ,pm.product_id
            ,pm.material_used_date
@@ -547,6 +583,36 @@ app.post('/getTabProjectLinkedById', (req, res, next) => {
     }
   );
 });
+
+app.post('/getTabProjectLinkedById', (req, res, next) => {
+  db.query(`SELECT DISTINCT 
+           pm.record_id
+           ,p.invoice_date
+           ,com.company_name
+           ,pm.qty
+           FROM invoice_item pm
+           LEFT JOIN invoice p ON (p.invoice_id = pm.invoice_id)
+           LEFT JOIN company com ON (com.company_id = p.company_id)
+           WHERE pm.record_id =${db.escape(req.body.product_id)}`,
+    (err, result) => {
+       
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+ 
+    }
+  );
+});
+
 
 app.post('/getAdjustStock', (req, res, next) => {
   db.query(`SELECT al.adjust_stock_log_id,
@@ -664,6 +730,35 @@ app.post('/getProductQuantity', (req, res, next) => {
     i.actual_stock,
     (SELECT COALESCE(SUM(po.qty), 0) FROM po_product po WHERE po.product_id = p.product_id) AS materials_purchased,
     (SELECT COALESCE(SUM(pm.quantity), 0) FROM project_materials pm WHERE pm.product_id = p.product_id) AS materials_used
+FROM 
+    product p
+LEFT JOIN 
+    inventory i ON i.product_id = p.product_id
+WHERE 
+    p.product_id = ${db.escape(req.body.product_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log('error: ', err)
+        return res.status(400).send({
+          data: err,
+          msg: 'failed',
+        })
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: 'Success',
+            });
+      }
+ 
+    }
+  );
+});
+
+app.post('/getPurchaseSoldQTY', (req, res, next) => {
+  db.query(`SELECT 
+    i.actual_stock,
+    (SELECT COALESCE(SUM(po.qty), 0) FROM po_product po WHERE po.product_id = p.product_id) AS materials_purchased,
+    (SELECT COALESCE(SUM(pm.qty), 0) FROM invoice_item pm WHERE pm.record_id = p.product_id) AS materials_used
 FROM 
     product p
 LEFT JOIN 
