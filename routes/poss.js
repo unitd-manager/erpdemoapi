@@ -569,7 +569,7 @@ app.post("/removeClientId", (req, res, next) => {
 app.post('/generateBillAndCreateOrder', async (req, res) => {
   try {
     // Extract request body parameters
-    const { mode_of_payment, gst_selected, order_date, subtotal_amount, order_id, amount_given } = req.body;
+    const { mode_of_payment, gst_selected, order_date,company_id, subtotal_amount, order_id, amount_given } = req.body;
 
     // Create a new order
     const newOrderResult = await queryDB(`
@@ -635,6 +635,7 @@ app.post('/generateBillAndCreateOrder', async (req, res) => {
     let fa = {
       invoice_amount, // Set invoice_amount to subtotal_amount
       invoice_code,
+      company_id,
       invoice_date: new Date().toISOString().split('T')[0],
       order_id: session_order_id,
       invoice_source_id: session_order_id,
