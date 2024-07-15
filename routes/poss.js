@@ -35,7 +35,6 @@ app.use(
 
 // Promisify the db.query method
 const query = util.promisify(db.query).bind(db);
-
 app.get('/createNewOrder', async (req, res) => {
   try {
     const result = await query(`
@@ -70,12 +69,24 @@ app.get('/createNewOrder', async (req, res) => {
 
     const order_id = insertResult.insertId;
     req.session.order_id = order_id;
-    res.send(`New order created with ID: ${order_id}`);
+
+    // Return the new order data as JSON
+    res.json({
+      order_id: order_id,
+      bill_number: bill_number,
+      company_name: null, // Update with actual company name if available
+      company_id: null, // Update with actual company ID if available
+      gst_status: 'ON',
+      shipping_charge: 0,
+      discount: 0,
+      order_status: 'New'
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while creating the order.");
   }
 });
+
 
 app.post("/cancelOrder", async (req, res) => {
   try {
@@ -156,7 +167,7 @@ app.post("/cancelOrderandNew", async (req, res) => {
     const session_order_id = req.body.order_id || '';
 
     if (!session_order_id) {
-      return res.status(400).send("No order ID in session.");
+      return res.status(400).json({ message: "No order ID in session." });
     }
 
     // Cancel the order, invoice, and receipt in a transaction
@@ -191,7 +202,6 @@ app.post("/cancelOrderandNew", async (req, res) => {
 
     const newBillNumber = (newOrderResult[0]?.bill_number || 0) + 1;
 
-    
     await query('UPDATE setting SET value = (value + 1) WHERE key_text = "nextOrderCode"');
 
     const receipt_code_result = await query('SELECT value FROM setting WHERE key_text = "nextOrderCode"');
@@ -205,6 +215,7 @@ app.post("/cancelOrderandNew", async (req, res) => {
     const newOrderData = {
       order_status: 'New',
       record_type: 'POS',
+      gst_status: 'ON',
       order_date: new Date().toISOString().split('T')[0],
       bill_number: newBillNumber,
       link_stock: 1,
@@ -219,16 +230,29 @@ app.post("/cancelOrderandNew", async (req, res) => {
     // Commit the transaction
     await query('COMMIT');
 
-    res.send(`Order, invoice, and receipt cancelled successfully. New order created with ID: ${newOrderId}`);
+    // Return the new order data as JSON
+    res.json({
+     
+        order_id: newOrderId,
+        bill_number: newBillNumber,
+        company_name: null, // Update with actual company name if available
+        company_id: null, // Update with actual company ID if available
+        gst_status: 'ON',
+        shipping_charge: 0,
+        discount: 0,
+        order_status: 'New'
+      
+    });
+    
   } catch (error) {
     // Rollback the transaction in case of an error
     await query('ROLLBACK');
     console.error(error);
-    res.status(500).send("An error occurred while cancelling the order and creating a new one.");
+    res.status(500).json({ message: "An error occurred while cancelling the order and creating a new one." });
   }
 });
 
-app.delete('/deleteOrderItem', (req, res, next) => {
+app.post('/deleteOrderItem', (req, res, next) => {
 
   let data = {order_item_id : req.body.order_item_id };
   let sql = "DELETE FROM order_item WHERE ?";
@@ -545,7 +569,7 @@ app.post("/removeClientId", (req, res, next) => {
 app.post('/generateBillAndCreateOrder', async (req, res) => {
   try {
     // Extract request body parameters
-    const { mode_of_payment, gst_selected, order_date, subtotal_amount, order_id, amount_given } = req.body;
+    const { mode_of_payment, gst_selected, order_date,company_id, subtotal_amount, order_id, amount_given } = req.body;
 
     // Create a new order
     const newOrderResult = await queryDB(`
@@ -611,6 +635,7 @@ app.post('/generateBillAndCreateOrder', async (req, res) => {
     let fa = {
       invoice_amount, // Set invoice_amount to subtotal_amount
       invoice_code,
+      company_id,
       invoice_date: new Date().toISOString().split('T')[0],
       order_id: session_order_id,
       invoice_source_id: session_order_id,
