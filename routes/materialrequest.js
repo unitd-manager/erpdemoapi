@@ -16,6 +16,51 @@ app.use(fileUpload({
     createParentPath: true
 }));
 
+app.get('/getMaterialStats', (req, res, next) => {
+  const { company_id } = req.query;
+
+  let sqlQuery = `
+    SELECT 
+      p.title,
+      COUNT(m.material_request_id) AS material_request_count,
+      COUNT(mi.material_issue_id) AS material_issue_count
+    FROM 
+      material_request m
+      LEFT JOIN project p ON m.project_id = p.project_id
+      LEFT JOIN company c ON p.company_id = c.company_id
+      LEFT JOIN material_issue mi ON m.material_request_id = mi.material_request_id
+    WHERE 
+      m.material_request_id != ''
+            GROUP BY p.project_id
+  `;
+
+  if (company_id) {
+    sqlQuery += ` AND c.company_id = ?`;
+  }
+
+  sqlQuery += `
+    GROUP BY 
+      p.title
+  `;
+
+  db.query(sqlQuery, [company_id], (err, result) => {
+    if (err) {
+      console.log('Error:', err);
+      return res.status(400).send({
+        data: err,
+        msg: 'Failed to fetch material stats',
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+      });
+    }
+  });
+});
+
+
+
 app.get('/getMaterialRequest', (req, res, next) => {
   db.query(`select
   lr.material_request_id

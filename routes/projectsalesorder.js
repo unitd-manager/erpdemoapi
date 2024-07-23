@@ -69,20 +69,16 @@ app.get('/getProjectSalesOrder', (req, res, next) => {
 );
 });
 
-
 app.get('/getProjectOrderStats', (req, res, next) => {
   const { company_id } = req.query;
 
   let sqlQuery = `
     SELECT 
-      o.project_order_id,
-      o.company_id,
-      c.company_name,
       o.order_status,
-      o.order_status_arb
-      FROM 
+      COUNT(o.project_order_id) AS count
+    FROM 
       project_orders o
-       LEFT JOIN 
+      LEFT JOIN 
       company c ON o.company_id = c.company_id
     WHERE 
       o.project_order_id != ''`;
@@ -93,9 +89,9 @@ app.get('/getProjectOrderStats', (req, res, next) => {
 
   sqlQuery += `
     GROUP BY 
-      o.project_order_id
+      o.order_status
     ORDER BY 
-      o.project_order_id DESC`;
+      o.order_status DESC`;
 
   db.query(sqlQuery, [company_id], (err, result) => {
     if (err) {
@@ -105,6 +101,12 @@ app.get('/getProjectOrderStats', (req, res, next) => {
         msg: 'failed',
       });
     } else {
+      if (result.length === 0) {
+        return res.status(404).send({
+          data: [],
+          msg: 'No orders found for the selected company',
+        });
+      }
       return res.status(200).send({
         data: result,
         msg: 'Success',

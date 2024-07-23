@@ -68,6 +68,49 @@ app.get('/getEquipmentRequest', (req, res, next) => {
   );
 });
 
+app.get('/getEquipmentStats', (req, res, next) => {
+  const { company_id } = req.query;
+
+  let sqlQuery = `
+    SELECT 
+      p.title,
+      COUNT(m.equipment_request_id) AS equipment_request_count,
+      COUNT(mi.equipment_issue_id) AS equipment_issue_count
+    FROM 
+      equipment_request m
+      LEFT JOIN project p ON m.project_id = p.project_id
+      LEFT JOIN company c ON p.company_id = c.company_id
+      LEFT JOIN equipment_issue mi ON m.equipment_request_id = mi.equipment_request_id
+    WHERE 
+      m.equipment_request_id != ''
+      
+  `;
+
+  if (company_id) {
+    sqlQuery += ` AND c.company_id = ?`;
+  }
+
+  sqlQuery += `
+    GROUP BY 
+      p.title
+  `;
+
+  db.query(sqlQuery, [company_id], (err, result) => {
+    if (err) {
+      console.log('Error:', err);
+      return res.status(400).send({
+        data: err,
+        msg: 'Failed to fetch material stats',
+      });
+    } else {
+      return res.status(200).send({
+        data: result,
+        msg: 'Success',
+      });
+    }
+  });
+});
+
 app.get('/getTranslationForEquipmentRequest', (req, res, next) => {
   db.query(`SELECT t.value,t.key_text,t.arb_value FROM translation t WHERE key_text LIKE 'mdEquipmentRequest%'`,
   (err, result) => {
